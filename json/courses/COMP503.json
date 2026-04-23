@@ -1,0 +1,18 @@
+{
+    "code": "COMP503",
+    "name": "Object Oriented Programming",
+    "points": 15,
+    "level": 5,
+    "prerequisites":
+    [
+        
+    ],
+    "corequisites":
+    [
+        "COMP503"
+    ],
+    "semesters":
+    [
+        1, 2
+    ]
+}

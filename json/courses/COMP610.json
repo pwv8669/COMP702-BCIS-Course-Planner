@@ -1,0 +1,18 @@
+{
+    "code": "COMP610",
+    "name": "Data Structures and Algorithms",
+    "points": 15,
+    "level": 6,
+    "prerequisites":
+    [
+        "COMP503"
+    ],
+    "corequisites":
+    [
+
+    ],
+    "semesters":
+    [
+        1, 2
+    ]
+}

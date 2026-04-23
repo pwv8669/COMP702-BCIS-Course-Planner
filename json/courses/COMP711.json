@@ -1,0 +1,18 @@
+{
+    "code": "COMP711",
+    "name": "Theory of Computation",
+    "points": 15,
+    "level": 7,
+    "prerequisites":
+    [
+        ["COMP610", "COMP613"]
+    ],
+    "corequisites":
+    [
+
+    ],
+    "semesters":
+    [
+        2
+    ]
+}

@@ -1,0 +1,18 @@
+{
+    "code": "COMP713",
+    "name": "Distributed and Mobile Systems",
+    "points": 15,
+    "level": 7,
+    "prerequisites":
+    [
+        "COMP611"
+    ],
+    "corequisites":
+    [
+
+    ],
+    "semesters":
+    [
+        2
+    ]
+}

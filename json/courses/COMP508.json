@@ -1,0 +1,19 @@
+{
+    "code": "COMP508",
+    "name": "Database System Design",
+    "points": 15,
+    "level": 5,
+    "prerequisites":
+    [
+
+    ],
+    "corequisites":
+    [
+
+    ],
+    "semesters":
+    [
+        1, 2
+    ],
+    "core": true
+}
