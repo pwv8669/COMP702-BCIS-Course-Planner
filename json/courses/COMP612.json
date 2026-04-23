@@ -1,0 +1,19 @@
+{
+    "code": "COMP612",
+    "name": "Computer Graphics Programming",
+    "points": 15,
+    "level": 6,
+    "prerequisites":
+    [
+        "MATH503",
+        ["COMP603", "COMP610"]
+    ],
+    "corequisites":
+    [
+
+    ],
+    "semesters":
+    [
+        1, 2
+    ]
+}

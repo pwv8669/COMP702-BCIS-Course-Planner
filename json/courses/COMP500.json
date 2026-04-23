@@ -1,0 +1,19 @@
+{
+    "code": "COMP500",
+    "name": "Programming Concepts and Techniques",
+    "points": 15,
+    "level": 5,
+    "prerequisites":
+    [
+
+    ],
+    "corequisites":
+    [
+
+    ],
+    "semesters":
+    [
+        1, 2
+    ],
+    "core": true
+}

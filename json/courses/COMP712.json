@@ -1,0 +1,18 @@
+{
+    "code": "COMP712",
+    "name": "Programming Languages",
+    "points": 15,
+    "level": 7,
+    "prerequisites":
+    [
+        ["COMP610", "COMP613"]
+    ],
+    "corequisites":
+    [
+
+    ],
+    "semesters":
+    [
+        2
+    ]
+}

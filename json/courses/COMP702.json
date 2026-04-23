@@ -1,0 +1,23 @@
+{
+    "code": "COMP702",
+    "name": "Research and Development Project Part 1",
+    "points": 15,
+    "level": 7,
+    "prerequisites":
+    [
+        "COMP500",
+        "COMP501",
+        "COMP507",
+        "DIGD507",
+        "MATH503"
+    ],
+    "corequisites":
+    [
+        "COMP703"
+    ],
+    "semesters":
+    [
+        1, 2
+    ],
+    "core": true
+}

@@ -1,0 +1,19 @@
+{
+    "code": "DIGD507",
+    "name": "Mahitahi | Collaborative Practices",
+    "points": 15,
+    "level": 5,
+    "prerequisites":
+    [
+
+    ],
+    "corequisites":
+    [
+
+    ],
+    "semesters":
+    [
+        1, 2
+    ],
+    "core": true
+}

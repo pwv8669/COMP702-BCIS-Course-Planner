@@ -1,0 +1,19 @@
+{
+    "code": "MATH503",
+    "name": "Mathematics for Computing",
+    "points": 15,
+    "level": 5,
+    "prerequisites":
+    [
+        
+    ],
+    "corequisites":
+    [
+
+    ],
+    "semesters":
+    [
+        1, 2
+    ],
+    "core": true
+}

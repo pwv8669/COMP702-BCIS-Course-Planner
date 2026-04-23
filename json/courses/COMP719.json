@@ -1,0 +1,18 @@
+{
+    "code": "COMP719",
+    "name": "Applied Human Computer Interaction",
+    "points": 15,
+    "level": 7,
+    "prerequisites":
+    [
+
+    ],
+    "corequisites":
+    [
+
+    ],
+    "semesters":
+    [
+        1, 2
+    ]
+}
