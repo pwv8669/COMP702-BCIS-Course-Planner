@@ -1,1 +1,91 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+table, td {
+  border: 2px solid black;
+}
+table{
+float:left;
+}
 
+
+th {
+float:left;
+vertical-align:top;
+text-align: center;
+
+}
+</style>
+</head>
+<body>
+
+<p>Click the button to insert new cell(s) at the beginning of the table row.</p>
+
+<table>
+<tr>
+<th>Year 1</th>
+<tr>
+  <tr>
+    <td id="Class 1">First cell</td>
+    <td id="Class 2">Second cell</td>
+  </tr>
+    <tr>
+    <td id="Class 3">Third cell</td>
+    <td id="Class 4">Fourth cell</td>
+  </tr>
+  <tr>
+    <td id="Class 5">Fifth cell</td>
+    <td id="Class 6">Sixth cell</td>
+  </tr>
+</table>
+
+<table>
+<tr>
+<th>Year 2</th>
+<tr>
+  <tr>
+    <td id="Class 1">First cell</td>
+    <td id="Class 2">Second cell</td>
+  </tr>
+    <tr>
+    <td id="Class 3">Third cell</td>
+    <td id="Class 4">Fourth cell</td>
+  </tr>
+  <tr>
+    <td id="Class 5">Fifth cell</td>
+    <td id="Class 6">Sixth cell</td>
+  </tr>
+</table>
+
+
+<table>
+<tr>
+<th>Year 3</th>
+<tr>
+  <tr>
+    <td id="Class 1">First cell</td>
+    <td id="Class 2">Second cell</td>
+  </tr>
+    <tr>
+    <td id="Class 3">Third cell</td>
+    <td id="Class 4">Fourth cell</td>
+  </tr>
+  <tr>
+    <td id="Class 5">Fifth cell</td>
+    <td id="Class 6">Sixth cell</td>
+  </tr>
+</table>
+
+<br>
+
+<script>
+function myFunction() {
+  var row = document.getElementById("myRow");
+  var x = row.insertCell(0);
+  x.innerHTML = "New cell";
+}
+</script>
+
+</body>
+</html>
