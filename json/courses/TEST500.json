@@ -1,8 +1,10 @@
 {
     "Code": "TEST500",
-    "Name": "Testing 2",
+    "Name": "Testing 3",
     "Points": "15",
     "Level": "5",
-    "Semester1Offered": false,
-    "Semester2Offered": false
+    "Semester1Offered": true,
+    "Semester2Offered": false,
+    "Prerequisites": "MATH503 AND (COMP603 OR COMP610)",
+    "Corequisites": "COMP500"
 }
