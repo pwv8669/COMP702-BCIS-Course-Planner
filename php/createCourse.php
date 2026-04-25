@@ -23,4 +23,5 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
     $filePath = $folder . $_POST["Code"] . ".json";
     file_put_contents($filePath, $jsonData);
 }
+header("Location: ../CourseCreator.html");
 ?>
