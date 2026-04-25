@@ -1,99 +1,165 @@
 <!DOCTYPE html>
 <html>
 <head>
-<script src="jquery-4.0.0.min.js"></script>
+<script src="app.js" defer></script>
 
 <style>
-table, td {
-  border: 2px solid black;
-}
-table{
-float:left;
-}
-
-
+  /* Styling here */
 th {
-float:left;
-vertical-align:top;
-text-align: center;
-
+  background-color: #ec784e;
+  font-size: 20px;
+  font-family: sans-serif;
+  color: #ffffff;
+  text-align: center;
 }
+table {
+  /* border: 2px solid black; */
+}
+
+td{
+  
+  font-family: 'Courier New', Courier, monospace;
+}
+tr:nth-child(even){background-color: #cac7c4;}  /* Alternate between light and dark cells */
+tr:nth-child(odd){background-color: #a2a19f;}
+table{
+   width:220px;
+float:left;
+}
+tr{
+  width: 100px;
+  height: 100px;
+}
+
+
 </style>
 </head>
 <body>
-
-
-
-
+  <!-- table setup -->
 <table>
-<tr>
-<th>Year 1</th>
-<tr>
+  <tr>
+   <th>Semester 1</th>
+    <!-- im thinking we do 8 arrays representing each semester -->
+      <!-- but atm the IDs are set as "Year-Class" eg year:1 class:2 is Class 1-2 -->
+       <!-- we can likely use for loops to change these cells-->
   <tr>
     <td id="Class 1-1">First cell</td>
+   
+  </tr>
+    <tr>
     <td id="Class 1-2">Second cell</td>
   </tr>
     <tr>
     <td id="Class 1-3">Third cell</td>
+  </tr>
+    <tr>
     <td id="Class 1-4">Fourth cell</td>
   </tr>
+</table>
+<table>
+</tr>
+   <th>Semester 2</th>
   <tr>
-    <td id="Class 1-5">Fifth cell</td>
-    <td id="Class 1-6">Sixth cell</td>
+    <td id="Class 1-5">First cell</td>
   </tr>
-   <tr>
-    <td id="Class 1-7">Seventh cell</td>
-    <td id="Class 1-8">Eighth cell</td>
+    <tr>
+    <td id="Class 1-6">Second cell</td>
+  </tr>
+    <tr>
+    <td id="Class 1-7">Third cell</td>
+  </tr>
+    <tr>
+    <td id="Class 1-8">Fourth cell</td>
   </tr>
 </table>
-
 <table>
-<tr>
-<th>Year 2</th>
-<tr>
+  <tr>
+   <th>Semester 1</th>
   <tr>
     <td id="Class 2-1">First cell</td>
+  </tr>
+    <tr>
     <td id="Class 2-2">Second cell</td>
   </tr>
     <tr>
     <td id="Class 2-3">Third cell</td>
+  </tr>
+    <tr>
     <td id="Class 2-4">Fourth cell</td>
   </tr>
+</table>
+<table>
+</tr>
+   <th>Semester 2</th>
   <tr>
-    <td id="Class 2-5">Fifth cell</td>
-    <td id="Class 2-6">Sixth cell</td>
+    <td id="Class 2-5">First cell</td>
   </tr>
-   <tr>
-    <td id="Class 2-7">Seventh cell</td>
-    <td id="Class 2-8">Eighth cell</td>
+    <tr>
+    <td id="Class 2-6">Second cell</td>
+  </tr>
+    <tr>
+    <td id="Class 2-7">Third cell</td>
+  </tr>
+    <tr>
+    <td id="Class 2-8">Fourth cell</td>
   </tr>
 </table>
-
-
 <table>
-<tr>
-<th>Year 3</th>
-<tr>
+  <tr>
+   <th>Semester 1</th>
   <tr>
     <td id="Class 3-1">First cell</td>
+  </tr>
+    <tr>
     <td id="Class 3-2">Second cell</td>
   </tr>
     <tr>
     <td id="Class 3-3">Third cell</td>
+  </tr>
+    <tr>
     <td id="Class 3-4">Fourth cell</td>
   </tr>
+</table>
+<table>
+</tr>
+   <th>Semester 2</th>
   <tr>
-    <td id="Class 3-5">Fifth cell</td>
-    <td id="Class 3-6">Sixth cell</td>
+    <td id="Class 3-5">First cell</td>
   </tr>
-   <tr>
-    <td id="Class 3-7">Seventh cell</td>
-    <td id="Class 3-8">Eighth cell</td>
+    <tr>
+    <td id="Class 3-6">Second cell</td>
+  </tr>
+    <tr>
+    <td id="Class 3-7">Third cell</td>
+  </tr>
+    <tr>
+    <td id="Class 3-8">Fourth cell</td>
   </tr>
 </table>
-<p id="demo">a</p>
 
+<button onclick="forEach()">Output Course Objects to console</button>
+<br> <br>
+<button id="Change" onclick="DisplayCourses()">Display Courses</button>
+<div id="groupSelect" style=display:none></div>
 <script>
+const coursearray = [];
+
+function forEach(){
+	coursearray.forEach(printerfunc);
+//Go through all courses in array and output all courses to console
+  function printerfunc(index){
+    console.log(index);
+  }
+}
+
+function DisplayCourses(){
+  var x = document.getElementById("groupSelect");
+  if (x.style.display === "none") {
+    x.style.display = "block";
+  } else {
+    x.style.display = "none";
+  }
+}
 
 </script>
 
