@@ -4,8 +4,8 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
     $course = [
         "Code" => $_POST["Code"],
         "Name" => $_POST["Name"],
-        "Points" => $_POST["Points"],
-        "Level" => $_POST["Level"],
+        "Points" => intval($_POST["Points"]),
+        "Level" => intval($_POST["Code"][4]), // Extract the level from the course code (e.g., COMP503 -> 5)
         "Semester1Offered" => isset($_POST["Semester1Offered"]) ? true : false,
         "Semester2Offered" => isset($_POST["Semester2Offered"]) ? true : false,
         "Prerequisites" => $_POST["Prerequisites"] ?? "",
