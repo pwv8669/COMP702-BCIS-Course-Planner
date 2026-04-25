@@ -1,0 +1,10 @@
+{
+    "Code": "COMP616",
+    "Name": "Statistics for Data Science",
+    "Points": "15",
+    "Level": "6",
+    "Semester1Offered": true,
+    "Semester2Offered": false,
+    "Prerequisites": "MATH503",
+    "Corequisites": ""
+}

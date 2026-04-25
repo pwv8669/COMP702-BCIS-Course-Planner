@@ -1,19 +1,10 @@
 {
-    "code": "COMP612",
-    "name": "Computer Graphics Programming",
-    "points": 15,
-    "level": 6,
-    "prerequisites":
-    [
-        "MATH503",
-        ["COMP603", "COMP610"]
-    ],
-    "corequisites":
-    [
-
-    ],
-    "semesters":
-    [
-        1, 2
-    ]
+    "Code": "COMP612",
+    "Name": "Computer Graphics Programming",
+    "Points": "15",
+    "Level": "6",
+    "Semester1Offered": true,
+    "Semester2Offered": true,
+    "Prerequisites": "MATH503 AND (COMP603 OR COMP610)",
+    "Corequisites": ""
 }

@@ -1,18 +1,10 @@
 {
-    "code": "COMP713",
-    "name": "Distributed and Mobile Systems",
-    "points": 15,
-    "level": 7,
-    "prerequisites":
-    [
-        "COMP611"
-    ],
-    "corequisites":
-    [
-
-    ],
-    "semesters":
-    [
-        2
-    ]
+    "Code": "COMP713",
+    "Name": "Distributed and Mobile Systems",
+    "Points": "15",
+    "Level": "7",
+    "Semester1Offered": false,
+    "Semester2Offered": true,
+    "Prerequisites": "COMP611",
+    "Corequisites": ""
 }

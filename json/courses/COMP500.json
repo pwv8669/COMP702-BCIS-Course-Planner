@@ -1,19 +1,10 @@
 {
-    "code": "COMP500",
-    "name": "Programming Concepts and Techniques",
-    "points": 15,
-    "level": 5,
-    "prerequisites":
-    [
-
-    ],
-    "corequisites":
-    [
-
-    ],
-    "semesters":
-    [
-        1, 2
-    ],
-    "core": true
+    "Code": "COMP500",
+    "Name": "Programming Concepts and Techniques",
+    "Points": "15",
+    "Level": "5",
+    "Semester1Offered": true,
+    "Semester2Offered": true,
+    "Prerequisites": "",
+    "Corequisites": ""
 }

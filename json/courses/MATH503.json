@@ -1,19 +1,10 @@
 {
-    "code": "MATH503",
-    "name": "Mathematics for Computing",
-    "points": 15,
-    "level": 5,
-    "prerequisites":
-    [
-        
-    ],
-    "corequisites":
-    [
-
-    ],
-    "semesters":
-    [
-        1, 2
-    ],
-    "core": true
+    "Code": "MATH503",
+    "Name": "Mathematics for computing",
+    "Points": "15",
+    "Level": "5",
+    "Semester1Offered": true,
+    "Semester2Offered": true,
+    "Prerequisites": "",
+    "Corequisites": ""
 }

@@ -1,18 +1,10 @@
 {
-    "code": "COMP610",
-    "name": "Data Structures and Algorithms",
-    "points": 15,
-    "level": 6,
-    "prerequisites":
-    [
-        "COMP503"
-    ],
-    "corequisites":
-    [
-
-    ],
-    "semesters":
-    [
-        1, 2
-    ]
+    "Code": "COMP610",
+    "Name": "Data Structures and Algorithms",
+    "Points": "15",
+    "Level": "6",
+    "Semester1Offered": true,
+    "Semester2Offered": true,
+    "Prerequisites": "COMP603",
+    "Corequisites": ""
 }

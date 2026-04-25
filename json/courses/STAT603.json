@@ -1,0 +1,10 @@
+{
+    "Code": "STAT603",
+    "Name": "Forecasting",
+    "Points": "15",
+    "Level": "6",
+    "Semester1Offered": false,
+    "Semester2Offered": true,
+    "Prerequisites": "MATH503",
+    "Corequisites": ""
+}
