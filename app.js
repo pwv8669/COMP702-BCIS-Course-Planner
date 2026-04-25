@@ -1,45 +1,56 @@
+// Importing the state object from the state.js file which contains the coursePlan array. This allows us to manipulate the course plan data from this file globally.
 import { state } from './javascript/state.js';
 
-function placeCourse(row, col, code) {
-    state.coursePlan[row][col] = code;
+// Function to place a course in the course plan at a specific row and column.
+async function placeCourse(row, col, code) {
+	const path = `json/courses/${code}.json`;
+	// Get the corresponding json file and convert it to a javascript object.
+	const courseData = await fetch(path);
+	const course = await courseData.json();
+	// Place the course code in the course plan at the specified row and column.
+	state.coursePlan[row][col] = course.code;
+	
 }
-placeCourse(0, 0, 'COMP500');
 
-function renderCoursePlan() {
+// Example usage of the placeCourse function.
+await placeCourse(0, 0, 'COMP500');
+await placeCourse(0, 1, 'COMP501');
+await placeCourse(0, 2, 'COMP508');
+await placeCourse(0, 3, 'MATH503');
+await placeCourse(1, 0, 'COMP507');
+await placeCourse(1, 1, 'DIGD507');
+await placeCourse(4, 0, 'COMP702');
+await placeCourse(5, 0, 'COMP703');
+
+console.log(state.coursePlan);
+
+async function renderCoursePlan() {
+	// Loop through the course plan and update the corresponding cells in the HTML table with the course codes.
 	for (let row = 0; row < state.coursePlan.length; row++) {
 		for (let col = 0; col < state.coursePlan[row].length; col++) {
+			// Get the cell element by its id.
 			const cell = document.getElementById(`cell-${row}-${col}`);
-			cell.textContent = state.coursePlan[row][col] || '';
+			// Get the course code from the course plan at the current row and column.
+			const courseCode = state.coursePlan[row][col];
+			if (courseCode) {
+				// If there is a course code, fetch the course data and update the cell's text content with the course code and name.
+				const path = `json/courses/${courseCode}.json`;
+				const courseData = await fetch(path);
+				const course = await courseData.json();
+				cell.textContent = `${courseCode}: ${course.name}` || '';
+			} else {
+				// If there is no course code, clear the cell's text content.
+				cell.textContent = '';
+			}
 		}
 	}
 }
-renderCoursePlan();
+await renderCoursePlan();
 
 
 const coursearray = [];
 const select = document.getElementById('groupSelect');
 const container = document.getElementById('boxContainer');
-// async function loadBoxGroup(group)
-// {
-// 	container.innerHTML = '';
-	
-// 	const indexResource = await fetch(`json/boxGroups/${group}`);
-// 	const index = await indexResource.json();
-
-// 	for (const file of index.data)
-// 	{
-// 		const fileResource = await fetch(`json/boxes/${file}`);
-// 		const fileData = await fileResource.json();
-		
-// 		const newBox = document.createElement('div');
-// 		newBox.className = 'box';
-// 		newBox.style.backgroundColor = fileData.bgColor;
-		
-// 		newBox.innerHTML = `<h2>${fileData.title}</h2><br><p>${fileData.message}</p>`;
-		
-// 		container.appendChild(newBox);
-// 	}
-// }
 
 async function initGroupSelect()
 {

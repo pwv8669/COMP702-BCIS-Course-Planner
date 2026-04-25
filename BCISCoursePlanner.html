@@ -133,20 +133,10 @@ tr{
   </tr>
 </table>
 
-<button onclick="forEach()">Output Course Objects to console</button>
-<br> <br>
 <button id="Change" onclick="DisplayCourses()">Display Courses</button>
 <div id="groupSelect" style=display:none></div>
 <script>
 const coursearray = [];
-
-function forEach(){
-	coursearray.forEach(printerfunc);
-//Go through all courses in array and output all courses to console
-  function printerfunc(index){
-    console.log(index);
-  }
-}
 
 function DisplayCourses(){
   var x = document.getElementById("groupSelect");
