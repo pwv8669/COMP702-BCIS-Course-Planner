@@ -1,3 +1,22 @@
+import { state } from './javascript/state.js';
+
+function placeCourse(row, col, code) {
+    state.coursePlan[row][col] = code;
+}
+placeCourse(0, 0, 'COMP500');
+
+function renderCoursePlan() {
+	for (let row = 0; row < state.coursePlan.length; row++) {
+		for (let col = 0; col < state.coursePlan[row].length; col++) {
+			const cell = document.getElementById(`cell-${row}-${col}`);
+			cell.textContent = state.coursePlan[row][col] || '';
+		}
+	}
+}
+renderCoursePlan();
+
+
+const coursearray = [];
 const select = document.getElementById('groupSelect');
 const container = document.getElementById('boxContainer');
 // async function loadBoxGroup(group)
