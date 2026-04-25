@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+<title>BCIS Course Creator</title>
+<body>
+  <h1>BCIS Course Creator</h1>
+
+  <form method="POST" action="createCourse.php">
+    <input name="Code" type="text" placeholder="Course Code" required><br>
+    <input name="Name" type="text" placeholder="Course Name" required><br>
+    <input name="Points" type="number" placeholder="Course Points" required><br>
+    <input name="Level" type="number" placeholder="Course Level" required><br>
+    Semesters Offered: 1<input name="Semester1Offered" type="checkbox" placeholder="Semester 1">
+    2<input name="Semester2Offered" type="checkbox" placeholder="Semester 2"><br>
+    <!-- Need to think about how to do prereqs and coreqs -->
+    
+    <input type="submit" value="Add Course">
+  </form>
+</body>
+</html>
