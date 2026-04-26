@@ -1,5 +1,5 @@
 // Importing the state object from the state.js file which contains the coursePlan array. This allows us to manipulate the course plan data from this file globally.
-import { state } from './javascript/state.js';
+import { state, Pathways } from './javascript/state.js';
 
 // Function to place a course in the course plan at a specific row and column.
 async function placeCourse(row, col, code) {
@@ -21,8 +21,6 @@ await placeCourse(1, 1, 'DIGD507');
 await placeCourse(4, 0, 'COMP702');
 await placeCourse(5, 0, 'COMP703');
 
-console.log(state.coursePlan);
-
 async function renderCoursePlan() {
 	// Loop through the course plan and update the corresponding cells in the HTML table with the course codes.
 	for (let row = 0; row < state.coursePlan.length; row++) {
@@ -42,6 +40,15 @@ async function renderCoursePlan() {
 	}
 }
 await renderCoursePlan();
+
+// alter state.selectedPathway to the pathway in the html form.
+const pathwaySelect = document.getElementById('pathwaySelect');
+pathwaySelect.addEventListener('change', (e) => {
+	// Update the selected pathway enum.
+	state.selectedPathway = Pathways[e.target.value];
+	console.log(`Selected pathway: ${state.selectedPathway}`);
+});
+state.selectedPathway = Pathways.doubleMajors; // Set default pathway to double majors.
 
 
 const coursearray = [];
