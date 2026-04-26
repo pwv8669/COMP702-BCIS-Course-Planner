@@ -33,8 +33,10 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
     if (!isset($index["courses"])) {
         $index["courses"] = [];
     }
-    // Add the new course code to the index
-    $index["courses"][] = $_POST["Code"];
+    // Add the new course code to the index, ensuring no duplicates
+    if (!in_array($_POST["Code"], $index["courses"])) {
+        $index["courses"][] = $_POST["Code"];
+    }
 
     // Alphabetically sort the course codes in the index
     sort($index["courses"]);
