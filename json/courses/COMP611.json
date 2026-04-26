@@ -1,18 +1,10 @@
 {
-    "code": "COMP611",
-    "name": "Algorithm Design and Analysis",
-    "points": 15,
-    "level": 6,
-    "prerequisites":
-    [
-        "COMP610"
-    ],
-    "corequisites":
-    [
-
-    ],
-    "semesters":
-    [
-        2
-    ]
+    "Code": "COMP611",
+    "Name": "Algorithm Design and Analysis",
+    "Points": "15",
+    "Level": "6",
+    "Semester1Offered": false,
+    "Semester2Offered": true,
+    "Prerequisites": "COMP610",
+    "Corequisites": ""
 }

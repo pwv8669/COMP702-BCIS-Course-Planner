@@ -1,0 +1,10 @@
+{
+    "Code": "COMP716",
+    "Name": "Highly Secure Systems",
+    "Points": "15",
+    "Level": "7",
+    "Semester1Offered": true,
+    "Semester2Offered": false,
+    "Prerequisites": "COMP611",
+    "Corequisites": ""
+}

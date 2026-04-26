@@ -1,0 +1,10 @@
+{
+    "Code": "COMP729",
+    "Name": "Enterprise Networks",
+    "Points": "15",
+    "Level": "7",
+    "Semester1Offered": false,
+    "Semester2Offered": true,
+    "Prerequisites": "COMP504",
+    "Corequisites": ""
+}

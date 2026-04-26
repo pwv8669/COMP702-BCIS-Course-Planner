@@ -1,0 +1,10 @@
+{
+    "Code": "COMP603",
+    "Name": "Programme Design and Construction",
+    "Points": "15",
+    "Level": "6",
+    "Semester1Offered": true,
+    "Semester2Offered": true,
+    "Prerequisites": "COMP503 OR COMP610",
+    "Corequisites": ""
+}

@@ -1,18 +1,10 @@
 {
-    "code": "COMP712",
-    "name": "Programming Languages",
-    "points": 15,
-    "level": 7,
-    "prerequisites":
-    [
-        ["COMP610", "COMP613"]
-    ],
-    "corequisites":
-    [
-
-    ],
-    "semesters":
-    [
-        2
-    ]
+    "Code": "COMP712",
+    "Name": "Programming Languages",
+    "Points": "15",
+    "Level": "7",
+    "Semester1Offered": true,
+    "Semester2Offered": false,
+    "Prerequisites": "COMP610 OR COMP613",
+    "Corequisites": ""
 }

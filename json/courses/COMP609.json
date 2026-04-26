@@ -1,0 +1,10 @@
+{
+    "Code": "COMP609",
+    "Name": "Network and System Administration",
+    "Points": "15",
+    "Level": "6",
+    "Semester1Offered": true,
+    "Semester2Offered": true,
+    "Prerequisites": "COMP604",
+    "Corequisites": ""
+}

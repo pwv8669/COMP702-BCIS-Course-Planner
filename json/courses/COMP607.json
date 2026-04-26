@@ -1,0 +1,10 @@
+{
+    "Code": "COMP607",
+    "Name": "Information Security Technologies",
+    "Points": "15",
+    "Level": "6",
+    "Semester1Offered": false,
+    "Semester2Offered": true,
+    "Prerequisites": "COMP501",
+    "Corequisites": ""
+}

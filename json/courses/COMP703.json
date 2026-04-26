@@ -1,19 +1,10 @@
 {
-    "code": "COMP703",
-    "name": "Research and Development Project Part 2",
-    "points": 15,
-    "level": 7,
-    "prerequisites":
-    [
-        "COMP702"
-    ],
-    "corequisites":
-    [
-        "COMP702"
-    ],
-    "semesters":
-    [
-        1, 2
-    ],
-    "core": true
+    "Code": "COMP703",
+    "Name": "Research and Development Project Part 2",
+    "Points": "15",
+    "Level": "7",
+    "Semester1Offered": true,
+    "Semester2Offered": true,
+    "Prerequisites": "COMP702",
+    "Corequisites": ""
 }

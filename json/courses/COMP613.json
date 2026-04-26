@@ -1,19 +1,10 @@
 {
-    "code": "COMP613",
-    "name": "Combinatorics and Graph Theory",
-    "points": 15,
-    "level": 6,
-    "prerequisites":
-    [
-        "COMP500",
-        "MATH503"
-    ],
-    "corequisites":
-    [
-
-    ],
-    "semesters":
-    [
-        1
-    ]
+    "Code": "COMP613",
+    "Name": "Combinatorics and Graph Theory",
+    "Points": "15",
+    "Level": "6",
+    "Semester1Offered": true,
+    "Semester2Offered": false,
+    "Prerequisites": "COMP500 AND MATH503",
+    "Corequisites": ""
 }

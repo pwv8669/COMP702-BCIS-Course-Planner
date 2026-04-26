@@ -1,18 +1,10 @@
 {
-    "code": "COMP711",
-    "name": "Theory of Computation",
-    "points": 15,
-    "level": 7,
-    "prerequisites":
-    [
-        ["COMP610", "COMP613"]
-    ],
-    "corequisites":
-    [
-
-    ],
-    "semesters":
-    [
-        2
-    ]
+    "Code": "COMP711",
+    "Name": "Theory of Computation",
+    "Points": "15",
+    "Level": "7",
+    "Semester1Offered": false,
+    "Semester2Offered": true,
+    "Prerequisites": "COMP610 OR COMP613",
+    "Corequisites": ""
 }
