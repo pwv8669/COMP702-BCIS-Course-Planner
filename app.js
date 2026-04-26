@@ -8,8 +8,7 @@ async function placeCourse(row, col, code) {
 	const courseData = await fetch(path);
 	const course = await courseData.json();
 	// Place the course code in the course plan at the specified row and column.
-	state.coursePlan[row][col] = course.code;
-	
+	state.coursePlan[row][col] = course;
 }
 
 // Example usage of the placeCourse function.
@@ -31,13 +30,10 @@ async function renderCoursePlan() {
 			// Get the cell element by its id.
 			const cell = document.getElementById(`cell-${row}-${col}`);
 			// Get the course code from the course plan at the current row and column.
-			const courseCode = state.coursePlan[row][col];
-			if (courseCode) {
-				// If there is a course code, fetch the course data and update the cell's text content with the course code and name.
-				const path = `json/courses/${courseCode}.json`;
-				const courseData = await fetch(path);
-				const course = await courseData.json();
-				cell.textContent = `${courseCode}: ${course.name}` || '';
+			const course = state.coursePlan[row][col];
+			if (course) {
+				// If there is a course, update the cell's text content with the course code and name.
+				cell.textContent = `${course.Code}: ${course.Name}` || '';
 			} else {
 				// If there is no course code, clear the cell's text content.
 				cell.textContent = '';
@@ -54,25 +50,25 @@ const container = document.getElementById('boxContainer');
 
 async function initGroupSelect()
 {
-	const indexResource = await fetch('./json/courses/courses.json');
+	const indexResource = await fetch('./json/courses/index.json');
 	const index = await indexResource.json();
 
-	for (const group of index.files)
+	for (const code of index.courses)
 	{
-		const fileResource = await fetch(`json/courses/${group}`);
+		const fileResource = await fetch(`json/courses/${code}.json`);
 		const fileData = await fileResource.json();
 		coursearray.push(fileData);
 		const newOption = document.createElement('option');
-		newOption.value = group;
-		newOption.textContent = fileData.name;
+		newOption.value = code;
+		newOption.textContent = fileData.Name;
 		select.appendChild(newOption);
 	}
 
 	// // Load first group by default
-	// if(index.files.length > 0)
+	// if(index.courses.length > 0)
 	// {
-	// 	loadBoxGroup(index.files[0]);
-	// 	console.log('loaded first group: '+index.files[0]);
+	// 	loadBoxGroup(index.courses[0]);
+	// 	console.log('loaded first group: '+index.courses[0]);
 	// }
 
 	// // e is for event as i find out
