@@ -1,5 +1,9 @@
 <!DOCTYPE html>
 <html>
+<head>
+  <script type="module" src="SelectionMenu.js">
+  </script>
+</head>
 <title>BCIS Course Creator</title>
 <body>
   <h1>BCIS Course Creator</h1>
@@ -14,5 +18,56 @@
     Corequisites: <input name="Corequisites" type="text" placeholder="e.g. COMP500"><br>
     <input type="submit" value="Add Course">
   </form>
+
+
+
+
+  <!-- Selection Dropdown -->
+   <br>
+  <label for="coursetoedit">Choose a course to edit:</label>
+    <!-- This part will be directly modified by selection menu with a list containing all the names
+   of the courses, as well as their indexin courseobjects array (see below) -->
+  <p id="coursetoedit" style="margin-top: 0%;"></p>
+
 </body>
+<script>
+//array that stores all course objects in json
+const courseobjects = [];
+    function setInput(){
+      var x = document.getElementById("courseselectionedit").value;//get value from selection
+      if(x != ""){//if its not the null selection
+        //replace with their respective information
+        document.getElementsByName("Code")[0].value = courseobjects[x].Code;
+        document.getElementsByName("Name")[0].value = courseobjects[x].Name;
+        document.getElementsByName("Points")[0].value = courseobjects[x].Points;
+       
+        if(courseobjects[x].Semester1Offered == true){//set checks based on if true or not
+          document.getElementsByName("Semester1Offered")[0].checked = 1;//check if true
+        }
+        else{
+           document.getElementsByName("Semester1Offered")[0].checked = 0;//uncheck if false
+        }
+
+        if(courseobjects[x].Semester1Offered == true){//refer to above, this time for semester 2
+          document.getElementsByName("Semester2Offered")[0].checked = 1;
+        }
+        else{
+           document.getElementsByName("Semester2Offered")[0].checked = 0;
+        }
+        document.getElementsByName("Prerequisites")[0].value = courseobjects[x].Prerequisites;
+        document.getElementsByName("Corequisites")[0].value = courseobjects[x].Corequisites;
+      }
+      else{//if its the null selection
+         document.getElementsByName("Code")[0].value = "";//reset
+      document.getElementsByName("Name")[0].value = "";
+      document.getElementsByName("Points")[0].value = 15;
+      document.getElementsByName("Semester1Offered")[0].checked = 0;
+      document.getElementsByName("Semester2Offered")[0].checked = 0;
+     document.getElementsByName("Prerequisites")[0].value = "";
+      document.getElementsByName("Corequisites")[0].value = "";
+      }
+     
+    }
+
+</script>
 </html>
