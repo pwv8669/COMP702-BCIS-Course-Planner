@@ -47,10 +47,192 @@ pathwaySelect.addEventListener('change', (e) => {
 	// Update the selected pathway enum.
 	state.selectedPathway = Pathways[e.target.value];
 	console.log(`Selected pathway: ${state.selectedPathway}`);
+	updatePathwayOptions();
 });
 state.selectedPathway = Pathways.doubleMajors; // Set default pathway to double majors.
 
+// This function is a total mess. Focusing on function first though. -C
+async function updatePathwayOptions()
+{
+	const pathwayOptionContainer = document.getElementById(`pathwayOptionContainer`);
+	// Clear current options. Not ideal solution to reset when changing pathway option, but can be revisited later. -C
+	pathwayOptionContainer.innerHTML = ''; 
+	state.selectedMajors = [null, null];
+	state.selectedMinors = [null, null];
 
+	// Major 1
+	const major1Label = document.createElement('label');
+	major1Label.textContent = 'Major 1: ';
+	const major1 = document.createElement('select');
+	major1.id = major1Label.id = 'major1';
+
+	major1.addEventListener('change', (e) => {
+		checkValidOptionChange(major1, 'major1', e.target.value);
+	});
+	pathwayOptionContainer.appendChild(major1Label);
+	major1Label.appendChild(major1);
+
+	for (const option of majorsArray)
+	{
+		
+		const newOption = document.createElement('option');
+		newOption.value = option.code;
+		newOption.textContent = option.name;
+		major1.appendChild(newOption);
+	}
+
+	if (state.selectedPathway == Pathways.doubleMajors)
+	{
+		// Major 2
+		const major2Label = document.createElement('label');
+		major2Label.textContent = 'Major 2: ';
+		const major2 = document.createElement('select');
+		major2.id = major2Label.id = 'major2';
+
+		major2.addEventListener('change', (e) => {
+			checkValidOptionChange(major2, 'major2', e.target.value);
+		});
+
+		pathwayOptionContainer.appendChild(major2Label);
+		major2Label.appendChild(major2);
+
+		for (const option of majorsArray)
+		{
+			const newOption = document.createElement('option');
+			newOption.value = option.code;
+			newOption.textContent = option.name;
+			major2.appendChild(newOption);
+		}
+	}
+	else if (state.selectedPathway == Pathways.doubleMinors)
+	{
+		// Minor 1
+		const minor1Label = document.createElement('label');
+		minor1Label.textContent = 'Minor 1: ';
+		const minor1 = document.createElement('select');
+		minor1.id = minor1Label.id = 'minor1';
+
+		minor1.addEventListener('change', (e) => {
+			checkValidOptionChange(minor1, 'minor1', e.target.value);
+		});
+
+		pathwayOptionContainer.appendChild(minor1Label);
+		minor1Label.appendChild(minor1);
+
+		for (const option of minorsArray)
+		{
+			const newOption = document.createElement('option');
+			newOption.value = option.code;
+			newOption.textContent = option.name;
+			minor1.appendChild(newOption);
+		}
+
+		// Minor 2
+		const minor2Label = document.createElement('label');
+		minor2Label.textContent = 'Minor 2: ';
+		const minor2 = document.createElement('select');
+		minor2.id = minor2Label.id = 'minor2';
+
+		minor2.addEventListener('change', (e) => {
+			checkValidOptionChange(minor2, 'minor2', e.target.value);
+		});
+
+		pathwayOptionContainer.appendChild(minor2Label);
+		minor2Label.appendChild(minor2);
+
+		for (const option of minorsArray)
+		{
+			const newOption = document.createElement('option');
+			newOption.value = option.code;
+			newOption.textContent = option.name;
+			minor2.appendChild(newOption);
+		}
+	}
+	else if (state.selectedPathway == Pathways.electives)
+	{
+		// Minor 1
+		const minor1Label = document.createElement('label');
+		minor1Label.textContent = 'Minor 1: ';
+		const minor1 = document.createElement('select');
+		minor1.id = minor1Label.id = 'minor1';
+
+		minor1.addEventListener('change', (e) => {
+			checkValidOptionChange(minor1, 'minor1', e.target.value);
+		});
+
+		pathwayOptionContainer.appendChild(minor1Label);
+		minor1Label.appendChild(minor1);
+
+		for (const option of minorsArray)
+		{
+			const newOption = document.createElement('option');
+			newOption.value = option.code;
+			newOption.textContent = option.name;
+			minor1.appendChild(newOption);
+		}
+	}
+	else
+	{
+		console.log(`Could not update pathway options`);
+	}
+}
+async function checkValidOptionChange(self, slot, target)
+{
+	applyOptionChange(slot, null);
+	// Always allow unselection
+	if (target == '---')
+	{
+		console.log('Unselecting');
+		return;
+	}
+
+	// No duplicates
+	if (state.selectedMajors.includes(target) || state.selectedMinors.includes(target))
+	{
+		alert(`You cannot take the same major/minor twice.`);
+		self.value = '---';
+		return;
+	}
+
+	// Data Science with AI 
+	if 
+	(
+		(state.selectedMajors.includes('DataScience') || state.selectedMinors.includes('DataScience')) && target == 'ArtificialIntelligence'
+		|| (state.selectedMinors.includes('ArtificialIntelligence') && target == 'DataScience')
+	)
+	{
+		alert(`Data Science and Artificial Intelligence cannot be taken together.`);
+		self.value = '---';
+		return;
+	}
+	applyOptionChange(slot, target);
+
+}
+
+async function applyOptionChange(slot, target)
+{
+	switch (slot)
+	{
+		case 'major1':
+			state.selectedMajors[0] = target;
+			break;
+		case 'major2':
+			state.selectedMajors[1] = target;
+			break;
+		case 'minor1':
+			state.selectedMinors[0] = target;
+			break;
+		case 'minor2':
+			state.selectedMinors[1] = target;
+			break;
+		default:
+			console.log('Invalid slot type');
+			break;
+	}
+	console.log(state.selectedMajors);
+	console.log(state.selectedMinors);
+
+}
 const coursearray = [];
 const select = document.getElementById('groupSelect');
 const container = document.getElementById('boxContainer');
@@ -70,19 +252,30 @@ async function initGroupSelect()
 		newOption.textContent = fileData.Name;
 		select.appendChild(newOption);
 	}
-
-	// // Load first group by default
-	// if(index.courses.length > 0)
-	// {
-	// 	loadBoxGroup(index.courses[0]);
-	// 	console.log('loaded first group: '+index.courses[0]);
-	// }
-
-	// // e is for event as i find out
-	// select.addEventListener('change', (e) => {
-	// 	loadBoxGroup(e.target.value);
-	// });
 	
 }
-
 initGroupSelect();
+
+const majorsArray = [];
+const minorsArray = [];
+async function initPathwayOptions()
+{
+	const indexResource = await fetch('./json/pathways/options/index.json');
+	const index = await indexResource.json();
+
+	for (const major of index.majors)
+	{
+		const fileResource = await fetch(`json/pathways/options/${major}.json`);
+		const fileData = await fileResource.json();
+		majorsArray.push(fileData);
+	}
+
+	for (const minor of index.minors)
+	{
+		const fileResource = await fetch(`json/pathways/options/${minor}.json`);
+		const fileData = await fileResource.json();
+		minorsArray.push(fileData);
+	}
+	updatePathwayOptions();
+}
+initPathwayOptions();
