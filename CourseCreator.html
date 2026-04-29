@@ -1,22 +1,158 @@
 <!DOCTYPE html>
 <html>
+
+<style>
+  /* Styling here */
+body{
+    /* set default font */
+      font-size: 20px;
+  color: #ffffff;
+  font-family: 'Trebuchet MS'; 
+  font-weight: bolder;
+  background-color: #f4eee5;
+}
+div{
+  background-color: #dd6e46;
+}
+input {
+  color: #fcfbfa;
+  font-family: 'Trebuchet MS'; 
+  font-weight: bolder;
+  border-radius: 1px;
+  border:0px;
+  background-color: #e58d6b;
+  font-size: 20px;
+  padding:10px;
+  width:80%;
+  text-align: left;   
+}
+
+
+
+
+
+
+/* input styling */
+label {
+  display: inline-block;
+  cursor: pointer;
+  position: relative;
+  padding-left: 25px;
+  margin-left: 15px;
+  margin-top: 25px;
+  vertical-align: center;
+  font-size: 11px;
+     transition: transform .2s;
+}
+
+label:hover {
+     transform: scale(1.2);
+}
+
+
+
+label:before {
+  content: "";
+  display: inline-block;
+
+
+  width: 16px;
+  height: 16px;
+
+
+  margin-right: 10px;
+  position: absolute;
+  left: 0;
+  bottom: 1px;
+  background-color: rgb(120, 56, 43);
+}
+
+
+input[type="checkbox"] {
+    display: none;
+}
+.checkbox label:before {
+  border-radius: 3px;
+}
+
+input[type=checkbox]:checked + label:before {
+  content: "\2713";
+  font-size: 20px;
+  color: #fff;
+  text-align: center;
+  line-height: 12px;
+}
+
+::placeholder {
+  color: rgb(130, 91, 81);
+}
+
+
+
+
+.submit:hover {
+  background-color: #fff8f5;
+   transform: scale(1.1);
+   transition: transform .2s;
+}
+
+
+
+.submit {
+  cursor:pointer;
+    color: #454141;
+    border-radius: 10px;
+  font-family: 'Trebuchet MS'; 
+  font-weight: bolder;
+   outline:0px;
+  align-content: center;
+  border:0px;
+  width:20%;
+  background-color: #ffbe7e;
+  font-size: 20px;
+  padding:12px;
+ transform: scale(1);
+   transition: transform .2s;
+}
+
+
+select {
+    color: #ffffff;
+  font-family: 'Trebuchet MS'; 
+  font-weight: bolder;
+   outline:0px;
+  align-content: center;
+  border:0px;
+  width:40%;
+  background-color: #e78663;
+  font-size: 20px;
+  padding:12px;
+  cursor:pointer; 
+}
+
+
+</style>
+
+
 <head>
   <script type="module" src="SelectionMenu.js">
   </script>
 </head>
 <title>BCIS Course Creator</title>
 <body>
+  <div style="width: 45%; padding-bottom: 2px;padding-top: 0.5px;padding-left: 1%;">
   <h1>BCIS Course Creator</h1>
 
   <form method="POST" action="php/createCourse.php">
     <input name="Code" type="text" placeholder="Course Code" required><br>
     <input name="Name" type="text" placeholder="Course Name" required><br>
     Course Points: <input name="Points" type="number" placeholder="Course Points" value="15" required><br>
-    Semesters Offered: 1<input name="Semester1Offered" type="checkbox" placeholder="Semester 1">
-    2<input name="Semester2Offered" type="checkbox" placeholder="Semester 2"><br>
+    Semesters Offered:<br>1 <input id="sem1"name="Semester1Offered" type="checkbox" placeholder="Semester 1"><label for="sem1"></label>
+    <br>2<input id="sem2"name="Semester2Offered" type="checkbox" placeholder="Semester 2"> <label for="sem2"></label><br>
     Prerequisites: <input name="Prerequisites" type="text" placeholder="e.g. MATH503 AND (COMP603 OR COMP610)"><br>
     Corequisites: <input name="Corequisites" type="text" placeholder="e.g. COMP500"><br>
-    <input type="submit" value="Add Course">
+   <br>
+    <input class="submit" type="submit" value="Add Course">
   </form>
 
 
@@ -24,11 +160,11 @@
 
   <!-- Selection Dropdown -->
    <br>
-  <label for="coursetoedit">Choose a course to edit:</label>
+  <div for="coursetoedit">Choose a course to edit:
     <!-- This part will be directly modified by selection menu with a list containing all the names
    of the courses, as well as their indexin courseobjects array (see below) -->
-  <p id="coursetoedit" style="margin-top: 0%;"></p>
-
+  <p id="coursetoedit" style="margin-top: 0%; "></p></div>
+  </div>
 </body>
 <script>
 //array that stores all course objects in json
