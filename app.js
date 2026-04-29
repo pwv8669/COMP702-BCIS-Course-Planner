@@ -116,6 +116,8 @@ function createMajorDropdowns()
 		newOption.textContent = option.name;
 		major1.appendChild(newOption);
 	}
+	// Set the value of the major 1 select element to the currently selected major in the state, or '---' if no major is selected.
+	major1.value = state.selectedMajors[0] || '---';
 
 	// If the selected pathway is double majors, we create the major 2 select element as well.
 	if (state.selectedPathway == Pathways.doubleMajors){
@@ -139,6 +141,8 @@ function createMajorDropdowns()
 			newOption.textContent = option.name;
 			major2.appendChild(newOption);
 		}
+		// Set the value of the major 2 select element to the currently selected major in the state, or '---' if no major is selected.
+		major2.value = state.selectedMajors[1] || '---';
 	}
 }
 
@@ -168,6 +172,8 @@ function creeateMinorDropdowns()
 			newOption.textContent = option.name;
 			minor1.appendChild(newOption);
 		}
+		// Set the value of the minor 1 select element to the currently selected minor in the state, or '---' if no minor is selected.
+		minor1.value = state.selectedMinors[0] || '---';
 	}
 	// If the selected pathway is double minors, we create the minor 2 select element as well.
 	if (state.selectedPathway == Pathways.doubleMinors)
@@ -192,6 +198,8 @@ function creeateMinorDropdowns()
 			newOption.textContent = option.name;
 			minor2.appendChild(newOption);
 		}	
+		// Set the value of the minor 2 select element to the currently selected minor in the state, or '---' if no minor is selected.
+		minor2.value = state.selectedMinors[1] || '---';
 	}
 }
 
@@ -211,12 +219,11 @@ async function updatePathwayOptions()
 	createMajorDropdowns();
 	creeateMinorDropdowns();
 
-	
-	/*else
+	// If the selected pathway does not match any of the defined pathways, log an error message to the console.
+	if (state.selectedPathway != Pathways.doubleMajors && state.selectedPathway != Pathways.doubleMinors && state.selectedPathway != Pathways.electives)
 	{
-		// If the selected pathway does not match any of the defined pathways, log an error message to the console.
 		console.log(`Could not update pathway options`);
-	}*/
+	}
 }
 
 
