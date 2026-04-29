@@ -104,6 +104,26 @@ select,button{
 </head>
 <body>
 
+  <!-- Form for selecting course pathway. -->
+  <form id="pathwayForm">
+  <label for="pathwaySelect">Course Pathway:</label>
+
+  <select id="pathwaySelect" name="pathwaySelect">
+    <option value="doubleMajors" selected>
+      Double Majors
+    </option>
+    <option value="doubleMinors">
+      Single Major + Double Minors
+    </option>
+    <option value="electives">
+      Single Major + Single Minor + Electives
+    </option>
+  </select>
+  </form>
+
+  <!-- Handled in app.js -->
+  <form id="pathwayOptionContainer">
+  </form>
 
   <!-- table setup -->
 <div class="canvas_div_pdf"style="float: left; width:100%;margin-left: -0.1%;">
