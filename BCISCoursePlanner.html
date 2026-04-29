@@ -46,6 +46,7 @@ tr{
   background-color: #da452a;
 }
 
+
 .major{
   background-color: #e36d28;
 }
@@ -80,11 +81,12 @@ select,label {
   font-family: 'Trebuchet MS'; 
   font-weight: bolder;
    outline:0px;
-  align-content: center;
+
   border:0px;
   background-color: #dd6e46;
   font-size: 20px;
   padding:12px;
+  height:100%;
  
 }
 select,button{
@@ -100,30 +102,15 @@ select,button{
     float:left; 
 }
 
+
+label{
+  padding: 12.85px;
+}
 </style>
 </head>
 <body>
 
-  <!-- Form for selecting course pathway. -->
-  <form id="pathwayForm">
-  <label for="pathwaySelect">Course Pathway:</label>
-
-  <select id="pathwaySelect" name="pathwaySelect">
-    <option value="doubleMajors" selected>
-      Double Majors
-    </option>
-    <option value="doubleMinors">
-      Single Major + Double Minors
-    </option>
-    <option value="electives">
-      Single Major + Single Minor + Electives
-    </option>
-  </select>
-  </form>
-
-  <!-- Handled in app.js -->
-  <form id="pathwayOptionContainer">
-  </form>
+ 
 
   <!-- table setup -->
 <div class="canvas_div_pdf"style="float: left; width:100%;margin-left: -0.1%;">
@@ -235,11 +222,18 @@ select,button{
 </table>
 </div>
 
+<div style="float:right">
+  <button onclick="getPDF()">Save as PDF</button>
+  <button style="float:right;"id="Change" onclick="DisplayCourses()">Display Courses</button>
+  <br><br>
+  <div id="groupSelect" style="display:none;text-align: right;color: #353233;"></div>
+</div>
 
- <!-- Form for selecting course pathway. -->
+
+   <!-- Form for selecting course pathway. -->
   <form id="pathwayForm">
-    <div style="float: left;background-color: #dd6e46;">
-    <label for="pathwaySelect">Course Pathway:</label>
+    <div style="float: left;background-color: #dd6e46;"></div>
+  <label for="pathwaySelect">Course Pathway:</label>
 
   <select id="pathwaySelect" name="pathwaySelect">
     <option value="doubleMajors" selected>
@@ -254,16 +248,13 @@ select,button{
   </select>
   </div>
   </form>
+  <div style="margin-top: 5px;"></div>
+  <!-- Handled in app.js -->
+  <form id="pathwayOptionContainer">
+  </form>
 
 
 
-<div style="float:right">
-  <button onclick="getPDF()">Save as PDF</button>
-  <button style="float:right;"id="Change" onclick="DisplayCourses()">Display Courses</button>
-  <br><br>
-  <div id="groupSelect" style="display:none;text-align: right;color: #353233;"></div>
-
-</div>
 
 </body>
 <script>
