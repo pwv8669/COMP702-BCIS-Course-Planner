@@ -62,52 +62,88 @@ pathwaySelect.addEventListener('change', (e) => {
 });
 state.selectedPathway = Pathways.doubleMajors; // Set default pathway to double majors.
 
+// Arrays to hold the majors and minors options fetched from the json files. These will be used to populate the dropdowns in the HTML form for selecting majors and minors.
+const majorsArray = [];
+const minorsArray = [];
+
+// This function fetches the available majors and minors from the json files and populates the majorsArray and minorsArray with the data. It then calls the updatePathwayOptions function to update the dropdown options in the HTML form based on the selected pathway.
+async function initPathwayOptions()
+{
+	// Fetch the index.json file which contains the list of available majors and minors.
+	const indexResource = await fetch('./json/pathways/options/index.json');
+	const index = await indexResource.json();
+
+	// Loop through the list of majors in the index.json file, and push the data into the majorsArray.
+	for (const major of index.majors)
+	{
+		const fileResource = await fetch(`json/pathways/options/${major}.json`);
+		const fileData = await fileResource.json();
+		majorsArray.push(fileData);
+	}
+
+	// Loop through the list of minors in the index.json file, and push the data into the minorsArray.
+	for (const minor of index.minors)
+	{
+		const fileResource = await fetch(`json/pathways/options/${minor}.json`);
+		const fileData = await fileResource.json();
+		minorsArray.push(fileData);
+	}
+	// After fetching the majors and minors data, call the updatePathwayOptions function to populate the dropdowns in the HTML form based on the selected pathway.
+	updatePathwayOptions();
+}
+initPathwayOptions();
+
+
 // This function is a total mess. Focusing on function first though. -C
 async function updatePathwayOptions()
 {
 	const pathwayOptionContainer = document.getElementById(`pathwayOptionContainer`);
 	// Clear the container before adding new options.
 	pathwayOptionContainer.innerHTML = ''; 
+
+	// Log the current selected majors, minors, and electives for debugging purposes.
 	console.log(`Majors Array: ${state.selectedMajors}`);
 	console.log(`Minors Array: ${state.selectedMinors}`);
 	console.log(`Electives Array: ${state.selectedElectives}`);
 
-	// Major 1
+	// Major 1 is always present regardless of the pathway, so we create it first.
 	const major1Label = document.createElement('label');
 	major1Label.textContent = 'Major 1: ';
 	const major1 = document.createElement('select');
 	major1.id = major1Label.id = 'major1';
 
+	// Add an event listener to the major 1 select element to handle changes and validate the selected option.
 	major1.addEventListener('change', (e) => {
 		checkValidOptionChange(major1, 'major1', e.target.value);
 	});
 	pathwayOptionContainer.appendChild(major1Label);
 	major1Label.appendChild(major1);
 
+	// Populate the major 1 select element with options from the majorsArray.
 	for (const option of majorsArray)
 	{
-		
 		const newOption = document.createElement('option');
 		newOption.value = option.code;
 		newOption.textContent = option.name;
 		major1.appendChild(newOption);
 	}
 
+	// Based on the selected pathway, we conditionally render the appropriate options for major 2, minor 1, minor 2.
 	if (state.selectedPathway == Pathways.doubleMajors)
 	{
-		// Major 2
+		// Create the major 2 select element.
 		const major2Label = document.createElement('label');
 		major2Label.textContent = 'Major 2: ';
 		const major2 = document.createElement('select');
 		major2.id = major2Label.id = 'major2';
-
+		// Add an event listener to the major 2 select element to handle changes and validate the selected option.
 		major2.addEventListener('change', (e) => {
 			checkValidOptionChange(major2, 'major2', e.target.value);
 		});
-
+		// Append the major 2 select element to the pathway option container in the HTML form.
 		pathwayOptionContainer.appendChild(major2Label);
 		major2Label.appendChild(major2);
-
+		// Populate the major 2 select element with options from the majorsArray.
 		for (const option of majorsArray)
 		{
 			const newOption = document.createElement('option');
@@ -118,19 +154,19 @@ async function updatePathwayOptions()
 	}
 	else if (state.selectedPathway == Pathways.doubleMinors)
 	{
-		// Minor 1
+		// Create the minor 1 select element.
 		const minor1Label = document.createElement('label');
 		minor1Label.textContent = 'Minor 1: ';
 		const minor1 = document.createElement('select');
 		minor1.id = minor1Label.id = 'minor1';
-
+		// Add an event listener to the minor 1 select element to handle changes and validate the selected option.
 		minor1.addEventListener('change', (e) => {
 			checkValidOptionChange(minor1, 'minor1', e.target.value);
 		});
-
+		// Append the minor 1 select element to the pathway option container in the HTML form.
 		pathwayOptionContainer.appendChild(minor1Label);
 		minor1Label.appendChild(minor1);
-
+		// Populate the minor 1 select element with options from the minorsArray.
 		for (const option of minorsArray)
 		{
 			const newOption = document.createElement('option');
@@ -139,19 +175,19 @@ async function updatePathwayOptions()
 			minor1.appendChild(newOption);
 		}
 
-		// Minor 2
+		// Create the minor 2 select element.
 		const minor2Label = document.createElement('label');
 		minor2Label.textContent = 'Minor 2: ';
 		const minor2 = document.createElement('select');
 		minor2.id = minor2Label.id = 'minor2';
-
+		// Add an event listener to the minor 2 select element to handle changes and validate the selected option.
 		minor2.addEventListener('change', (e) => {
 			checkValidOptionChange(minor2, 'minor2', e.target.value);
 		});
-
+		// Append the minor 2 select element to the pathway option container in the HTML form.
 		pathwayOptionContainer.appendChild(minor2Label);
 		minor2Label.appendChild(minor2);
-
+		// Populate the minor 2 select element with options from the minorsArray.
 		for (const option of minorsArray)
 		{
 			const newOption = document.createElement('option');
@@ -162,19 +198,19 @@ async function updatePathwayOptions()
 	}
 	else if (state.selectedPathway == Pathways.electives)
 	{
-		// Minor 1
+		// Create the minor 1 select element.
 		const minor1Label = document.createElement('label');
 		minor1Label.textContent = 'Minor 1: ';
 		const minor1 = document.createElement('select');
 		minor1.id = minor1Label.id = 'minor1';
-
+		// Add an event listener to the minor 1 select element to handle changes and validate the selected option.
 		minor1.addEventListener('change', (e) => {
 			checkValidOptionChange(minor1, 'minor1', e.target.value);
 		});
-
+		// Append the minor 1 select element to the pathway option container in the HTML form.
 		pathwayOptionContainer.appendChild(minor1Label);
 		minor1Label.appendChild(minor1);
-
+		// Populate the minor 1 select element with options from the minorsArray.
 		for (const option of minorsArray)
 		{
 			const newOption = document.createElement('option');
@@ -185,9 +221,12 @@ async function updatePathwayOptions()
 	}
 	else
 	{
+		// If the selected pathway does not match any of the defined pathways, log an error message to the console.
 		console.log(`Could not update pathway options`);
 	}
 }
+
+
 async function checkValidOptionChange(self, slot, target)
 {
 	applyOptionChange(slot, null);
@@ -267,27 +306,3 @@ async function initGroupSelect()
 	
 }
 initGroupSelect();
-
-const majorsArray = [];
-const minorsArray = [];
-async function initPathwayOptions()
-{
-	const indexResource = await fetch('./json/pathways/options/index.json');
-	const index = await indexResource.json();
-
-	for (const major of index.majors)
-	{
-		const fileResource = await fetch(`json/pathways/options/${major}.json`);
-		const fileData = await fileResource.json();
-		majorsArray.push(fileData);
-	}
-
-	for (const minor of index.minors)
-	{
-		const fileResource = await fetch(`json/pathways/options/${minor}.json`);
-		const fileData = await fileResource.json();
-		minorsArray.push(fileData);
-	}
-	updatePathwayOptions();
-}
-initPathwayOptions();
