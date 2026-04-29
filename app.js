@@ -230,14 +230,14 @@ async function updatePathwayOptions()
 async function checkValidOptionChange(self, slot, target)
 {
 	applyOptionChange(slot, null);
-	// Always allow unselection
+	// Always allow unselection.
 	if (target == '---')
 	{
 		console.log('Unselecting');
 		return;
 	}
 
-	// No duplicates
+	// Check if the selected option is already selected in another slot. If it is, alert the user and reset the select element to '---'.
 	if (state.selectedMajors.includes(target) || state.selectedMinors.includes(target))
 	{
 		alert(`You cannot take the same major/minor twice.`);
@@ -245,7 +245,7 @@ async function checkValidOptionChange(self, slot, target)
 		return;
 	}
 
-	// Data Science with AI 
+	// Check if the selected option is Data Science or Artificial Intelligence, and if the other one is already selected in another slot. If it is, alert the user that they cannot be taken together and reset the select element to '---'.
 	if 
 	(
 		(state.selectedMajors.includes('DataScience') || state.selectedMinors.includes('DataScience')) && target == 'ArtificialIntelligence'
@@ -280,9 +280,8 @@ async function applyOptionChange(slot, target)
 			console.log('Invalid slot type');
 			break;
 	}
-	console.log(state.selectedMajors);
-	console.log(state.selectedMinors);
-
+	console.log('Selected Majors: ' + state.selectedMajors);
+	console.log('Selected Minors: ' + state.selectedMinors);
 }
 const coursearray = [];
 const select = document.getElementById('groupSelect');
