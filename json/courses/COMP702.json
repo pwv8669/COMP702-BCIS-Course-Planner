@@ -5,6 +5,6 @@
     "Level": "7",
     "Semester1Offered": true,
     "Semester2Offered": true,
-    "Prerequisites": "COMP500 AND COMP501 AND COMP507 AND DIGD507 AND MATH503AND",
+    "Prerequisites": "COMP500 AND COMP501 AND COMP507 AND COMP508 AND DIGD507 AND MATH503",
     "Corequisites": ""
 }
