@@ -93,32 +93,21 @@ async function initPathwayOptions()
 }
 initPathwayOptions();
 
-
-// This function is a total mess. Focusing on function first though. -C
-async function updatePathwayOptions()
+// This function creates the major dropdowns in the HTML form based on the selected pathway. If the selected pathway is double majors, it creates two major dropdowns. If the selected pathway is double minors or electives, it creates one major dropdown. It also adds event listeners to the dropdowns to handle changes and validate the selected options.
+function createMajorDropdowns()
 {
-	const pathwayOptionContainer = document.getElementById(`pathwayOptionContainer`);
-	// Clear the container before adding new options.
-	pathwayOptionContainer.innerHTML = ''; 
-
-	// Log the current selected majors, minors, and electives for debugging purposes.
-	console.log(`Majors Array: ${state.selectedMajors}`);
-	console.log(`Minors Array: ${state.selectedMinors}`);
-	console.log(`Electives Array: ${state.selectedElectives}`);
-
 	// Major 1 is always present regardless of the pathway, so we create it first.
+	// Create the major 1 select element.
 	const major1Label = document.createElement('label');
 	major1Label.textContent = 'Major 1: ';
 	const major1 = document.createElement('select');
 	major1.id = major1Label.id = 'major1';
-
 	// Add an event listener to the major 1 select element to handle changes and validate the selected option.
 	major1.addEventListener('change', (e) => {
 		checkValidOptionChange(major1, 'major1', e.target.value);
 	});
 	pathwayOptionContainer.appendChild(major1Label);
 	major1Label.appendChild(major1);
-
 	// Populate the major 1 select element with options from the majorsArray.
 	for (const option of majorsArray)
 	{
@@ -128,9 +117,8 @@ async function updatePathwayOptions()
 		major1.appendChild(newOption);
 	}
 
-	// Based on the selected pathway, we conditionally render the appropriate options for major 2, minor 1, minor 2.
-	if (state.selectedPathway == Pathways.doubleMajors)
-	{
+	// If the selected pathway is double majors, we create the major 2 select element as well.
+	if (state.selectedPathway == Pathways.doubleMajors){
 		// Create the major 2 select element.
 		const major2Label = document.createElement('label');
 		major2Label.textContent = 'Major 2: ';
@@ -152,7 +140,13 @@ async function updatePathwayOptions()
 			major2.appendChild(newOption);
 		}
 	}
-	else if (state.selectedPathway == Pathways.doubleMinors)
+}
+
+// This function creates the minor dropdowns in the HTML form based on the selected pathway. If the selected pathway is double minors, it creates two minor dropdowns. If the selected pathway is electives, it creates one minor dropdown. It also adds event listeners to the dropdowns to handle changes and validate the selected options.
+function creeateMinorDropdowns()
+{
+	// If the selected pathway is double minors or electives, we create the minor 1 select element.
+	if (state.selectedPathway == Pathways.doubleMinors || state.selectedPathway == Pathways.electives)
 	{
 		// Create the minor 1 select element.
 		const minor1Label = document.createElement('label');
@@ -174,7 +168,10 @@ async function updatePathwayOptions()
 			newOption.textContent = option.name;
 			minor1.appendChild(newOption);
 		}
-
+	}
+	// If the selected pathway is double minors, we create the minor 2 select element as well.
+	if (state.selectedPathway == Pathways.doubleMinors)
+	{
 		// Create the minor 2 select element.
 		const minor2Label = document.createElement('label');
 		minor2Label.textContent = 'Minor 2: ';
@@ -194,36 +191,32 @@ async function updatePathwayOptions()
 			newOption.value = option.code;
 			newOption.textContent = option.name;
 			minor2.appendChild(newOption);
-		}
+		}	
 	}
-	else if (state.selectedPathway == Pathways.electives)
-	{
-		// Create the minor 1 select element.
-		const minor1Label = document.createElement('label');
-		minor1Label.textContent = 'Minor 1: ';
-		const minor1 = document.createElement('select');
-		minor1.id = minor1Label.id = 'minor1';
-		// Add an event listener to the minor 1 select element to handle changes and validate the selected option.
-		minor1.addEventListener('change', (e) => {
-			checkValidOptionChange(minor1, 'minor1', e.target.value);
-		});
-		// Append the minor 1 select element to the pathway option container in the HTML form.
-		pathwayOptionContainer.appendChild(minor1Label);
-		minor1Label.appendChild(minor1);
-		// Populate the minor 1 select element with options from the minorsArray.
-		for (const option of minorsArray)
-		{
-			const newOption = document.createElement('option');
-			newOption.value = option.code;
-			newOption.textContent = option.name;
-			minor1.appendChild(newOption);
-		}
-	}
-	else
+}
+
+// This function is a total mess. Focusing on function first though. -C
+async function updatePathwayOptions()
+{
+	const pathwayOptionContainer = document.getElementById(`pathwayOptionContainer`);
+	// Clear the container before adding new options.
+	pathwayOptionContainer.innerHTML = ''; 
+
+	// Log the current selected majors, minors, and electives for debugging purposes.
+	console.log(`Majors Array: ${state.selectedMajors}`);
+	console.log(`Minors Array: ${state.selectedMinors}`);
+	console.log(`Electives Array: ${state.selectedElectives}`);
+
+	// Based on the selected pathway, create the appropriate dropdowns for majors, minors, and electives.
+	createMajorDropdowns();
+	creeateMinorDropdowns();
+
+	
+	/*else
 	{
 		// If the selected pathway does not match any of the defined pathways, log an error message to the console.
 		console.log(`Could not update pathway options`);
-	}
+	}*/
 }
 
 
