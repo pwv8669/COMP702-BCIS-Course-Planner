@@ -147,7 +147,7 @@ function createMajorDropdowns()
 }
 
 // This function creates the minor dropdowns in the HTML form based on the selected pathway. If the selected pathway is double minors, it creates two minor dropdowns. If the selected pathway is electives, it creates one minor dropdown. It also adds event listeners to the dropdowns to handle changes and validate the selected options.
-function creeateMinorDropdowns()
+function createMinorDropdowns()
 {
 	// If the selected pathway is double minors or electives, we create the minor 1 select element.
 	if (state.selectedPathway == Pathways.doubleMinors || state.selectedPathway == Pathways.electives)
@@ -217,7 +217,7 @@ async function updatePathwayOptions()
 
 	// Based on the selected pathway, create the appropriate dropdowns for majors, minors, and electives.
 	createMajorDropdowns();
-	creeateMinorDropdowns();
+	createMinorDropdowns();
 
 	// If the selected pathway does not match any of the defined pathways, log an error message to the console.
 	if (state.selectedPathway != Pathways.doubleMajors && state.selectedPathway != Pathways.doubleMinors && state.selectedPathway != Pathways.electives)
