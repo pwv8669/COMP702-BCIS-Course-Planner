@@ -10,26 +10,32 @@ async function initCourseMap() {
 	const courses = await coursesData.json();
 	Object.assign(courseMap, courses);
 }
-await initCourseMap();
-console.log(courseMap);
+
+async function init() {
+	await initCourseMap();
+	console.log(courseMap);
+
+	// Example usage of the placeCourse function.
+	placeCourse(0, 0, 'COMP500');
+	placeCourse(0, 1, 'COMP501');
+	placeCourse(0, 2, 'COMP508');
+	placeCourse(0, 3, 'MATH503');
+	placeCourse(1, 0, 'COMP507');
+	placeCourse(1, 1, 'DIGD507');
+	placeCourse(4, 0, 'COMP702');
+	placeCourse(5, 0, 'COMP703');
+
+	console.log(state.coursePlan);
+}
 
 
 // Function to place a course in the course plan at a specific row and column.
-async function placeCourse(row, col, code) {
+function placeCourse(row, col, code) {
 	state.coursePlan[row][col] = courseMap[code];
 }
 
-// Example usage of the placeCourse function.
-await placeCourse(0, 0, 'COMP500');
-await placeCourse(0, 1, 'COMP501');
-await placeCourse(0, 2, 'COMP508');
-await placeCourse(0, 3, 'MATH503');
-await placeCourse(1, 0, 'COMP507');
-await placeCourse(1, 1, 'DIGD507');
-await placeCourse(4, 0, 'COMP702');
-await placeCourse(5, 0, 'COMP703');
 
-console.log(state.coursePlan);
+
 
 import { numCoursesValidator } from './javascript/numCoursesValidator.js';
 console.log(numCoursesValidator());
