@@ -1,0 +1,442 @@
+{
+    "COMP500": {
+        "Code": "COMP500",
+        "Name": "Programming Concepts and Techniques",
+        "Points": 15,
+        "Level": 5,
+        "Semester1Offered": true,
+        "Semester2Offered": true,
+        "Prerequisites": "",
+        "Corequisites": ""
+    },
+    "COMP501": {
+        "Code": "COMP501",
+        "Name": "Computing Technology in Society",
+        "Points": "15",
+        "Level": "5",
+        "Semester1Offered": true,
+        "Semester2Offered": true,
+        "Prerequisites": "",
+        "Corequisites": ""
+    },
+    "COMP503": {
+        "Code": "COMP503",
+        "Name": "Object Oriented Programming",
+        "Points": "15",
+        "Level": "5",
+        "Semester1Offered": true,
+        "Semester2Offered": true,
+        "Prerequisites": "",
+        "Corequisites": "COMP500"
+    },
+    "COMP504": {
+        "Code": "COMP504",
+        "Name": "Networks and Internet",
+        "Points": "15",
+        "Level": "5",
+        "Semester1Offered": true,
+        "Semester2Offered": true,
+        "Prerequisites": "",
+        "Corequisites": ""
+    },
+    "COMP507": {
+        "Code": "COMP507",
+        "Name": "IT Project Management",
+        "Points": "15",
+        "Level": "5",
+        "Semester1Offered": true,
+        "Semester2Offered": true,
+        "Prerequisites": "",
+        "Corequisites": ""
+    },
+    "COMP508": {
+        "Code": "COMP508",
+        "Name": "Database Sytem Design",
+        "Points": "15",
+        "Level": "5",
+        "Semester1Offered": true,
+        "Semester2Offered": true,
+        "Prerequisites": "",
+        "Corequisites": ""
+    },
+    "COMP517": {
+        "Code": "COMP517",
+        "Name": "Data Analysis",
+        "Points": "15",
+        "Level": "5",
+        "Semester1Offered": true,
+        "Semester2Offered": true,
+        "Prerequisites": "",
+        "Corequisites": ""
+    },
+    "COMP603": {
+        "Code": "COMP603",
+        "Name": "Programme Design and Construction",
+        "Points": "15",
+        "Level": "6",
+        "Semester1Offered": true,
+        "Semester2Offered": true,
+        "Prerequisites": "COMP503 OR COMP610",
+        "Corequisites": ""
+    },
+    "COMP604": {
+        "Code": "COMP604",
+        "Name": "Operating Systems",
+        "Points": "15",
+        "Level": "6",
+        "Semester1Offered": true,
+        "Semester2Offered": true,
+        "Prerequisites": "COMP503 or COMP504",
+        "Corequisites": ""
+    },
+    "COMP607": {
+        "Code": "COMP607",
+        "Name": "Information Security Technologies",
+        "Points": "15",
+        "Level": "6",
+        "Semester1Offered": false,
+        "Semester2Offered": true,
+        "Prerequisites": "COMP501",
+        "Corequisites": ""
+    },
+    "COMP609": {
+        "Code": "COMP609",
+        "Name": "Network and System Administration",
+        "Points": "15",
+        "Level": "6",
+        "Semester1Offered": true,
+        "Semester2Offered": true,
+        "Prerequisites": "COMP604",
+        "Corequisites": ""
+    },
+    "COMP610": {
+        "Code": "COMP610",
+        "Name": "Data Structures and Algorithms",
+        "Points": "15",
+        "Level": "6",
+        "Semester1Offered": true,
+        "Semester2Offered": true,
+        "Prerequisites": "COMP603",
+        "Corequisites": ""
+    },
+    "COMP611": {
+        "Code": "COMP611",
+        "Name": "Algorithm Design and Analysis",
+        "Points": "15",
+        "Level": "6",
+        "Semester1Offered": false,
+        "Semester2Offered": true,
+        "Prerequisites": "COMP610",
+        "Corequisites": ""
+    },
+    "COMP612": {
+        "Code": "COMP612",
+        "Name": "Computer Graphics Programming",
+        "Points": "15",
+        "Level": "6",
+        "Semester1Offered": true,
+        "Semester2Offered": true,
+        "Prerequisites": "MATH503 AND (COMP603 OR COMP610)",
+        "Corequisites": ""
+    },
+    "COMP613": {
+        "Code": "COMP613",
+        "Name": "Combinatorics and Graph Theory",
+        "Points": "15",
+        "Level": "6",
+        "Semester1Offered": true,
+        "Semester2Offered": false,
+        "Prerequisites": "COMP500 AND MATH503",
+        "Corequisites": ""
+    },
+    "COMP615": {
+        "Code": "COMP615",
+        "Name": "Foundations of Data Science",
+        "Points": "15",
+        "Level": "6",
+        "Semester1Offered": true,
+        "Semester2Offered": false,
+        "Prerequisites": "COMP517",
+        "Corequisites": ""
+    },
+    "COMP616": {
+        "Code": "COMP616",
+        "Name": "Statistics for Data Science",
+        "Points": "15",
+        "Level": "6",
+        "Semester1Offered": true,
+        "Semester2Offered": false,
+        "Prerequisites": "MATH503",
+        "Corequisites": ""
+    },
+    "COMP700": {
+        "Code": "COMP700",
+        "Name": "Text and Vision Intelligence",
+        "Points": "15",
+        "Level": "7",
+        "Semester1Offered": false,
+        "Semester2Offered": true,
+        "Prerequisites": "",
+        "Corequisites": ""
+    },
+    "COMP701": {
+        "Code": "COMP701",
+        "Name": "Nature Inspired Computing",
+        "Points": "15",
+        "Level": "7",
+        "Semester1Offered": true,
+        "Semester2Offered": false,
+        "Prerequisites": "",
+        "Corequisites": ""
+    },
+    "COMP702": {
+        "Code": "COMP702",
+        "Name": "Research and Development Project Part 1",
+        "Points": "15",
+        "Level": "7",
+        "Semester1Offered": true,
+        "Semester2Offered": true,
+        "Prerequisites": "COMP500 AND COMP501 AND COMP507 AND DIGD507 AND MATH503AND",
+        "Corequisites": ""
+    },
+    "COMP703": {
+        "Code": "COMP703",
+        "Name": "Research and Development Project Part 2",
+        "Points": "15",
+        "Level": "7",
+        "Semester1Offered": true,
+        "Semester2Offered": true,
+        "Prerequisites": "COMP702",
+        "Corequisites": ""
+    },
+    "COMP710": {
+        "Code": "COMP710",
+        "Name": "Game Programming",
+        "Points": "15",
+        "Level": "7",
+        "Semester1Offered": true,
+        "Semester2Offered": false,
+        "Prerequisites": "COMP612",
+        "Corequisites": ""
+    },
+    "COMP711": {
+        "Code": "COMP711",
+        "Name": "Theory of Computation",
+        "Points": "15",
+        "Level": "7",
+        "Semester1Offered": false,
+        "Semester2Offered": true,
+        "Prerequisites": "COMP610 OR COMP613",
+        "Corequisites": ""
+    },
+    "COMP712": {
+        "Code": "COMP712",
+        "Name": "Programming Languages",
+        "Points": "15",
+        "Level": "7",
+        "Semester1Offered": true,
+        "Semester2Offered": false,
+        "Prerequisites": "COMP610 OR COMP613",
+        "Corequisites": ""
+    },
+    "COMP713": {
+        "Code": "COMP713",
+        "Name": "Distributed and Mobile Systems",
+        "Points": "15",
+        "Level": "7",
+        "Semester1Offered": false,
+        "Semester2Offered": true,
+        "Prerequisites": "COMP611",
+        "Corequisites": ""
+    },
+    "COMP714": {
+        "Code": "COMP714",
+        "Name": "Advanced Network Technologies",
+        "Points": "15",
+        "Level": "7",
+        "Semester1Offered": false,
+        "Semester2Offered": true,
+        "Prerequisites": "COMP609",
+        "Corequisites": ""
+    },
+    "COMP715": {
+        "Code": "COMP715",
+        "Name": "Network Security",
+        "Points": "15",
+        "Level": "7",
+        "Semester1Offered": false,
+        "Semester2Offered": true,
+        "Prerequisites": "ENEL611",
+        "Corequisites": ""
+    },
+    "COMP716": {
+        "Code": "COMP716",
+        "Name": "Highly Secure Systems",
+        "Points": "15",
+        "Level": "7",
+        "Semester1Offered": true,
+        "Semester2Offered": false,
+        "Prerequisites": "COMP611",
+        "Corequisites": ""
+    },
+    "COMP717": {
+        "Code": "COMP717",
+        "Name": "Artificial Intelligence",
+        "Points": "15",
+        "Level": "7",
+        "Semester1Offered": true,
+        "Semester2Offered": false,
+        "Prerequisites": "COMP500 AND 60_L6_POINTS",
+        "Corequisites": ""
+    },
+    "COMP718": {
+        "Code": "COMP718",
+        "Name": "Information Security Management",
+        "Points": "15",
+        "Level": "7",
+        "Semester1Offered": true,
+        "Semester2Offered": false,
+        "Prerequisites": "",
+        "Corequisites": ""
+    },
+    "COMP719": {
+        "Code": "COMP719",
+        "Name": "Applied Human Computer Interaction",
+        "Points": "15",
+        "Level": "7",
+        "Semester1Offered": true,
+        "Semester2Offered": true,
+        "Prerequisites": "",
+        "Corequisites": ""
+    },
+    "COMP723": {
+        "Code": "COMP723",
+        "Name": "Data Mining and Knowledge Engineering",
+        "Points": "15",
+        "Level": "7",
+        "Semester1Offered": false,
+        "Semester2Offered": true,
+        "Prerequisites": "",
+        "Corequisites": ""
+    },
+    "COMP726": {
+        "Code": "COMP726",
+        "Name": "Blockchains and Cryptocurrency Technology",
+        "Points": "15",
+        "Level": "7",
+        "Semester1Offered": false,
+        "Semester2Offered": true,
+        "Prerequisites": "",
+        "Corequisites": ""
+    },
+    "COMP728": {
+        "Code": "COMP728",
+        "Name": "Internet of Things and Applications",
+        "Points": "15",
+        "Level": "7",
+        "Semester1Offered": false,
+        "Semester2Offered": true,
+        "Prerequisites": "",
+        "Corequisites": ""
+    },
+    "COMP729": {
+        "Code": "COMP729",
+        "Name": "Enterprise Networks",
+        "Points": "15",
+        "Level": "7",
+        "Semester1Offered": false,
+        "Semester2Offered": true,
+        "Prerequisites": "COMP504",
+        "Corequisites": ""
+    },
+    "DIGD507": {
+        "Code": "DIGD507",
+        "Name": "Mahitahi | Collaborative Practices",
+        "Points": "15",
+        "Level": "5",
+        "Semester1Offered": true,
+        "Semester2Offered": true,
+        "Prerequisites": "",
+        "Corequisites": ""
+    },
+    "ENEL611": {
+        "Code": "ENEL611",
+        "Name": "Computer Network Applications",
+        "Points": "15",
+        "Level": "6",
+        "Semester1Offered": true,
+        "Semester2Offered": false,
+        "Prerequisites": "COMP504",
+        "Corequisites": ""
+    },
+    "INFS502": {
+        "Code": "INFS502",
+        "Name": "Digital Services in IT",
+        "Points": "15",
+        "Level": "5",
+        "Semester1Offered": false,
+        "Semester2Offered": true,
+        "Prerequisites": "",
+        "Corequisites": ""
+    },
+    "INFS603": {
+        "Code": "INFS603",
+        "Name": "Needs Analysis, Acquisition and Training",
+        "Points": "15",
+        "Level": "6",
+        "Semester1Offered": true,
+        "Semester2Offered": false,
+        "Prerequisites": "",
+        "Corequisites": ""
+    },
+    "INFS604": {
+        "Code": "INFS604",
+        "Name": "Service Modelling",
+        "Points": "15",
+        "Level": "6",
+        "Semester1Offered": true,
+        "Semester2Offered": false,
+        "Prerequisites": "",
+        "Corequisites": ""
+    },
+    "INFS605": {
+        "Code": "INFS605",
+        "Name": "Microservices",
+        "Points": "15",
+        "Level": "6",
+        "Semester1Offered": false,
+        "Semester2Offered": true,
+        "Prerequisites": "",
+        "Corequisites": ""
+    },
+    "INFS704": {
+        "Code": "INFS704",
+        "Name": "Service Innovation and Design",
+        "Points": "15",
+        "Level": "7",
+        "Semester1Offered": true,
+        "Semester2Offered": false,
+        "Prerequisites": "",
+        "Corequisites": ""
+    },
+    "MATH503": {
+        "Code": "MATH503",
+        "Name": "Mathematics for computing",
+        "Points": "15",
+        "Level": "5",
+        "Semester1Offered": true,
+        "Semester2Offered": true,
+        "Prerequisites": "",
+        "Corequisites": ""
+    },
+    "STAT603": {
+        "Code": "STAT603",
+        "Name": "Forecasting",
+        "Points": "15",
+        "Level": "6",
+        "Semester1Offered": false,
+        "Semester2Offered": true,
+        "Prerequisites": "MATH503",
+        "Corequisites": ""
+    }
+}
