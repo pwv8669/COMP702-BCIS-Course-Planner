@@ -289,25 +289,3 @@ async function applyOptionChange(slot, target)
 	console.log('Selected Majors: ' + state.selectedMajors);
 	console.log('Selected Minors: ' + state.selectedMinors);
 }
-const coursearray = [];
-const select = document.getElementById('groupSelect');
-const container = document.getElementById('boxContainer');
-
-async function initGroupSelect()
-{
-	const indexResource = await fetch('./json/courses/index.json');
-	const index = await indexResource.json();
-
-	for (const code of index.courses)
-	{
-		const fileResource = await fetch(`json/courses/${code}.json`);
-		const fileData = await fileResource.json();
-		coursearray.push(fileData);
-		const newOption = document.createElement('option');
-		newOption.value = code;
-		newOption.textContent = fileData.Name;
-		select.appendChild(newOption);
-	}
-	
-}
-initGroupSelect();
