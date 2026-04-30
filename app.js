@@ -21,6 +21,7 @@ await placeCourse(1, 1, 'DIGD507');
 await placeCourse(4, 0, 'COMP702');
 await placeCourse(5, 0, 'COMP703');
 
+
 async function renderCoursePlan() {
 	// Loop through the course plan and update the corresponding cells in the HTML table with the course codes.
 	for (let row = 0; row < state.coursePlan.length; row++) {
