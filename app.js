@@ -3,10 +3,12 @@ import { state, Pathways } from './javascript/state.js';
 
 // Function to place a course in the course plan at a specific row and column.
 async function placeCourse(row, col, code) {
-	const path = `json/courses/${code}.json`;
+	const path = `json/courses.json`;
 	// Get the corresponding json file and convert it to a javascript object.
-	const courseData = await fetch(path);
-	const course = await courseData.json();
+	const coursesData = await fetch(path);
+	const courses = await coursesData.json();
+	const course = courses[code];
+	console.log(course);
 	// Place the course code in the course plan at the specified row and column.
 	state.coursePlan[row][col] = course;
 }
