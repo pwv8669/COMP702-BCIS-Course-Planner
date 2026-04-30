@@ -1,0 +1,19 @@
+{
+    "majors": [
+        "Unselected",
+        "ComputerScience",
+        "DataScience",
+        "DigitalServices",
+        "NetworksAndCybersecurity",
+        "SoftwareDevelopment"
+    ],
+    "minors": [
+        "Unselected",
+        "ComputerScience",
+        "DataScience",
+        "DigitalServices",
+        "NetworksAndCybersecurity",
+        "SoftwareDevelopment",
+        "ArtificialIntelligence"
+    ]
+}
