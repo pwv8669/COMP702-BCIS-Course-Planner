@@ -1,18 +1,20 @@
-async function numCoursesValidator(coursePlan)
+import { state } from './state.js';
+
+async function numCoursesValidator()
 {
 	let courses = 0;
 	let semesters = 0;
-	for (let i = 0; i < coursePlan.length; i++)
+	for (let i = 0; i < state.coursePlan.length; i++)
 	{
-		for (let j = 0; j < coursePlan[i].length; j++ )
+		for (let j = 0; j < state.coursePlan[i].length; j++ )
 		{
-			if (coursePlan[i][j] != null) //checks how many courses are being taken per semester if the value is null -
+			if (state.coursePlan[i][j] != null) //checks how many courses are being taken per semester if the value is null -
 			{                             //-in the coursePlan a course is not being taken in said semester
 			   courses++;
 			}
 			
 		}
-		if (!coursePlan[i].every( value => value === null)) //checks if a semesters courses are all null if so the semester isnt being taken 
+		if (!state.coursePlan[i].every( value => value === null)) //checks if a semesters courses are all null if so the semester isnt being taken 
 		{
 		   semesters++;
 		}
@@ -41,22 +43,4 @@ async function numCoursesValidator(coursePlan)
 	}
 }
 
-/*
-const mockPlan = 
-    [
-        [{ Code: "MATH503" }, { Code: "COMP500" }, { Code: "COMP501" }, { Code: "COMP508" }],
-        [{ Code: "COMP503" }, { Code: "COMP517" }, { Code: "COMP507" }, { Code: "DIGD507" }],
-        [{ Code: "COMP610" }, { Code: "COMP615" }, { Code: "COMP604" }, { Code: "COMP603" }],
-        [{ Code: "COMP611" }, { Code: "COMP612" }, { Code: "STAT603" }, { Code: "COMP602" }],
-        [{ Code: "COMP702" }, { Code: "COMP717" }, { Code: "COMP613" }, { Code: "COMP721" }],
-        [{ Code: "COMP703" }, { Code: "COMP719" }, { Code: "ENSE707" }, { Code: "COMP711" }]
-    ];
-
-	numCoursesValidator(mockPlan).then(message => {
-    if (message === "") {
-        console.log("Success: The plans number of courses and semesters are valid!");
-    } else {
-        console.log("Validation Result:", message);
-    }
-});
-*/
+console.log(numCoursesValidator())
