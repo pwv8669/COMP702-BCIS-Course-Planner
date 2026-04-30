@@ -1,20 +1,22 @@
 import { state } from './state.js';
 
+
 async function numCoursesValidator()
 {
+	let coursePlan = state.coursePlan;
 	let courses = 0;
 	let semesters = 0;
-	for (let i = 0; i < state.coursePlan.length; i++)
+	for (let i = 0; i < coursePlan.length; i++)
 	{
-		for (let j = 0; j < state.coursePlan[i].length; j++ )
+		for (let j = 0; j < coursePlan[i].length; j++ )
 		{
-			if (state.coursePlan[i][j] != null) //checks how many courses are being taken per semester if the value is null -
+			if (coursePlan[i][j] != null) //checks how many courses are being taken per semester if the value is null -
 			{                             //-in the coursePlan a course is not being taken in said semester
 			   courses++;
 			}
 			
 		}
-		if (!state.coursePlan[i].every( value => value === null)) //checks if a semesters courses are all null if so the semester isnt being taken 
+		if (!coursePlan[i].every( value => value === null)) //checks if a semesters courses are all null if so the semester isnt being taken 
 		{
 		   semesters++;
 		}
@@ -43,4 +45,4 @@ async function numCoursesValidator()
 	}
 }
 
-console.log(numCoursesValidator())
+export { numCoursesValidator };

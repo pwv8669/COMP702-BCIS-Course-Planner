@@ -21,6 +21,9 @@ await placeCourse(1, 1, 'DIGD507');
 await placeCourse(4, 0, 'COMP702');
 await placeCourse(5, 0, 'COMP703');
 
+import { numCoursesValidator } from './javascript/numCoursesValidator.js';
+console.log(numCoursesValidator());
+
 
 async function renderCoursePlan() {
 	// Loop through the course plan and update the corresponding cells in the HTML table with the course codes.
