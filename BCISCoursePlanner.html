@@ -83,14 +83,13 @@ select,label {
    outline:0px;
 
   border:0px;
-  background-color: #dd6e46;
+  
   font-size: 20px;
-  padding:12px;
-  height:100%;
- 
+  padding:12px; 
 }
 select,button{
   cursor:pointer;
+    transition: transform .2s;
 }
 
 .yearheading{
@@ -104,12 +103,21 @@ select,button{
 
 
 label{
+  background-color: #dd6e46;
   padding: 12.85px;
+  margin-right: 10px;
+    width:400px;
+  display: inline-block;
 }
 
+select{
+   
+  background-color: #bc5e3c;
+}
 
-label{
-  margin-right: 10px;
+select:hover,button:hover{
+   transform: scale(1.025);
+
 }
 </style>
 </head>
@@ -229,24 +237,15 @@ label{
 
 <div style="float:right;width:200px" >
   <button style="float:right;"onclick="getPDF()">Save as PDF</button>
-
-  <!-- BUTTON THAT SHOWS ALL COURSES! Delete when no longer needed as its basically just a placeholder function -->
-  <br><br>
-  <button style="float:right;"id="Change" onclick="DisplayCourses()">Display Courses</button>
-  <br><br>
-  <br><br>
-  <div style="float:right;width:400px">
-  <div id="groupSelect" style="font-size:15px;display:none;text-align: right;color: #353233;"></div>
-  </div>
 </div>
 
 
    <!-- Form for selecting course pathway. -->
   <form id="pathwayForm">
     <div style="float: left;background-color: #dd6e46;"></div>
-  <label for="pathwaySelect">Course Pathway:</label>
-
-  <select id="pathwaySelect" name="pathwaySelect">
+  <label class=pathwayselector style="margin-right: -6px;"for="pathwaySelect">Course Pathway:
+  <div style="height: 10px;"></div>
+  <select id="pathwaySelect" name="pathwaySelect" style="float:right">
     <option value="doubleMajors" selected>
       Double Majors
     </option>
@@ -257,6 +256,7 @@ label{
       Single Major + Single Minor + Electives
     </option>
   </select>
+  </label>
   </div>
   </form>
   <div style="margin-top: 5px;"></div>
@@ -270,18 +270,6 @@ label{
 </body>
 <script>
 const coursearray = [];
-
-function DisplayCourses(){
-  var x = document.getElementById("groupSelect");
-  if (x.style.display === "none") {
-    x.style.display = "block";
-  } else {
-    x.style.display = "none";
-  }
-}
-
-
-
 // JSPDF
 //Create PDf from HTML...
 function getPDF(){
@@ -313,7 +301,7 @@ function getPDF(){
 				pdf.addImage(imgData, 'JPG', top_left_margin, -(PDF_Height*i)+(top_left_margin*4),canvas_image_width,canvas_image_height);
 			}
 			
-		    pdf.save("HTML-Document.pdf");
+		    pdf.save("Study Plan.pdf");
         });
 	};
 </script>
