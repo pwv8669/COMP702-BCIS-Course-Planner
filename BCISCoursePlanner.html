@@ -232,9 +232,6 @@ label{
 <div style="float:right;width:200px" >
   <button style="float:right;"onclick="getPDF()">Save as PDF</button>
 
-  <!-- BUTTON THAT SHOWS ALL COURSES! Delete when no longer needed as its basically just a placeholder function -->
-  <br><br>
-  <button style="float:right;"id="Change" onclick="DisplayCourses()">Display Courses</button>
   <br><br>
   <br><br>
   <div style="float:right;width:400px">
@@ -271,17 +268,6 @@ label{
 
 </body>
 <script>
-const coursearray = [];
-
-function DisplayCourses(){
-  var x = document.getElementById("groupSelect");
-  if (x.style.display === "none") {
-    x.style.display = "block";
-  } else {
-    x.style.display = "none";
-  }
-}
-
 
 
 // JSPDF

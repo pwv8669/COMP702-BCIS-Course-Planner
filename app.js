@@ -1,25 +1,41 @@
 // Importing the state object from the state.js file which contains the coursePlan array. This allows us to manipulate the course plan data from this file globally.
 import { state, Pathways } from './javascript/state.js';
 
-// Function to place a course in the course plan at a specific row and column.
-async function placeCourse(row, col, code) {
-	const path = `json/courses/${code}.json`;
+
+const courseMap = {};
+async function initCourseMap() {
+	const path = `json/courses.json`;
 	// Get the corresponding json file and convert it to a javascript object.
-	const courseData = await fetch(path);
-	const course = await courseData.json();
-	// Place the course code in the course plan at the specified row and column.
-	state.coursePlan[row][col] = course;
+	const coursesData = await fetch(path);
+	const courses = await coursesData.json();
+	Object.assign(courseMap, courses);
 }
 
-// Example usage of the placeCourse function.
-await placeCourse(0, 0, 'COMP500');
-await placeCourse(0, 1, 'COMP501');
-await placeCourse(0, 2, 'COMP508');
-await placeCourse(0, 3, 'MATH503');
-await placeCourse(1, 0, 'COMP507');
-await placeCourse(1, 1, 'DIGD507');
-await placeCourse(4, 0, 'COMP702');
-await placeCourse(5, 0, 'COMP703');
+async function init() {
+	await initCourseMap();
+	console.log(courseMap);
+
+	// Example usage of the placeCourse function.
+	placeCourse(0, 0, 'COMP500');
+	placeCourse(0, 1, 'COMP501');
+	placeCourse(0, 2, 'COMP508');
+	placeCourse(0, 3, 'MATH503');
+	placeCourse(1, 0, 'COMP507');
+	placeCourse(1, 1, 'DIGD507');
+	placeCourse(4, 0, 'COMP702');
+	placeCourse(5, 0, 'COMP703');
+
+	console.log(state.coursePlan);
+}
+
+
+// Function to place a course in the course plan at a specific row and column.
+function placeCourse(row, col, code) {
+	state.coursePlan[row][col] = courseMap[code];
+}
+
+
+
 
 import { numCoursesValidator } from './javascript/numCoursesValidator.js';
 console.log(numCoursesValidator());
@@ -287,25 +303,3 @@ async function applyOptionChange(slot, target)
 	console.log('Selected Majors: ' + state.selectedMajors);
 	console.log('Selected Minors: ' + state.selectedMinors);
 }
-const coursearray = [];
-const select = document.getElementById('groupSelect');
-const container = document.getElementById('boxContainer');
-
-async function initGroupSelect()
-{
-	const indexResource = await fetch('./json/courses/index.json');
-	const index = await indexResource.json();
-
-	for (const code of index.courses)
-	{
-		const fileResource = await fetch(`json/courses/${code}.json`);
-		const fileData = await fileResource.json();
-		coursearray.push(fileData);
-		const newOption = document.createElement('option');
-		newOption.value = code;
-		newOption.textContent = fileData.Name;
-		select.appendChild(newOption);
-	}
-	
-}
-initGroupSelect();
