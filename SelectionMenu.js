@@ -14,9 +14,10 @@ async function SetupSelections()
 	text += "<option>"+"</option>";//add a null option
 
 	// For each course in courses, add an option to the selection menu with the course code as the display text and the index of the course in the courseobjects array as the value.
-	let courseobjects = [];//this will be an array of the course objects, which will be used to get the course data when the user selects a course from the selection menu.
+	let courseobjects = [];//this will be a temporary array of the course objects, which will be used to get the course data when the user selects a course from the selection menu.
 	for (const code in courses)
 	{
+		courseobjectsstore.push(courses[code]);//push to the autofill array
 		courseobjects.push(courses[code]);//add the course to the courseobjects array
 		text += "<option value="+(courseobjects.length-1)+">" + courses[code].Code + "</option>";
 	}
