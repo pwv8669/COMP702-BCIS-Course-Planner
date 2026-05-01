@@ -5,20 +5,21 @@ import { state } from './javascript/state.js';
 
 async function SetupSelections()
 {
-	const indexResource = await fetch('./json/courses/index.json');//open file
-	const index = await indexResource.json();
+	const coursesData = await fetch('./json/courses.json');//open file
+	const courses = await coursesData.json();
 	
 	let text = "<select id=\"courseselectionedit\" onchange=\"setInput()\">"//this will be the 
 	
 	//selection menu, and will replace the empty coursetoedit <p>
 	text += "<option>"+"</option>";//add a null option
 
-	for (const code of index.courses)
+	// For each course in courses, add an option to the selection menu with the course code as the display text and the index of the course in the courseobjects array as the value.
+	let courseobjects = [];//this will be a temporary array of the course objects, which will be used to get the course data when the user selects a course from the selection menu.
+	for (const code in courses)
 	{
-		const fileResource = await fetch(`json/courses/${code}.json`);
-		const fileData = await fileResource.json();
-		courseobjects.push(fileData);
-		text += "<option value="+(courseobjects.length-1)+">" + fileData.Code + "</option>";
+		courseobjectsstore.push(courses[code]);//push to the autofill array
+		courseobjects.push(courses[code]);//add the course to the courseobjects array
+		text += "<option value="+(courseobjects.length-1)+">" + courses[code].Code + "</option>";
 	}
  	text += "</select>"
 

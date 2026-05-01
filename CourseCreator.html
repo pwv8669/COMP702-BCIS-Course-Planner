@@ -174,34 +174,41 @@ select:hover {
 
 
 
- 
+  <!-- Selection Dropdown -->
+   <br>
+  <div for="coursetoedit">Choose a course to edit:
+    <!-- This part will be directly modified by selection menu with a list containing all the names
+   of the courses, as well as their indexin courseobjectsstore array (see below) -->
+  <p id="coursetoedit" style="margin-top: 0%; "></p></div>
+  </div>
 </body>
 <script>
 //array that stores all course objects in json
-const courseobjects = [];
+const courseobjectsstore = [];//this is the array that will hold the objects for the auto-fill
     function setInput(){
       var x = document.getElementById("courseselectionedit").value;//get value from selection
       if(x != ""){//if its not the null selection
         //replace with their respective information
-        document.getElementsByName("Code")[0].value = courseobjects[x].Code;
-        document.getElementsByName("Name")[0].value = courseobjects[x].Name;
-        document.getElementsByName("Points")[0].value = courseobjects[x].Points;
+        console.log(courseobjectsstore[x]);
+        document.getElementsByName("Code")[0].value = courseobjectsstore[x].Code;
+        document.getElementsByName("Name")[0].value = courseobjectsstore[x].Name;
+        document.getElementsByName("Points")[0].value = courseobjectsstore[x].Points;
        
-        if(courseobjects[x].Semester1Offered == true){//set checks based on if true or not
+        if(courseobjectsstore[x].Semester1Offered == true){//set checks based on if true or not
           document.getElementsByName("Semester1Offered")[0].checked = 1;//check if true
         }
         else{
            document.getElementsByName("Semester1Offered")[0].checked = 0;//uncheck if false
         }
 
-        if(courseobjects[x].Semester1Offered == true){//refer to above, this time for semester 2
+        if(courseobjectsstore[x].Semester1Offered == true){//refer to above, this time for semester 2
           document.getElementsByName("Semester2Offered")[0].checked = 1;
         }
         else{
            document.getElementsByName("Semester2Offered")[0].checked = 0;
         }
-        document.getElementsByName("Prerequisites")[0].value = courseobjects[x].Prerequisites;
-        document.getElementsByName("Corequisites")[0].value = courseobjects[x].Corequisites;
+        document.getElementsByName("Prerequisites")[0].value = courseobjectsstore[x].Prerequisites;
+        document.getElementsByName("Corequisites")[0].value = courseobjectsstore[x].Corequisites;
       }
       else{//if its the null selection
          document.getElementsByName("Code")[0].value = "";//reset
