@@ -1,0 +1,61 @@
+{
+    "Pathways": 
+    [
+        {
+            "Code": "---",
+            "Name": "---",
+            "Courses": [],
+            "AvailableAsMajor": true,
+            "AvailableAsMinor": true
+        },
+        {
+            "Code": "Core",
+            "Name": "Core",
+            "Courses": ["COMP500", "COMP501", "COMP507", "COMP508", "DIGD507", "MATH503", "COMP702", "COMP703"],
+            "AvailableAsMajor": false,
+            "AvailableAsMinor": false
+        },
+        {
+            "Code": "ArtificialIntelligence",
+            "Name": "Artificial Intelligence",
+            "Courses": ["COMP517", "COMP610", "COMP613", "COMP615", "COMP700", "COMP701", "COMP717"],
+            "AvailableAsMajor": false,
+            "AvailableAsMinor": true
+        },
+        {
+            "Code": "ComputerScience",
+            "Name": "Computer Science",
+            "Courses": ["COMP503", "COMP610", "COMP611", "COMP612", "COMP613", "COMP711", "COMP712", "COMP713", "COMP719"],
+            "AvailableAsMajor": true,
+            "AvailableAsMinor": true
+        },
+        {
+            "Code": "DataScience",
+            "Name": "Data Science",
+            "Courses": ["COMP517", "COMP610", "COMP613", "COMP615", "COMP616", "STAT603", "COMP700", "COMP701", "COMP717", "COMP723"],
+            "AvailableAsMajor": true,
+            "AvailableAsMinor": true
+        },
+        {
+            "Code": "DigitalServices",
+            "Name": "Digital Services",
+            "Courses": ["INFS502", "COMP603", "COMP607", "INFS603", "INFS604", "INFS605", "COMP718", "COMP726", "COMP728", "INFS704"],
+            "AvailableAsMajor": true,
+            "AvailableAsMinor": true
+        },
+        {
+            "Code": "NetworksAndCybersecurity",
+            "Name": "Networks and Cybersecurity",
+            "Courses": ["COMP504", "COMP604", "COMP607", "COMP609", "ENEL611", "COMP714", "COMP729", "COMP715", "COMP716", "COMP718"],
+            "AvailableAsMajor": true,
+            "AvailableAsMinor": true
+        },
+        {
+            "Code": "SoftwareDevelopment",
+            "Name": "Software Development",
+            "Courses": ["COMP503", "COMP602", "COMP603", "COMP604", "COMP611", "COMP610", "COMP705", "ENSE707", "COMP713", "COMP721", "COMP719", "COMP612", "COMP710"],
+            "AvailableAsMajor": true,
+            "AvailableAsMinor": true
+        }
+    ]
+}

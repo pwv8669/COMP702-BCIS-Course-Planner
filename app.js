@@ -89,25 +89,24 @@ const minorsArray = [];
 // This function fetches the available majors and minors from the json files and populates the majorsArray and minorsArray with the data. It then calls the updatePathwayOptions function to update the dropdown options in the HTML form based on the selected pathway.
 async function initPathwayOptions()
 {
-	// Fetch the index.json file which contains the list of available majors and minors.
-	const indexResource = await fetch('./json/pathways/options/index.json');
-	const index = await indexResource.json();
+	// Fetch the pathways.json file which contains the list of available majors and minors.
+	const pathwaysResource = await fetch('./json/pathways/pathways.json');
+	const pathways = await pathwaysResource.json();
 
-	// Loop through the list of majors in the index.json file, and push the data into the majorsArray.
-	for (const major of index.majors)
+	// Loop through the list of in the pathways.json file, and push the data into the majorsArray and minorsArray.
+	for (const pathway of pathways.Pathways)
 	{
-		const fileResource = await fetch(`json/pathways/options/${major}.json`);
-		const fileData = await fileResource.json();
-		majorsArray.push(fileData);
+		if (pathway.AvailableAsMajor)
+		{
+			majorsArray.push(pathway);
+		}
+		
+		if (pathway.AvailableAsMinor)
+		{
+			minorsArray.push(pathway);
+		}
 	}
 
-	// Loop through the list of minors in the index.json file, and push the data into the minorsArray.
-	for (const minor of index.minors)
-	{
-		const fileResource = await fetch(`json/pathways/options/${minor}.json`);
-		const fileData = await fileResource.json();
-		minorsArray.push(fileData);
-	}
 	// After fetching the majors and minors data, call the updatePathwayOptions function to populate the dropdowns in the HTML form based on the selected pathway.
 	updatePathwayOptions();
 }
@@ -132,8 +131,8 @@ function createMajorDropdowns()
 	for (const option of majorsArray)
 	{
 		const newOption = document.createElement('option');
-		newOption.value = option.code;
-		newOption.textContent = option.name;
+		newOption.value = option.Code;
+		newOption.textContent = option.Name;
 		major1.appendChild(newOption);
 	}
 	// Set the value of the major 1 select element to the currently selected major in the state, or '---' if no major is selected.
@@ -157,8 +156,8 @@ function createMajorDropdowns()
 		for (const option of majorsArray)
 		{
 			const newOption = document.createElement('option');
-			newOption.value = option.code;
-			newOption.textContent = option.name;
+			newOption.value = option.Code;
+			newOption.textContent = option.Name;
 			major2.appendChild(newOption);
 		}
 		// Set the value of the major 2 select element to the currently selected major in the state, or '---' if no major is selected.
@@ -188,8 +187,8 @@ function createMinorDropdowns()
 		for (const option of minorsArray)
 		{
 			const newOption = document.createElement('option');
-			newOption.value = option.code;
-			newOption.textContent = option.name;
+			newOption.value = option.Code;
+			newOption.textContent = option.Name;
 			minor1.appendChild(newOption);
 		}
 		// Set the value of the minor 1 select element to the currently selected minor in the state, or '---' if no minor is selected.
@@ -214,8 +213,8 @@ function createMinorDropdowns()
 		for (const option of minorsArray)
 		{
 			const newOption = document.createElement('option');
-			newOption.value = option.code;
-			newOption.textContent = option.name;
+			newOption.value = option.Code;
+			newOption.textContent = option.Name;
 			minor2.appendChild(newOption);
 		}	
 		// Set the value of the minor 2 select element to the currently selected minor in the state, or '---' if no minor is selected.
