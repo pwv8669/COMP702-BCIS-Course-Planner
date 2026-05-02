@@ -14,7 +14,6 @@ async function initCourseMap() {
 async function init() {
 	await initCourseMap();
 	console.log(courseMap);
-
 	// Example usage of the placeCourse function.
 	// placeCourse(0, 0, 'COMP500');
 	// placeCourse(0, 1, 'COMP501');
@@ -53,7 +52,7 @@ function SaveFile(){
 
 			}
 			else{
-				text += "NULL";
+				text += "\"undefined\"";
 			}
 			if(col < 3){
 				text += ","
@@ -65,7 +64,16 @@ function SaveFile(){
 		}
 	}
 	text += "]";
+
 	console.log(text);
+
+    let blobdtMIME = new Blob([text], { type: "text/plain" });
+    let url = URL.createObjectURL(blobdtMIME);
+    let anele = document.createElement("a");
+    anele.setAttribute("download", "Schedule");
+    anele.href = url;
+    anele.click();
+    console.log(blobdtMIME)
 }
 
 
