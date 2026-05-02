@@ -32,16 +32,69 @@ async function init() {
 
 }
 init();
+// Importing json files
+export function importschedule(JsonInput) {
+	const arraytoparse = JsonInput.schedule;
+ 	for(let semester = 0; semester < arraytoparse.length; semester++){
+        for(let course = 0; course < arraytoparse[semester].length; course++){
+          placeCourse(semester, course, arraytoparse[semester][course]);
+        }
+    }
 
+	const pathwaySelect = document.getElementById('pathwaySelect');
+	pathwaySelect.value = JsonInput.selectedPathway;
+	// Update the selected pathway enum.
+	state.selectedPathway = JsonInput.selectedPathway;
+	console.log(`Selected pathway: ${state.selectedPathway}`);
+	// Clear the unused selected majors, minors, and electives based on the selected pathway.
+	if(state.selectedPathway == Pathways.doubleMajors){
+		state.selectedMinors = [null, null];
+		state.selectedElectives = [null, null, null, null];
+	} else if (state.selectedPathway == Pathways.doubleMinors){
+		state.selectedMajors[1] = null;
+		state.selectedElectives = [null, null, null, null];
+	} else if (state.selectedPathway == Pathways.electives){
+		state.selectedMajors[1] = null;
+		state.selectedMinors[1] = null;
+	}
+	updatePathwayOptions();
+	state.selectedElectives = JsonInput.selectedElectives;
+	state.selectedMajors = JsonInput.selectedMajors;
+	state.selectedMinors = JsonInput.selectedMinors;
+	const major1 = document.getElementById('major1');
+	const major2 = document.getElementById('major2');
+	const minor1 = document.getElementById('minor1');
+	const minor2 = document.getElementById('minor2');
+	
+
+	console.log(major1);
+	major1.value = state.selectedMajors[0];
+	if(state.selectedPathway == Pathways.doubleMajors){
+		major2.value = state.selectedMajors[1];
+	}
+	else{
+		minor1.value = state.selectedMinors[0];
+		if(state.selectedPathway == Pathways.doubleMinors){
+			minor2.value = state.selectedMinors[1];
+		}
+	}
+	console.log(state);
+}
 // Function to place a course in the course plan at a specific row and column.
-export function placeCourse(row, col, code) {
+function placeCourse(row, col, code) {
 	state.coursePlan[row][col] = courseMap[code];
 	renderCoursePlan();
 	console.log(state.coursePlan);
 }
 
+// Function for saving files
 function SaveFile(){
-	let text = "[";
+	let text = "{\n";
+	text += "\"selectedPathway\":\""+ state.selectedPathway+"\",\n";
+	text += "\"selectedMajors\": [\""+ state.selectedMajors[0]+"\",\""+state.selectedMajors[1]+"\"],\n";
+	text += "\"selectedMinors\": [\""+ state.selectedMinors[0]+"\",\""+state.selectedMinors[1]+"\"],\n";
+	text += "\"selectedElectives\": [\""+ state.selectedElectives[0]+"\",\""+state.selectedElectives[1]+"\",\""+state.selectedElectives[2]+"\",\""+state.selectedElectives[3]+"\"],\n";
+	text += "\"schedule\": [";
 	for (let row = 0; row < state.coursePlan.length; row++) {
 		text += "[";
 		for (let col = 0; col < state.coursePlan[row].length; col++) {
@@ -63,11 +116,11 @@ function SaveFile(){
 			text += ",\n"
 		}
 	}
-	text += "]";
+	text += "]\n}";
 
 	console.log(text);
 
-    let blobdtMIME = new Blob([text], { type: "text/plain" });
+    let blobdtMIME = new Blob([text], { type: "application/json" });
     let url = URL.createObjectURL(blobdtMIME);
     let anele = document.createElement("a");
     anele.setAttribute("download", "Schedule");
@@ -162,7 +215,8 @@ function createMajorDropdowns()
 	const major1Label = document.createElement('label');
 	major1Label.textContent = 'Major 1: ';
 	const major1 = document.createElement('select');
-	major1.id = major1Label.id = 'major1';
+	major1.id = 'major1';
+	major1Label.id = 'major1label';
 	// Add an event listener to the major 1 select element to handle changes and validate the selected option.
 	major1.addEventListener('change', (e) => {
 		checkValidOptionChange(major1, 'major1', e.target.value);
@@ -186,7 +240,8 @@ function createMajorDropdowns()
 		const major2Label = document.createElement('label');
 		major2Label.textContent = 'Major 2: ';
 		const major2 = document.createElement('select');
-		major2.id = major2Label.id = 'major2';
+		major2.id = 'major2'; 
+		major2Label.id = 'major2label';
 		// Add an event listener to the major 2 select element to handle changes and validate the selected option.
 		major2.addEventListener('change', (e) => {
 			checkValidOptionChange(major2, 'major2', e.target.value);
@@ -217,7 +272,8 @@ function createMinorDropdowns()
 		const minor1Label = document.createElement('label');
 		minor1Label.textContent = 'Minor 1: ';
 		const minor1 = document.createElement('select');
-		minor1.id = minor1Label.id = 'minor1';
+		minor1.id  = 'minor1'; 
+		minor1Label.id = 'minor1label';
 		// Add an event listener to the minor 1 select element to handle changes and validate the selected option.
 		minor1.addEventListener('change', (e) => {
 			checkValidOptionChange(minor1, 'minor1', e.target.value);
@@ -243,7 +299,8 @@ function createMinorDropdowns()
 		const minor2Label = document.createElement('label');
 		minor2Label.textContent = 'Minor 2: ';
 		const minor2 = document.createElement('select');
-		minor2.id = minor2Label.id = 'minor2';
+		minor2.id = 'minor2';
+		 minor2Label.id = 'minor2label';
 		// Add an event listener to the minor 2 select element to handle changes and validate the selected option.
 		minor2.addEventListener('change', (e) => {
 			checkValidOptionChange(minor2, 'minor2', e.target.value);

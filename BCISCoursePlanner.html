@@ -322,7 +322,7 @@ function getPDF(){
 </script>
 
 <script type="module">
-import {placeCourse} from "./app.js";
+import {importschedule} from "./app.js";
 //this is for file input
 const inputElement = document.getElementById("file_upload");
 inputElement.addEventListener("change", handleFiles);
@@ -335,12 +335,8 @@ const reader = new FileReader();
 
   reader.addEventListener("load", () => {
     // this will then display a text file
-    const arraytoparse = JSON.parse(reader.result);
-    for(let semester = 0; semester < arraytoparse.length; semester++){
-        for(let course = 0; course < arraytoparse[semester].length; course++){
-          placeCourse(semester, course, arraytoparse[semester][course]);
-        }
-    }
+    const JsonParse = JSON.parse(reader.result);
+    importschedule(JsonParse);
     
   });
 
