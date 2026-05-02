@@ -16,24 +16,57 @@ async function init() {
 	console.log(courseMap);
 
 	// Example usage of the placeCourse function.
-	placeCourse(0, 0, 'COMP500');
-	placeCourse(0, 1, 'COMP501');
-	placeCourse(0, 2, 'COMP508');
-	placeCourse(0, 3, 'MATH503');
-	placeCourse(1, 0, 'COMP507');
-	placeCourse(1, 1, 'DIGD507');
-	placeCourse(4, 0, 'COMP702');
-	placeCourse(5, 0, 'COMP703');
+	// placeCourse(0, 0, 'COMP500');
+	// placeCourse(0, 1, 'COMP501');
+	// placeCourse(0, 2, 'COMP508');
+	// placeCourse(0, 3, 'MATH503');
+	// placeCourse(1, 0, 'COMP507');
+	// placeCourse(1, 1, 'DIGD507');
+	// placeCourse(4, 0, 'COMP702');
+	// placeCourse(5, 0, 'COMP703');
 
+	console.log(state.coursePlan);
+	const Button = document.getElementById("SaveFileButton");
+	Button.addEventListener("click", SaveFile, false);
+
+
+
+}
+init();
+
+// Function to place a course in the course plan at a specific row and column.
+export function placeCourse(row, col, code) {
+	state.coursePlan[row][col] = courseMap[code];
+	renderCoursePlan();
 	console.log(state.coursePlan);
 }
 
+function SaveFile(){
+	let text = "[";
+	for (let row = 0; row < state.coursePlan.length; row++) {
+		text += "[";
+		for (let col = 0; col < state.coursePlan[row].length; col++) {
+			if(state.coursePlan[row][col] != undefined){
+				console.log( state.coursePlan[row][col].Code);
+				const course = state.coursePlan[row][col].Code;
+				text += "\""+ course+"\"";
 
-// Function to place a course in the course plan at a specific row and column.
-function placeCourse(row, col, code) {
-	state.coursePlan[row][col] = courseMap[code];
+			}
+			else{
+				text += "NULL";
+			}
+			if(col < 3){
+				text += ","
+			}
+		}
+		text += "]"
+		if(row < 5){
+			text += ",\n"
+		}
+	}
+	text += "]";
+	console.log(text);
 }
-
 
 
 
