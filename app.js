@@ -1,5 +1,5 @@
 // Importing the state object from the state.js file which contains the coursePlan array. This allows us to manipulate the course plan data from this file globally.
-import { state, Pathways } from './javascript/state.js';
+import { state, Pathways, updatePoints } from './javascript/state.js';
 
 
 const courseMap = {};
@@ -9,6 +9,7 @@ async function initCourseMap() {
 	const coursesData = await fetch(path);
 	const courses = await coursesData.json();
 	Object.assign(courseMap, courses);
+	updatePoints();
 }
 
 async function init() {
@@ -27,11 +28,13 @@ async function init() {
 
 	console.log(state.coursePlan);
 }
+await init();
 
 
 // Function to place a course in the course plan at a specific row and column.
 function placeCourse(row, col, code) {
 	state.coursePlan[row][col] = courseMap[code];
+	updatePoints();
 }
 
 
