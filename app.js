@@ -34,6 +34,7 @@ async function init() {
 init();
 // Importing json files
 export function importschedule(JsonInput) {
+		try{
 	const arraytoparse = JsonInput.schedule;
  	for(let semester = 0; semester < arraytoparse.length; semester++){
         for(let course = 0; course < arraytoparse[semester].length; course++){
@@ -69,6 +70,9 @@ export function importschedule(JsonInput) {
 
 	console.log(major1);
 	major1.value = state.selectedMajors[0];
+
+
+	
 	if(state.selectedPathway == Pathways.doubleMajors){
 		major2.value = state.selectedMajors[1];
 	}
@@ -78,6 +82,10 @@ export function importschedule(JsonInput) {
 			minor2.value = state.selectedMinors[1];
 		}
 	}
+}
+catch{
+alert(`Incompatible File!`);
+}
 	console.log(state);
 }
 // Function to place a course in the course plan at a specific row and column.
