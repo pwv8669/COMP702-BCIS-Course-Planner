@@ -1,0 +1,10 @@
+<script type="module">
+import { loadCourses } from "./javascript/courseObjectConverter.js";
+
+async function init() {
+    const courses = await loadCourses();
+    console.log(courses);
+}
+
+init();
+</script>
