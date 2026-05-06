@@ -4,7 +4,7 @@ import { state, Pathways } from './state.js';
 
 const courseMap = {};
 async function initCourseMap() {
-	const path = '../json/courses.json';
+	const path = 'json/courses.json';
 	// Get the corresponding json file and convert it to a javascript object.
 	const coursesData = await fetch(path);
 	const courses = await coursesData.json();
@@ -24,7 +24,8 @@ async function init() {
 	placeCourse(1, 1, 'DIGD507');
 	placeCourse(4, 0, 'COMP702');
 	placeCourse(5, 0, 'COMP703');
-
+	
+	await renderCoursePlan(state);
 	console.log(state.coursePlan);
 }
 
@@ -72,4 +73,5 @@ state.selectedPathway = Pathways.doubleMajors; // Set default pathway to double 
 // This function fetches the available majors and minors from the json files and populates the majorsArray and minorsArray with the data. It then calls the updatePathwayOptions function to update the dropdown options in the HTML form based on the selected pathway.
 
 await initPathwayOptions(state, Pathways);
+init();
 
