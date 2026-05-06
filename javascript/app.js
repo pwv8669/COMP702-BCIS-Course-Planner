@@ -23,10 +23,9 @@ async function init() {
 
 
 // Function to place a course in the course plan at a specific row and column.
-function placeCourse(row, col, code) {
+export function placeCourse(row, col, code) {
 	state.coursePlan[row][col] = courses[code];
 }
-
 
 
 
@@ -60,7 +59,9 @@ pathwaySelect.addEventListener('change', (e) => {
 	updatePathwayOptions(state, Pathways);
 });
 state.selectedPathway = Pathways.doubleMajors; // Set default pathway to double majors.
-
+export function PathwayRefresh(){
+	updatePathwayOptions(state, Pathways);
+}
 
 // This function fetches the available majors and minors from the json files and populates the majorsArray and minorsArray with the data. It then calls the updatePathwayOptions function to update the dropdown options in the HTML form based on the selected pathway.
 
