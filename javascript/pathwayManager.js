@@ -2,6 +2,10 @@
 let majorsArray = [];
 let minorsArray = [];
 
+
+
+
+
 export async function updatePathwayOptions(state, Pathways)
 {
     const pathwayOptionContainer = document.getElementById(`pathwayOptionContainer`);
@@ -58,7 +62,8 @@ function createMajorDropdowns(state, Pathways)
     const major1Label = document.createElement('label');
     major1Label.textContent = 'Major 1: ';
     const major1 = document.createElement('select');
-    major1.id = major1Label.id = 'major1';
+   	major1.id = 'major1';
+	major1Label.id = 'major1label';
     // Add an event listener to the major 1 select element to handle changes and validate the selected option.
     major1.addEventListener('change', (e) => {
         checkValidOptionChange(state, major1, 'major1', e.target.value);
@@ -82,7 +87,8 @@ function createMajorDropdowns(state, Pathways)
         const major2Label = document.createElement('label');
         major2Label.textContent = 'Major 2: ';
         const major2 = document.createElement('select');
-        major2.id = major2Label.id = 'major2';
+        	major2.id = 'major2'; 
+		major2Label.id = 'major2label';
         // Add an event listener to the major 2 select element to handle changes and validate the selected option.
         major2.addEventListener('change', (e) => {
             checkValidOptionChange(state, major2, 'major2', e.target.value);
@@ -113,7 +119,8 @@ function createMinorDropdowns(state, Pathways)
         const minor1Label = document.createElement('label');
         minor1Label.textContent = 'Minor 1: ';
         const minor1 = document.createElement('select');
-        minor1.id = minor1Label.id = 'minor1';
+        minor1.id  = 'minor1'; 
+		minor1Label.id = 'minor1label';
         // Add an event listener to the minor 1 select element to handle changes and validate the selected option.
         minor1.addEventListener('change', (e) => {
             checkValidOptionChange(state, minor1, 'minor1', e.target.value);
@@ -139,7 +146,8 @@ function createMinorDropdowns(state, Pathways)
         const minor2Label = document.createElement('label');
         minor2Label.textContent = 'Minor 2: ';
         const minor2 = document.createElement('select');
-        minor2.id = minor2Label.id = 'minor2';
+       minor2.id = 'minor2';
+		 minor2Label.id = 'minor2label';
         // Add an event listener to the minor 2 select element to handle changes and validate the selected option.
         minor2.addEventListener('change', (e) => {
             checkValidOptionChange(state, minor2, 'minor2', e.target.value);
