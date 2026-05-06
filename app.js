@@ -14,27 +14,28 @@ async function initCourseMap() {
 async function init() {
 	await initCourseMap();
 	console.log(courseMap);
-
 	// Example usage of the placeCourse function.
-	placeCourse(0, 0, 'COMP500');
-	placeCourse(0, 1, 'COMP501');
-	placeCourse(0, 2, 'COMP508');
-	placeCourse(0, 3, 'MATH503');
-	placeCourse(1, 0, 'COMP507');
-	placeCourse(1, 1, 'DIGD507');
-	placeCourse(4, 0, 'COMP702');
-	placeCourse(5, 0, 'COMP703');
+	// placeCourse(0, 0, 'COMP500');
+	// placeCourse(0, 1, 'COMP501');
+	// placeCourse(0, 2, 'COMP508');
+	// placeCourse(0, 3, 'MATH503');
+	// placeCourse(1, 0, 'COMP507');
+	// placeCourse(1, 1, 'DIGD507');
+	// placeCourse(4, 0, 'COMP702');
+	// placeCourse(5, 0, 'COMP703');
 
 	console.log(state.coursePlan);
-}
 
+
+}
+init();
 
 // Function to place a course in the course plan at a specific row and column.
-function placeCourse(row, col, code) {
+export function placeCourse(row, col, code) {
 	state.coursePlan[row][col] = courseMap[code];
+	renderCoursePlan();
+	console.log(state.coursePlan);
 }
-
-
 
 
 import { numCoursesValidator } from './javascript/numCoursesValidator.js';
@@ -121,7 +122,8 @@ function createMajorDropdowns()
 	const major1Label = document.createElement('label');
 	major1Label.textContent = 'Major 1: ';
 	const major1 = document.createElement('select');
-	major1.id = major1Label.id = 'major1';
+	major1.id = 'major1';
+	major1Label.id = 'major1label';
 	// Add an event listener to the major 1 select element to handle changes and validate the selected option.
 	major1.addEventListener('change', (e) => {
 		checkValidOptionChange(major1, 'major1', e.target.value);
@@ -145,7 +147,8 @@ function createMajorDropdowns()
 		const major2Label = document.createElement('label');
 		major2Label.textContent = 'Major 2: ';
 		const major2 = document.createElement('select');
-		major2.id = major2Label.id = 'major2';
+		major2.id = 'major2'; 
+		major2Label.id = 'major2label';
 		// Add an event listener to the major 2 select element to handle changes and validate the selected option.
 		major2.addEventListener('change', (e) => {
 			checkValidOptionChange(major2, 'major2', e.target.value);
@@ -176,7 +179,8 @@ function createMinorDropdowns()
 		const minor1Label = document.createElement('label');
 		minor1Label.textContent = 'Minor 1: ';
 		const minor1 = document.createElement('select');
-		minor1.id = minor1Label.id = 'minor1';
+		minor1.id  = 'minor1'; 
+		minor1Label.id = 'minor1label';
 		// Add an event listener to the minor 1 select element to handle changes and validate the selected option.
 		minor1.addEventListener('change', (e) => {
 			checkValidOptionChange(minor1, 'minor1', e.target.value);
@@ -202,7 +206,8 @@ function createMinorDropdowns()
 		const minor2Label = document.createElement('label');
 		minor2Label.textContent = 'Minor 2: ';
 		const minor2 = document.createElement('select');
-		minor2.id = minor2Label.id = 'minor2';
+		minor2.id = 'minor2';
+		 minor2Label.id = 'minor2label';
 		// Add an event listener to the minor 2 select element to handle changes and validate the selected option.
 		minor2.addEventListener('change', (e) => {
 			checkValidOptionChange(minor2, 'minor2', e.target.value);
@@ -244,6 +249,10 @@ async function updatePathwayOptions()
 	{
 		console.log(`Could not update pathway options`);
 	}
+}
+
+export function PathwayRefresh(){
+	updatePathwayOptions();
 }
 
 
