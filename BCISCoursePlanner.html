@@ -237,21 +237,11 @@ select:hover,button:hover{
 </table>
 </div>
 
-<div style="float:right;width:400px" >
-   <button style="float:right;"id="SaveFileButton">Save Schedule as File</button>
-  <button style="float:right;"onclick="getPDF()">Save as PDF</button><br><br>
-    <div>
-    <label style="width: 250px; margin-left: 120px;" for="file_uploads">Choose File to upload
-    <input
-      type="file"
-      id="file_upload"
-      name="file_uploads"
-      accept=".txt, .json"
-      multiple />
-  </div>
-  
-
+<div style="float:right;width:200px" >
+  <button style="float:right;"onclick="getPDF()">Save as PDF</button>
 </div>
+
+
    <!-- Form for selecting course pathway. -->
   <form id="pathwayForm">
     <div style="float: left;background-color: #dd6e46;"></div>
@@ -275,7 +265,7 @@ select:hover,button:hover{
   <!-- Handled in app.js -->
   <form id="pathwayOptionContainer">
   </form>
-<br> 
+
 
 
 
@@ -317,32 +307,6 @@ function getPDF(){
 		    pdf.save("Study Plan.pdf");
         });
 	};
-
-
-</script>
-
-<script type="module">
-import {importschedule} from "./filehandler.js";
-//this is for file input
-const inputElement = document.getElementById("file_upload");
-inputElement.addEventListener("change", handleFiles);
-
-
-function handleFiles() {
-  const fileList = this.files; /* now you can work with the file list */
-
-const reader = new FileReader();
-
-  reader.addEventListener("load", () => {
-    // this will then display a text file
-    const JsonParse = JSON.parse(reader.result);
-    importschedule(JsonParse);
-    
-  });
-
-  reader.readAsText(fileList[0]);
- 
-}
 </script>
 
 
