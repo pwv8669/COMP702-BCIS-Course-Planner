@@ -1,5 +1,5 @@
 // Importing the state object from the state.js file which contains the coursePlan array. This allows us to manipulate the course plan data from this file globally.
-import { state } from './javascript/state.js';
+import { state } from './state.js';
 
 
 

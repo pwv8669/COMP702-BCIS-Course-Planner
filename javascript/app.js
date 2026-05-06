@@ -1,10 +1,10 @@
 // Importing the state object from the state.js file which contains the coursePlan array. This allows us to manipulate the course plan data from this file globally.
-import { state, Pathways } from './javascript/state.js';
+import { state, Pathways } from './state.js';
 
 
 const courseMap = {};
 async function initCourseMap() {
-	const path = `json/courses.json`;
+	const path = '../json/courses.json';
 	// Get the corresponding json file and convert it to a javascript object.
 	const coursesData = await fetch(path);
 	const courses = await coursesData.json();
@@ -37,7 +37,7 @@ function placeCourse(row, col, code) {
 
 
 
-import { numCoursesValidator } from './javascript/numCoursesValidator.js';
+import { numCoursesValidator } from './numCoursesValidator.js';
 console.log(numCoursesValidator());
 
 
@@ -96,7 +96,7 @@ async function initPathwayOptions()
 	// Loop through the list of majors in the index.json file, and push the data into the majorsArray.
 	for (const major of index.majors)
 	{
-		const fileResource = await fetch(`json/pathways/options/${major}.json`);
+		const fileResource = await fetch(`./json/pathways/options/${major}.json`);
 		const fileData = await fileResource.json();
 		majorsArray.push(fileData);
 	}
@@ -104,7 +104,7 @@ async function initPathwayOptions()
 	// Loop through the list of minors in the index.json file, and push the data into the minorsArray.
 	for (const minor of index.minors)
 	{
-		const fileResource = await fetch(`json/pathways/options/${minor}.json`);
+		const fileResource = await fetch(`./json/pathways/options/${minor}.json`);
 		const fileData = await fileResource.json();
 		minorsArray.push(fileData);
 	}
