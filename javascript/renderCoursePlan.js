@@ -8,7 +8,7 @@ export async function renderCoursePlan(state) {
             const course = state.coursePlan[row][col];
             if (course) {
                 // If there is a course, update the cell's text content with the course code and name.
-                cell.textContent = `${course.Code}: ${course.Name}` || '';
+                cell.textContent = `${course.code}: ${course.name}` || '';
             } else {
                 // If there is no course code, clear the cell's text content.
                 cell.textContent = '';
