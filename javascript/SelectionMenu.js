@@ -5,7 +5,7 @@ import { state } from './state.js';
 
 async function SetupSelections()
 {
-	const coursesData = await fetch('./json/courses.json');//open file
+	const coursesData = await fetch('json/courses.json');//open file
 	const courses = await coursesData.json();
 	
 	let text = "<select id=\"courseselectionedit\" onchange=\"setInput()\">"//this will be the 
