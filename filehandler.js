@@ -69,6 +69,8 @@ alert(`Incompatible File!`);
 // Function for saving files
 function SaveFile(){
 	let text = "{\n";
+	let canexport = false;
+	// If theres no classes, this will stay false, and then alert the user that it cant be exported
 	text += "\"selectedPathway\":\""+ state.selectedPathway+"\",\n";
 	text += "\"selectedMajors\": [\""+ state.selectedMajors[0]+"\",\""+state.selectedMajors[1]+"\"],\n";
 	text += "\"selectedMinors\": [\""+ state.selectedMinors[0]+"\",\""+state.selectedMinors[1]+"\"],\n";
@@ -77,11 +79,11 @@ function SaveFile(){
 	for (let row = 0; row < state.coursePlan.length; row++) {
 		text += "[";
 		for (let col = 0; col < state.coursePlan[row].length; col++) {
-			if(state.coursePlan[row][col] != undefined){
-				console.log( state.coursePlan[row][col].Code);
-				const course = state.coursePlan[row][col].Code;
-				text += "\""+ course+"\"";
-
+			if(state.coursePlan[row][col] != undefined){//if class isnt null
+				console.log( state.coursePlan[row][col].Code);//log it
+				const course = state.coursePlan[row][col].Code;//add it
+				text += "\""+ course+"\"";//text here
+				canexport = true;//valid for export
 			}
 			else{
 				text += "\"undefined\"";
@@ -99,12 +101,17 @@ function SaveFile(){
 
 	console.log(text);
 
-    let blobdtMIME = new Blob([text], { type: "application/json" });
-    let url = URL.createObjectURL(blobdtMIME);
-    let anele = document.createElement("a");
-    anele.setAttribute("download", "Schedule");
-    anele.href = url;
-    anele.click();
-    console.log(blobdtMIME)
+	if(canexport == true){
+		let blobdtMIME = new Blob([text], { type: "application/json" });
+		let url = URL.createObjectURL(blobdtMIME);
+		let anele = document.createElement("a");
+		anele.setAttribute("download", "Schedule");
+		anele.href = url;
+		anele.click();
+		console.log(blobdtMIME)
+	}
+   else{
+	alert(`Schedule is Empty!`);
+   }
 }
 
