@@ -1,19 +1,11 @@
 // Importing the state object from the state.js file which contains the coursePlan array. This allows us to manipulate the course plan data from this file globally.
 import { state, Pathways } from './state.js';
+import { loadCourses } from "./courseObjectConverter.js";
 
-
-const courseMap = {};
-async function initCourseMap() {
-	const path = 'json/courses.json';
-	// Get the corresponding json file and convert it to a javascript object.
-	const coursesData = await fetch(path);
-	const courses = await coursesData.json();
-	Object.assign(courseMap, courses);
-}
-
+let courses = {};
 async function init() {
-	await initCourseMap();
-	console.log(courseMap);
+	courses = await loadCourses();
+	console.log(courses);
 
 	// Example usage of the placeCourse function.
 	placeCourse(0, 0, 'COMP500');
@@ -32,7 +24,7 @@ async function init() {
 
 // Function to place a course in the course plan at a specific row and column.
 function placeCourse(row, col, code) {
-	state.coursePlan[row][col] = courseMap[code];
+	state.coursePlan[row][col] = courses[code];
 }
 
 
