@@ -162,7 +162,7 @@ function createMinorDropdowns(state, Pathways)
 
 async function checkValidOptionChange(state, self, slot, target)
 {
-    applyOptionChange(slot, null);
+    await applyOptionChange(state, slot, null);
     // Always allow unselection.
     if (target == '---')
     {
@@ -189,7 +189,7 @@ async function checkValidOptionChange(state, self, slot, target)
         self.value = '---';
         return;
     }
-    applyOptionChange(state, slot, target);
+    await applyOptionChange(state, slot, target);
 
 }
 
