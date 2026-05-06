@@ -18,7 +18,7 @@ class Course {
 }
 
 // Enum for the node types in the prerequisite and corequisite trees. This is used to distinguish between AND, OR, and COURSE nodes when building the tree structure.
-const NodeType = {
+export const NodeType = {
     AND: "AND",
     OR: "OR",
     COURSE: "COURSE"
