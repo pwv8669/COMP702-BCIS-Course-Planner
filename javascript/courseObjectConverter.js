@@ -17,6 +17,13 @@ class Course {
     
 }
 
+// Enum for the node types in the prerequisite and corequisite trees. This is used to distinguish between AND, OR, and COURSE nodes when building the tree structure.
+const NodeType = {
+    AND: "AND",
+    OR: "OR",
+    COURSE: "COURSE"
+};
+
 // Constructor for the Node class, which will be used to create a tree structure for the prerequisites and corequisites of the courses. The type property will be either "AND", "OR", or "COURSE", and the value property will be the course code if the type is "COURSE". The children property will be an array of child nodes, which will represent the prerequisites or corequisites of the course.
 class Node {
     constructor(type, value = null) {
@@ -42,7 +49,7 @@ function parse(tokens) {
         while (tokens[index] === "OR") {
             index++;
             const right = parseAnd();
-            const parent = new Node("OR");
+            const parent = new Node(NodeType.OR);
             parent.children.push(node, right);
             node = parent;
         }
@@ -56,7 +63,7 @@ function parse(tokens) {
         while (tokens[index] === "AND") {
             index++;
             const right = parseTerm();
-            const parent = new Node("AND");
+            const parent = new Node(NodeType.AND);
             parent.children.push(node, right);
             node = parent;
         }
@@ -73,7 +80,7 @@ function parse(tokens) {
             return node;
         }
         // If the token is not a parenthesis, it must be a course code, so we create a COURSE node with the token as its value.
-        return new Node("COURSE", token);
+        return new Node(NodeType.COURSE, token);
     }
 
     // Start parsing from the top-level expression
