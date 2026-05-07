@@ -20,6 +20,7 @@ async function init() {
 	await renderCoursePlan(state);
 	console.log(state.coursePlan);
 }
+init();
 
 
 // Function to place a course in the course plan at a specific row and column.
@@ -31,7 +32,6 @@ export function placeCourse(row, col, code) {
 
 import { numCoursesValidator } from './numCoursesValidator.js';
 console.log(numCoursesValidator());
-
 
 import { renderCoursePlan } from './renderCoursePlan.js';
 await renderCoursePlan(state);
@@ -66,5 +66,6 @@ export function PathwayRefresh(){
 // This function fetches the available majors and minors from the json files and populates the majorsArray and minorsArray with the data. It then calls the updatePathwayOptions function to update the dropdown options in the HTML form based on the selected pathway.
 
 await initPathwayOptions(state, Pathways);
-init();
 
+import { validateCourseAppearances } from './duplicateCoursesValidator.js';
+validateCourseAppearances();
