@@ -1,12 +1,12 @@
 import { state } from './state.js';
 import { NodeType } from './courseObjectConverter.js';
 
-// Returns all codes for courses completed prior to a given semester. Semesters are treated seperatley from years, so semester 1 of year 2 would need to be passed as 3.
+// Returns all codes for courses completed prior to a given semester.
 function getCompletedCourses(currentSemester){
     // We create a set to keep track of all the previously completed courses' codes.
     const completed = new Set()
     // Iterates through the previously completed courses and adds them to the set.
-    for (let i = 0; i<currentSemester-1; i++){
+    for (let i = 0; i<currentSemester; i++){
         for (const course of state.coursePlan[i]){
             if (course){
                 completed.add(course.code);
@@ -22,6 +22,7 @@ function evaluatePrerequisiteTree(node, completedCourses) {
 
     switch (node.type){
         case NodeType.COURSE:
+            console.log("Checking:", node.value, "→", completedCourses.has(node.value));
             return completedCourses.has(node.value);
         case NodeType.AND:
             return node.children.every(child =>
@@ -46,7 +47,7 @@ export async function validatePrerequisites(){
             if (!currentCourse) continue;
 
             const valid = evaluatePrerequisiteTree(
-                currentCourse.validatePrerequisites,
+                currentCourse.prerequisites,
                 completedCourses
             )
 
