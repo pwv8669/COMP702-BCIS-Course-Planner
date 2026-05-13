@@ -38,6 +38,7 @@ function evaluatePrerequisiteTree(node, completedCourses) {
 }
 
 export async function validatePrerequisites(){
+    const errors = [];
     for (let semester = 0; semester < state.coursePlan.length; semester++){
         const completedCourses = getCompletedCourses(semester);
 
@@ -51,7 +52,14 @@ export async function validatePrerequisites(){
                 completedCourses
             )
 
-            console.log(`${currentCourse.code}: ${valid ? "VALID" : "INVALID"}`);
+            if (!valid){
+                errors.push({
+                    code: currentCourse.code,
+                    message: `The prerequisites for ${currentCourse.code} are not met by semester ${semester+1}.`
+                });
+            }
         }
     }
+    console.log(errors);
+    return errors;
 }
