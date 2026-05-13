@@ -6,7 +6,16 @@ let minorsArray = [];
 
 export async function updatePathwayOptions(pathway)
 {
-    state.selectedPathway = Pathways[pathway];
+    if (pathway){
+        // If the user changed the selected pathway in the dropdown, change it in state.
+        console.log(pathway);
+        state.selectedPathway = Pathways[pathway];
+    } else {
+        // If they didn't, no argument is passed, so the 'pathway' argument is undefined.
+        console.log("Set selected pathway to Double Majors by default.");
+        state.selectedPathway = Pathways.doubleMajors;
+    }
+    
     // Update the selected pathway enum.
 	console.log(`Selected pathway: ${state.selectedPathway}`);
 	// Clear the unused selected majors, minors, and electives based on the selected pathway.
@@ -25,8 +34,6 @@ export async function updatePathwayOptions(pathway)
     // Clear the container before adding new options.
     pathwayOptionContainer.innerHTML = ''; 
 
-    // Log the current pathway option for debugging purposes.
-    console.log(`Pathway Option: ${state.selectedPathway}`);
     // Log the current selected majors, minors, and electives for debugging purposes.
     console.log(`Majors Array: ${state.selectedMajors}`);
     console.log(`Minors Array: ${state.selectedMinors}`);

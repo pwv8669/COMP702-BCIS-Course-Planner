@@ -44,7 +44,7 @@ const pathwaySelect = document.getElementById('pathwaySelect');
 pathwaySelect.addEventListener('change', (e) => {
 	updatePathwayOptions(e.target.value);
 });
-state.selectedPathway = Pathways.doubleMajors; // Set default pathway to double majors.
+
 export function PathwayRefresh(){
 	updatePathwayOptions();
 }
