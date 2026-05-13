@@ -438,5 +438,35 @@
         "Semester2Offered": true,
         "Prerequisites": "MATH503",
         "Corequisites": ""
+    },
+    "COMP602": {
+        "Code": "COMP602",
+        "Name": "Software Development Practice",
+        "Points": "15",
+        "Level": "6",
+        "Semester1Offered": true,
+        "Semester2Offered": true,
+        "Prerequisites": "COMP603 or COMP610",
+        "Corequisites": ""
+    },
+    "ENSE707": {
+        "Code": "ENSE707",
+        "Name": "Software Quality Assurance",
+        "Points": "15",
+        "Level": "7",
+        "Semester1Offered": false,
+        "Semester2Offered": true,
+        "Prerequisites": "COMP602",
+        "Corequisites": ""
+    },
+    "COMP721": {
+        "Code": "COMP721",
+        "Name": "Web Development",
+        "Points": "15",
+        "Level": "7",
+        "Semester1Offered": true,
+        "Semester2Offered": false,
+        "Prerequisites": "COMP603",
+        "Corequisites": ""
     }
 }

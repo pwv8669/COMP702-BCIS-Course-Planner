@@ -107,7 +107,7 @@ input[type=checkbox]:checked + label:before {
   font-weight: bolder;
    outline:0px;
   align-content: center;
-  border:0px;
+  border:0px; 
   width:20%;
   background-color: #ffbe7e;
   font-size: 20px;
@@ -186,7 +186,7 @@ const courseobjectsstore = [];//this is the array that will hold the objects for
            document.getElementsByName("Semester1Offered")[0].checked = 0;//uncheck if false
         }
 
-        if(courseobjectsstore[x].Semester1Offered == true){//refer to above, this time for semester 2
+        if(courseobjectsstore[x].Semester2Offered == true){//refer to above, this time for semester 2
           document.getElementsByName("Semester2Offered")[0].checked = 1;
         }
         else{

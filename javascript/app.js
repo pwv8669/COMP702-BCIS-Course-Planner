@@ -2,9 +2,19 @@
 import { state, Pathways } from './state.js';
 import { loadCourses } from "./courseObjectConverter.js";
 import { validatePrerequisites } from './prerequisiteValidator.js';
+import { numCoursesValidator } from './numCoursesValidator.js';
+import { renderCoursePlan } from './renderCoursePlan.js';
+import { updatePathwayOptions } from './pathwayManager.js';
+import { initPathwayOptions } from './pathwayManager.js';
+import './templatesController.js';
 
 let courses = {};
 async function init() {
+
+    if (document.readyState === "loading") {
+        await new Promise(resolve => document.addEventListener("DOMContentLoaded", resolve));
+    }
+
 	courses = await loadCourses();
 	console.log(courses);
 
@@ -20,52 +30,33 @@ async function init() {
 	
 	validatePrerequisites();
 	await renderCoursePlan(state);
+	await initPathwayOptions(state, Pathways);
+
 	console.log(state.coursePlan);
+	console.log(numCoursesValidator());
 }
+init();
 
 
 // Function to place a course in the course plan at a specific row and column.
-function placeCourse(row, col, code) {
+export function placeCourse(row, col, code) {
 	state.coursePlan[row][col] = courses[code];
 }
-
-
-
-
-import { numCoursesValidator } from './numCoursesValidator.js';
-console.log(numCoursesValidator());
-
-
-import { renderCoursePlan } from './renderCoursePlan.js';
-await renderCoursePlan(state);
-
-import { updatePathwayOptions } from './pathwayManager.js';
-import { initPathwayOptions } from './pathwayManager.js';
 
 // alter state.selectedPathway to the pathway in the html form.
 const pathwaySelect = document.getElementById('pathwaySelect');
 pathwaySelect.addEventListener('change', (e) => {
-	// Update the selected pathway enum.
-	state.selectedPathway = Pathways[e.target.value];
-	console.log(`Selected pathway: ${state.selectedPathway}`);
-	// Clear the unused selected majors, minors, and electives based on the selected pathway.
-	if(state.selectedPathway == Pathways.doubleMajors){
-		state.selectedMinors = [null, null];
-		state.selectedElectives = [null, null, null, null];
-	} else if (state.selectedPathway == Pathways.doubleMinors){
-		state.selectedMajors[1] = null;
-		state.selectedElectives = [null, null, null, null];
-	} else if (state.selectedPathway == Pathways.electives){
-		state.selectedMajors[1] = null;
-		state.selectedMinors[1] = null;
-	}
-	updatePathwayOptions(state, Pathways);
+	updatePathwayOptions(e.target.value);
 });
-state.selectedPathway = Pathways.doubleMajors; // Set default pathway to double majors.
 
+export function PathwayRefresh(pathway){
+	updatePathwayOptions(pathway);
+}
 
 // This function fetches the available majors and minors from the json files and populates the majorsArray and minorsArray with the data. It then calls the updatePathwayOptions function to update the dropdown options in the HTML form based on the selected pathway.
 
-await initPathwayOptions(state, Pathways);
+await initPathwayOptions();
 init();
 
+import { validateCourseAppearances } from './duplicateCoursesValidator.js';
+validateCourseAppearances();
