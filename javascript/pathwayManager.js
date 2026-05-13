@@ -1,12 +1,10 @@
+import { state, Pathways } from './state.js';
+
 // Arrays to hold the majors and minors options fetched from the json files. These will be used to populate the dropdowns in the HTML form for selecting majors and minors.
 let majorsArray = [];
 let minorsArray = [];
 
-
-
-
-
-export async function updatePathwayOptions(state, Pathways)
+export async function updatePathwayOptions()
 {
     const pathwayOptionContainer = document.getElementById(`pathwayOptionContainer`);
     // Clear the container before adding new options.
@@ -29,7 +27,7 @@ export async function updatePathwayOptions(state, Pathways)
 }
 
 // This function fetches the available majors and minors from the json files and populates the majorsArray and minorsArray with the data. It then calls the updatePathwayOptions function to update the dropdown options in the HTML form based on the selected pathway.
-export async function initPathwayOptions(state, Pathways)
+export async function initPathwayOptions()
 {
 	// Fetch the options.json file which contains the list of available majors and minors.
 	const optionsResource = await fetch('./json/options.json');
@@ -50,11 +48,11 @@ export async function initPathwayOptions(state, Pathways)
 		}
 	}
     // After fetching the majors and minors data, call the updatePathwayOptions function to populate the dropdowns in the HTML form based on the selected pathway.
-    updatePathwayOptions(state, Pathways);
+    updatePathwayOptions();
 }
 
 // This function creates the major dropdowns in the HTML form based on the selected pathway. If the selected pathway is double majors, it creates two major dropdowns. If the selected pathway is double minors or electives, it creates one major dropdown. It also adds event listeners to the dropdowns to handle changes and validate the selected options.
-function createMajorDropdowns(state, Pathways)
+function createMajorDropdowns()
 {
     // Major 1 is always present regardless of the pathway, so we create it first.
     // Create the major 1 select element.
@@ -109,7 +107,7 @@ function createMajorDropdowns(state, Pathways)
 }
 
 // This function creates the minor dropdowns in the HTML form based on the selected pathway. If the selected pathway is double minors, it creates two minor dropdowns. If the selected pathway is electives, it creates one minor dropdown. It also adds event listeners to the dropdowns to handle changes and validate the selected options.
-function createMinorDropdowns(state, Pathways)
+function createMinorDropdowns()
 {
     // If the selected pathway is double minors or electives, we create the minor 1 select element.
     if (state.selectedPathway == Pathways.doubleMinors || state.selectedPathway == Pathways.electives)
@@ -167,9 +165,9 @@ function createMinorDropdowns(state, Pathways)
     }
 }
 
-async function checkValidOptionChange(state, self, slot, target)
+async function checkValidOptionChange(self, slot, target)
 {
-    await applyOptionChange(state, slot, null);
+    await applyOptionChange(slot, null);
     // Always allow unselection.
     if (target == '---')
     {
@@ -196,11 +194,11 @@ async function checkValidOptionChange(state, self, slot, target)
         self.value = '---';
         return;
     }
-    await applyOptionChange(state, slot, target);
+    await applyOptionChange(slot, target);
 
 }
 
-async function applyOptionChange(state, slot, target)
+async function applyOptionChange(slot, target)
 {
     switch (slot)
     {
