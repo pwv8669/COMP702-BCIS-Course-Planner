@@ -14,6 +14,8 @@ $decodedData = json_decode($rawData, true);
 $filename = basename($decodedData['filename']);
 $filename = preg_replace('/[^a-zA-Z0-9_\-]/', '', $filename) . '.json';
 
+unset($decodedData['filename']);
+
 $targetDir = __DIR__ . '/../json/templates/'; 
 $targetFile = $targetDir . $filename;
 

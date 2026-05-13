@@ -65,7 +65,7 @@ document.addEventListener('DOMContentLoaded', () => {
         selectedMajors: state.selectedMajors,
         selectedMinors: state.selectedMinors,
         selectedElectives: state.selectedElectives,
-        coursePlan: cleanedSchedule 
+        schedule: cleanedSchedule 
     };
 
     try {
@@ -153,7 +153,6 @@ document.addEventListener('DOMContentLoaded', () => {
         reader.readAsText(file);
     }
 
-    // Core layout import processing loop engine
     function executeScheduleImport(JsonInput) {
         try {
             const arraytoparse = JsonInput.schedule;
