@@ -42,20 +42,6 @@ import { initPathwayOptions } from './pathwayManager.js';
 // alter state.selectedPathway to the pathway in the html form.
 const pathwaySelect = document.getElementById('pathwaySelect');
 pathwaySelect.addEventListener('change', (e) => {
-	// Update the selected pathway enum.
-	state.selectedPathway = Pathways[e.target.value];
-	console.log(`Selected pathway: ${state.selectedPathway}`);
-	// Clear the unused selected majors, minors, and electives based on the selected pathway.
-	if(state.selectedPathway == Pathways.doubleMajors){
-		state.selectedMinors = [null, null];
-		state.selectedElectives = [null, null, null, null];
-	} else if (state.selectedPathway == Pathways.doubleMinors){
-		state.selectedMajors[1] = null;
-		state.selectedElectives = [null, null, null, null];
-	} else if (state.selectedPathway == Pathways.electives){
-		state.selectedMajors[1] = null;
-		state.selectedMinors[1] = null;
-	}
 	updatePathwayOptions();
 });
 state.selectedPathway = Pathways.doubleMajors; // Set default pathway to double majors.
