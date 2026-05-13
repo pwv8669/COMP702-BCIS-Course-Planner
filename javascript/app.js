@@ -1,9 +1,19 @@
 // Importing the state object from the state.js file which contains the coursePlan array. This allows us to manipulate the course plan data from this file globally.
 import { state, Pathways } from './state.js';
 import { loadCourses } from "./courseObjectConverter.js";
+import { numCoursesValidator } from './numCoursesValidator.js';
+import { renderCoursePlan } from './renderCoursePlan.js';
+import { updatePathwayOptions } from './pathwayManager.js';
+import { initPathwayOptions } from './pathwayManager.js';
+import './templatesController.js';
 
 let courses = {};
 async function init() {
+
+    if (document.readyState === "loading") {
+        await new Promise(resolve => document.addEventListener("DOMContentLoaded", resolve));
+    }
+
 	courses = await loadCourses();
 	console.log(courses);
 
@@ -18,7 +28,11 @@ async function init() {
 	placeCourse(5, 0, 'COMP703');
 	
 	await renderCoursePlan(state);
+	await initPathwayOptions(state, Pathways);
+
 	console.log(state.coursePlan);
+	setupEventListeners();
+	console.log(numCoursesValidator());
 }
 
 
@@ -28,13 +42,32 @@ export function placeCourse(row, col, code) {
 }
 
 
+function setupEventListeners() {
+    // alter state.selectedPathway to the pathway in the html form.
+    const pathwaySelect = document.getElementById('pathwaySelect');
 
-import { numCoursesValidator } from './numCoursesValidator.js';
-console.log(numCoursesValidator());
+    if (!pathwaySelect) {
+        console.warn("Element '#pathwaySelect' was not found on this page.");
+        return;
+    }
 
-
-import { renderCoursePlan } from './renderCoursePlan.js';
-await renderCoursePlan(state);
+    pathwaySelect.addEventListener('change', (e) => {
+        // Update the selected pathway enum.
+        state.selectedPathway = Pathways[e.target.value];
+        console.log(`Selected pathway: ${state.selectedPathway}`);
+        // Clear the unused selected majors, minors, and electives based on the selected pathway.
+        if(state.selectedPathway == Pathways.doubleMajors){
+            state.selectedMinors = [null, null];
+            state.selectedElectives = [null, null, null, null];
+        } else if (state.selectedPathway == Pathways.doubleMinors){
+            state.selectedMajors[1] = null;
+            state.selectedElectives = [null, null, null, null];
+        } else if (state.selectedPathway == Pathways.electives){
+            state.selectedMajors[1] = null;
+            state.selectedMinors[1] = null;
+        }
+        updatePathwayOptions(state, Pathways);
+    });}
 
 import { updatePathwayOptions } from './pathwayManager.js';
 import { initPathwayOptions } from './pathwayManager.js';

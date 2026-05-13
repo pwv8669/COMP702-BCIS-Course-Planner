@@ -5,6 +5,11 @@ export async function renderCoursePlan(state) {
             // Get the cell element by its id.
             const cell = document.getElementById(`cell-${row}-${col}`);
             // Get the course code from the course plan at the current row and column.
+            if (!cell) {
+                console.warn(`Cell element 'cell-${row}-${col}' not found in the HTML table.`);
+                continue; // Skip to the next cell safely
+            }
+
             const course = state.coursePlan[row][col];
             if (course) {
                 // If there is a course, update the cell's text content with the course code and name.
