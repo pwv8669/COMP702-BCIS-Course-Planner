@@ -45,8 +45,8 @@ pathwaySelect.addEventListener('change', (e) => {
 	updatePathwayOptions(e.target.value);
 });
 
-export function PathwayRefresh(){
-	updatePathwayOptions();
+export function PathwayRefresh(pathway){
+	updatePathwayOptions(pathway);
 }
 
 // This function fetches the available majors and minors from the json files and populates the majorsArray and minorsArray with the data. It then calls the updatePathwayOptions function to update the dropdown options in the HTML form based on the selected pathway.

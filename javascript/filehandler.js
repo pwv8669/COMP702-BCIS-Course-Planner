@@ -33,7 +33,8 @@ export function importschedule(JsonInput) {
 		state.selectedMajors[1] = null;
 		state.selectedMinors[1] = null;
 	}
-	PathwayRefresh();
+	PathwayRefresh(pathwaySelect.value);
+	//console.log(JsonInput);
 	state.selectedElectives = JsonInput.selectedElectives;
 	state.selectedMajors = JsonInput.selectedMajors;
 	state.selectedMinors = JsonInput.selectedMinors;
@@ -57,7 +58,7 @@ export function importschedule(JsonInput) {
 			minor2.value = state.selectedMinors[1];
 		}
 	}
-	PathwayRefresh();
+	PathwayRefresh(pathwaySelect.value);
 	renderCoursePlan(state);
 }
 catch{
