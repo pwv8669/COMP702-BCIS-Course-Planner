@@ -439,7 +439,6 @@
         "Prerequisites": "MATH503",
         "Corequisites": ""
     },
-
     "COMP602": {
         "Code": "COMP602",
         "Name": "Software Development Practice",

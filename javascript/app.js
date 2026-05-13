@@ -69,12 +69,21 @@ function setupEventListeners() {
         updatePathwayOptions(state, Pathways);
     });}
 
-state.selectedPathway = Pathways.doubleMajors; // Set default pathway to double majors.
-export function PathwayRefresh(){
-	updatePathwayOptions(state, Pathways);
+import { updatePathwayOptions } from './pathwayManager.js';
+import { initPathwayOptions } from './pathwayManager.js';
+
+// alter state.selectedPathway to the pathway in the html form.
+const pathwaySelect = document.getElementById('pathwaySelect');
+pathwaySelect.addEventListener('change', (e) => {
+	updatePathwayOptions(e.target.value);
+});
+
+export function PathwayRefresh(pathway){
+	updatePathwayOptions(pathway);
 }
 
 // This function fetches the available majors and minors from the json files and populates the majorsArray and minorsArray with the data. It then calls the updatePathwayOptions function to update the dropdown options in the HTML form based on the selected pathway.
 
+await initPathwayOptions();
 init();
 
