@@ -44,11 +44,6 @@ document.addEventListener('DOMContentLoaded', () => {
     // 3. STORAGE & FETCHING FUNCTION PIPELINES
 
     async function saveCurrentTemplateToServer(customName) {
-
-    console.log("1. Live coursePlan matrix:", state.coursePlan);
-    if(state.coursePlan && state.coursePlan[0]) {
-        console.log("2. Sample Course Object inside slot [0][0]:", state.coursePlan[0][0]);
-    }
     if (!customName) return alert("Please provide a valid file name.");
 
     const cleanedSchedule = (state.coursePlan || []).map(semesterArray => {
