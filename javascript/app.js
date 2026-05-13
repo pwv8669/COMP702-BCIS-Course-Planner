@@ -28,7 +28,7 @@ async function init() {
 	placeCourse(5, 0, 'COMP703');
 	
 	await renderCoursePlan(state);
-	await initPathwayOptions(state, Pathways);
+	//await initPathwayOptions(state, Pathways);
 
 	console.log(state.coursePlan);
 	console.log(numCoursesValidator());

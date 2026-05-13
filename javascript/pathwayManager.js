@@ -191,6 +191,7 @@ function createMinorDropdowns()
 
 async function checkValidOptionChange(self, slot, target)
 {
+    console.log(target)
     await applyOptionChange(slot, null);
     // Always allow unselection.
     if (target == '---')
@@ -224,18 +225,20 @@ async function checkValidOptionChange(self, slot, target)
 
 async function applyOptionChange(slot, target)
 {
+    console.log(slot);
+    console.log(target);
     switch (slot)
     {
-        case 'major1':
+        case major1:
             state.selectedMajors[0] = target;
             break;
-        case 'major2':
+        case major2:
             state.selectedMajors[1] = target;
             break;
-        case 'minor1':
+        case minor1:
             state.selectedMinors[0] = target;
             break;
-        case 'minor2':
+        case minor2:
             state.selectedMinors[1] = target;
             break;
         default:

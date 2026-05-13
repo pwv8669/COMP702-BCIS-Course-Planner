@@ -1,7 +1,8 @@
-import { state,selectedMajors,Pathways } from "./javascript/state";
-function ValidateChoices(){
-    if(selectedMajors[0] != undefined){
-        Validate(selectedMajors[0],false);
+import { state,Pathways } from "./state.js";
+export function ValidateChoices(){
+    console.log("test");
+    if(state.selectedMajors[0] != undefined){
+        Validate(state.selectedMajors[0],false);
     }
     else{
         console.log("First major is missing!");
@@ -9,8 +10,8 @@ function ValidateChoices(){
 
 
     if(state.selectedPathway == Pathways.doubleMajors){//if chosen pathway is double major
-        if(selectedMajors[1] != undefined){//check other major
-            Validate(selectedMajors[1],false);
+        if(state.selectedMajors[1] != undefined){//check other major
+            Validate(state.selectedMajors[1],false);
         }
         else{
             console.log("Second major is missing!");
@@ -19,8 +20,8 @@ function ValidateChoices(){
 
 
     else{//else just run it on the first minor since we know that at minimum the user will have picked 1 minor if not using double majors
-        if(selectedMinors[0] != undefined){
-            Validate(selectedMinors[0],true);//isminor is set to true here
+        if(state.selectedMinors[0] != undefined){
+            Validate(state.selectedMinors[0],true);//isminor is set to true here
         }
         else{
             console.log("First Minor is missing!");
@@ -28,8 +29,8 @@ function ValidateChoices(){
 
 
         if(state.selectedPathway == Pathways.doubleMinors){//if chosen pathway is double minor, check the second minor
-            if(selectedMinors[1] != undefined){//check other minor
-                Validate(selectedMinors[1],true);
+            if(state.selectedMinors[1] != undefined){//check other minor
+                Validate(state.selectedMinors[1],true);
             }
             else{
                 console.log("Second Minor is missing!");
@@ -43,7 +44,7 @@ function ValidateChoices(){
 
 
 
-function Validate(MajorCode,IsMinor){
+async function Validate(MajorCode,IsMinor){
     if(IsMinor == true){
         let coursenumber = 4;//set the required courses to be validated to be 4 instead of 8
     }
@@ -51,8 +52,8 @@ function Validate(MajorCode,IsMinor){
         let coursenumber = 8;//else just set to the default of searching for 8 courses
     } 
    
-    const indexResource = await fetch('./json/pathways/pathways.json');//get majors
-	const index = await indexResource.json();//turn into json file
+    const fetchedoptions = await fetch('json/options.json');//get majors
+	const index = await fetchedoptions.json();//turn into json file
     let majorcourses = index.find(obj => obj.Code === MajorCode); //get major from index
     let coursearray = majorcourses.Courses;//grab the course array
     for (let row = 0; row < state.coursePlan.length; row++) {//go through each row of state
@@ -75,7 +76,7 @@ function ValidateElectives(){//we dont need to take any inputs because its too s
             coursenumber -=1;//minus 1 missing course
         }
     }
-    if(coursenumber > 0){//if courses missing is greater than 0
+    if(coursenumber > 0 && majorcourses != undefined){//if courses missing is greater than 0
         alert(majorcourses.Name + "is missing " + coursenumber + "courses!");//output error 
     }
 }
