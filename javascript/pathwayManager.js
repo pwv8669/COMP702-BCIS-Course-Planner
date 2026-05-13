@@ -4,10 +4,10 @@ import { state, Pathways } from './state.js';
 let majorsArray = [];
 let minorsArray = [];
 
-export async function updatePathwayOptions()
+export async function updatePathwayOptions(pathway)
 {
+    state.selectedPathway = Pathways[pathway];
     // Update the selected pathway enum.
-	state.selectedPathway = Pathways[e.target.value];
 	console.log(`Selected pathway: ${state.selectedPathway}`);
 	// Clear the unused selected majors, minors, and electives based on the selected pathway.
 	if(state.selectedPathway == Pathways.doubleMajors){
@@ -20,11 +20,13 @@ export async function updatePathwayOptions()
 		state.selectedMajors[1] = null;
 		state.selectedMinors[1] = null;
 	}
-    
+
     const pathwayOptionContainer = document.getElementById(`pathwayOptionContainer`);
     // Clear the container before adding new options.
     pathwayOptionContainer.innerHTML = ''; 
 
+    // Log the current pathway option for debugging purposes.
+    console.log(`Pathway Option: ${state.selectedPathway}`);
     // Log the current selected majors, minors, and electives for debugging purposes.
     console.log(`Majors Array: ${state.selectedMajors}`);
     console.log(`Minors Array: ${state.selectedMinors}`);

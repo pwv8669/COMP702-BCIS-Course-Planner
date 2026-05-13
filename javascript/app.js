@@ -42,7 +42,7 @@ import { initPathwayOptions } from './pathwayManager.js';
 // alter state.selectedPathway to the pathway in the html form.
 const pathwaySelect = document.getElementById('pathwaySelect');
 pathwaySelect.addEventListener('change', (e) => {
-	updatePathwayOptions();
+	updatePathwayOptions(e.target.value);
 });
 state.selectedPathway = Pathways.doubleMajors; // Set default pathway to double majors.
 export function PathwayRefresh(){
