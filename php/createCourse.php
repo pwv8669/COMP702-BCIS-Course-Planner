@@ -1,6 +1,6 @@
 <?php
 if($_SERVER["REQUEST_METHOD"] == "POST"){
-    $filePath = "./json/courses.json";
+    $filePath = "../json/courses.json";
     
     // Load existing courses from the JSON file.
     if (file_exists($filePath)) {
