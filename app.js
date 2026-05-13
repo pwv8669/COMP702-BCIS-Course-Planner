@@ -89,21 +89,21 @@ const minorsArray = [];
 // This function fetches the available majors and minors from the json files and populates the majorsArray and minorsArray with the data. It then calls the updatePathwayOptions function to update the dropdown options in the HTML form based on the selected pathway.
 async function initPathwayOptions()
 {
-	// Fetch the pathways.json file which contains the list of available majors and minors.
-	const pathwaysResource = await fetch('./json/pathways/pathways.json');
-	const pathways = await pathwaysResource.json();
+	// Fetch the options.json file which contains the list of available majors and minors.
+	const optionsResource = await fetch('./json/pathways/options.json');
+	const options = await optionsResource.json();
 
-	// Loop through the list of in the pathways.json file, and push the data into the majorsArray and minorsArray.
-	for (const pathway of pathways.Pathways)
+	// Loop through the list of in the options.json file, and push the data into the majorsArray and minorsArray.
+	for (const option of options.Options)
 	{
-		if (pathway.AvailableAsMajor)
+		if (option.AvailableAsMajor)
 		{
-			majorsArray.push(pathway);
+			majorsArray.push(option);
 		}
 		
-		if (pathway.AvailableAsMinor)
+		if (option.AvailableAsMinor)
 		{
-			minorsArray.push(pathway);
+			minorsArray.push(option);
 		}
 	}
 
