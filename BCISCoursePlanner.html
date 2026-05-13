@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-<script type="module" src="app.js"></script>
+<script type="module" src="./javascript/app.js"></script>
 
 <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.3.3/jspdf.min.js"></script>
@@ -24,8 +24,26 @@ th {
   text-align: center;
 }
 
+.hidden-element {
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+tr{
+  scale:1;
+  transition: transform .9s;
+}
+
+tr:hover {
+ scale:(1.025);
+}
+
+td:hover .hidden-element {
+  opacity: 1;
+}
+
 td{
-     font-size: 85%;
+  height: 120px;
+     font-size: 80%;
 
   font-weight: bolder;
   text-transform: uppercase;
@@ -249,9 +267,9 @@ select:hover,button:hover{
       accept=".txt, .json"
       multiple />
   </div>
-  
-
 </div>
+
+
    <!-- Form for selecting course pathway. -->
   <form id="pathwayForm">
     <div style="float: left;background-color: #dd6e46;"></div>
@@ -275,7 +293,7 @@ select:hover,button:hover{
   <!-- Handled in app.js -->
   <form id="pathwayOptionContainer">
   </form>
-<br> 
+
 
 
 
@@ -317,12 +335,10 @@ function getPDF(){
 		    pdf.save("Study Plan.pdf");
         });
 	};
-
-
 </script>
 
 <script type="module">
-import {importschedule} from "./filehandler.js";
+import {importschedule} from "./javascript/filehandler.js";
 //this is for file input
 const inputElement = document.getElementById("file_upload");
 inputElement.addEventListener("change", handleFiles);
@@ -344,6 +360,5 @@ const reader = new FileReader();
  
 }
 </script>
-
 
 </html>

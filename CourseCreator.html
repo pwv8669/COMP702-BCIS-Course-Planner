@@ -91,9 +91,10 @@ input[type=checkbox]:checked + label:before {
 
 
 .submit:hover {
-  background-color: #fff8f5;
+
+
+     background-color: #fff8f5;
    transform: scale(1.1);
-   transition: transform .2s;
 }
 
 
@@ -106,13 +107,13 @@ input[type=checkbox]:checked + label:before {
   font-weight: bolder;
    outline:0px;
   align-content: center;
-  border:0px;
+  border:0px; 
   width:20%;
   background-color: #ffbe7e;
   font-size: 20px;
   padding:12px;
  transform: scale(1);
-   transition: transform .2s;
+   transition: background-color .2s, transform .2s;
 }
 
 
@@ -135,7 +136,7 @@ select {
 
 
 <head>
-  <script type="module" src="SelectionMenu.js">
+  <script type="module" src="./javascript/SelectionMenu.js">
   </script>
 </head>
 <title>BCIS Course Creator</title>
@@ -143,7 +144,7 @@ select {
   <div style="width: 45%; padding-bottom: 2px;padding-top: 0.5px;padding-left: 1%;">
   <h1>BCIS Course Creator</h1>
 
-  <form method="POST" action="php/createCourse.php">
+  <form method="POST" action="./php/createCourse.php">
     <input name="Code" type="text" placeholder="Course Code" required><br>
     <input name="Name" type="text" placeholder="Course Name" required><br>
     Course Points: <input name="Points" type="number" placeholder="Course Points" value="15" required><br>
@@ -185,7 +186,7 @@ const courseobjectsstore = [];//this is the array that will hold the objects for
            document.getElementsByName("Semester1Offered")[0].checked = 0;//uncheck if false
         }
 
-        if(courseobjectsstore[x].Semester1Offered == true){//refer to above, this time for semester 2
+        if(courseobjectsstore[x].Semester2Offered == true){//refer to above, this time for semester 2
           document.getElementsByName("Semester2Offered")[0].checked = 1;
         }
         else{
