@@ -33,6 +33,7 @@ async function init() {
 	console.log(state.coursePlan);
 	console.log(numCoursesValidator());
 }
+init();
 
 
 // Function to place a course in the course plan at a specific row and column.
@@ -55,3 +56,5 @@ export function PathwayRefresh(pathway){
 await initPathwayOptions();
 init();
 
+import { validateCourseAppearances } from './duplicateCoursesValidator.js';
+validateCourseAppearances();
