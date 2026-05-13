@@ -21,12 +21,17 @@ function getCourseCounts(){
 }
 
 export function validateCourseAppearances() {
+    const errors = [];
     const appearances = getCourseCounts();
     appearances.forEach((count, code) => {
         if (count > 1) {
-            console.warn(`${code} appears ${count} times (INVALID)`);
-        } else {
-            console.log(`${code}: OK`);
+            errors.push({
+                code: code,
+                appearances: count,
+                message: `${code} appears ${count} times. You can only take each class once.`
+            });
         }
     });
+    console.log(errors);
+    return errors;
 }
