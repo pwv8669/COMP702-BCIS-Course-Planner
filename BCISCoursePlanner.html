@@ -251,17 +251,23 @@ select:hover,button:hover{
 </div>
 
 <div style="float:right;">
+    <!-- Main interface button to view saved/pre-made plans -->
     <button id="openTemplates">Pre-made study plans</button>
+    
+    <!-- Main interface button to save current workspace changes -->
+    <button id="saveTemplateBtn" type="button">Save Current Plan</button>
      
     <dialog id="templates">
-        <form action="/upload" method="POST" enctype="multipart/form-data">
-            <input type="file" name="jsonFile" accept=".json">
-            <button type="submit">Upload</button>
+       
+        <form id="uploadTemplateForm">
+            <input type="file" id="localJsonFileInput" accept=".json">
+            <button type="submit" id="uploadSubmitBtn">Load Local File</button>
             <button type="button" id="closeTemplates">Close</button>
-            <div id="templateBtnContainer"></div>
         </form>
         
+        <div id="templateBtnContainer" style="margin-top: 15px;"></div>
     </dialog>
+</div>
     
 
 </div>

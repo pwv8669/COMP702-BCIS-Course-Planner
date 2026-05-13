@@ -5,8 +5,7 @@ import { numCoursesValidator } from './numCoursesValidator.js';
 import { renderCoursePlan } from './renderCoursePlan.js';
 import { updatePathwayOptions } from './pathwayManager.js';
 import { initPathwayOptions } from './pathwayManager.js';
-import './templatesPanel.js';
-import './templateUpload.js';
+import './templatesController.js';
 
 let courses = {};
 async function init() {

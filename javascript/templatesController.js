@@ -1,26 +1,91 @@
-
 import { placeCourse, PathwayRefresh } from './app.js';
 import { renderCoursePlan } from './renderCoursePlan.js';
 import { state, Pathways } from './state.js';
 
 document.addEventListener('DOMContentLoaded', () => {
+    // 1. UI ELEMENT SELECTION TARGETS
     const panel = document.getElementById('templates');
     const openTemplates = document.getElementById('openTemplates');
     const closeTemplates = document.getElementById('closeTemplates');
     const btnContainer = document.getElementById('templateBtnContainer');
+    
+    const templateInput = document.getElementById('localJsonFileInput');
+    const uploadForm = document.getElementById('uploadTemplateForm');
+    const saveBtn = document.getElementById('saveTemplateBtn'); 
 
-    if (!panel || !openTemplates || !closeTemplates) {
-        return;
+    // 2. UI HOOK INTEGRATIONS & EVENT LISTENERS
+    if (openTemplates && panel) {
+        openTemplates.addEventListener('click', () => {
+            panel.showModal();
+            fetchServerTemplates(); 
+        });
     }
 
-    openTemplates.addEventListener('click', () => {
-        panel.showModal();
-        fetchServerTemplates(); 
+    if (closeTemplates && panel) {
+        closeTemplates.addEventListener('click', () => panel.close());
+    }
+
+    if (uploadForm) {
+        uploadForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            handleTemplateUpload();
+        });
+    }
+
+    if (saveBtn) {
+        saveBtn.addEventListener('click', () => {
+            const fileNameInput = prompt("Enter a unique filename for your study plan layout:");
+            if (fileNameInput) {
+                saveCurrentTemplateToServer(fileNameInput);
+            }
+        });
+    }
+
+    // 3. STORAGE & FETCHING FUNCTION PIPELINES
+
+    async function saveCurrentTemplateToServer(customName) {
+
+    console.log("1. Live coursePlan matrix:", state.coursePlan);
+    if(state.coursePlan && state.coursePlan[0]) {
+        console.log("2. Sample Course Object inside slot [0][0]:", state.coursePlan[0][0]);
+    }
+    if (!customName) return alert("Please provide a valid file name.");
+
+    const cleanedSchedule = (state.coursePlan || []).map(semesterArray => {
+        return semesterArray.map(course => {
+            if (!course) return null;
+            
+            return typeof course === 'object' ? (course.code) : course;
+        });
     });
 
-    closeTemplates.addEventListener('click', () => {
-        panel.close();
-    });
+    const payload = {
+        filename: customName,
+        selectedPathway: state.selectedPathway,
+        selectedMajors: state.selectedMajors,
+        selectedMinors: state.selectedMinors,
+        selectedElectives: state.selectedElectives,
+        coursePlan: cleanedSchedule 
+    };
+
+    try {
+        const response = await fetch('./php/save_template.php', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        });
+
+        const result = await response.json();
+        if (!response.ok) throw new Error(result.error || "Server storage failed.");
+
+        alert(result.message);
+        if (panel && panel.open) fetchServerTemplates(); 
+    } catch (error) {
+        console.error("Save Operation Error:", error);
+        alert(`Failed to save: ${error.message}`);
+    }
+}
+
 
     async function fetchServerTemplates() {
         if (!btnContainer) return;
@@ -50,26 +115,45 @@ document.addEventListener('DOMContentLoaded', () => {
                         if (!fileResponse.ok) throw new Error("Could not load template file.");
                         
                         const templateData = await fileResponse.json();
-                        console.log(`Template loaded: ${file.display_name}`, templateData);
-                        
                         executeScheduleImport(templateData);
-
                         panel.close(); 
                     } catch (err) {
                         console.error(`Failed to process template file: ${file.filepath}`, err);
                         alert("Incompatible File Structure!");
                     }
                 });
-
                 btnContainer.appendChild(btn);
             });
-
         } catch (error) {
             console.error("Error communicating with template scanner:", error);
             btnContainer.innerHTML = '<p style="color:red; font-size:14px;">Error connecting to templates folder.</p>';
         }
     }
 
+    // Reads an uploaded offline file directly from the user device storage
+    function handleTemplateUpload() {
+        if (!templateInput || templateInput.files.length === 0) {
+            alert("Please select a valid JSON template file first.");
+            return;
+        }
+
+        const file = templateInput.files[0];
+        const reader = new FileReader();
+
+        reader.onload = function (event) {
+            try {
+                const templateData = JSON.parse(event.target.result);
+                executeScheduleImport(templateData);
+                if (panel) panel.close();
+            } catch (error) {
+                console.error("Malformed JSON file layout:", error);
+                alert("Error: The uploaded file is not a valid JSON template.");
+            }
+        };
+        reader.readAsText(file);
+    }
+
+    // Core layout import processing loop engine
     function executeScheduleImport(JsonInput) {
         try {
             const arraytoparse = JsonInput.schedule;
