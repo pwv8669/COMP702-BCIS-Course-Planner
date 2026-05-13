@@ -1,12 +1,11 @@
 <!DOCTYPE html>
 <html>
 <head>
-<script type="module" src="./javascript/app.js"></script>
+<script type="module" src="./javascript/app.js" defer></script>
 
 <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.3.3/jspdf.min.js"></script>
 <script src="https://html2canvas.hertzen.com/dist/html2canvas.js"></script>
-
 
 <style>
   /* Styling here */
@@ -24,8 +23,26 @@ th {
   text-align: center;
 }
 
+.hidden-element {
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+tr{
+  scale:1;
+  transition: transform .9s;
+}
+
+tr:hover {
+ scale:(1.025);
+}
+
+td:hover .hidden-element {
+  opacity: 1;
+}
+
 td{
-     font-size: 85%;
+  height: 120px;
+     font-size: 80%;
 
   font-weight: bolder;
   text-transform: uppercase;
@@ -251,6 +268,28 @@ select:hover,button:hover{
   </div>
 </div>
 
+<div style="float:right;">
+    <!-- Main interface button to view saved/pre-made plans -->
+    <button id="openTemplates">Pre-made study plans</button>
+    
+    <!-- Main interface button to save current workspace changes -->
+    <button id="saveTemplateBtn" type="button">Save Current Plan</button>
+     
+    <dialog id="templates">
+       
+        <form id="uploadTemplateForm">
+            <input type="file" id="localJsonFileInput" accept=".json">
+            <button type="submit" id="uploadSubmitBtn">Load Local File</button>
+            <button type="button" id="closeTemplates">Close</button>
+        </form>
+        
+        <div id="templateBtnContainer" style="margin-top: 15px;"></div>
+    </dialog>
+</div>
+    
+
+</div>
+
 
    <!-- Form for selecting course pathway. -->
   <form id="pathwayForm">
@@ -280,7 +319,7 @@ select:hover,button:hover{
 
 
 </body>
-<script>
+<script defer>
 
 
 // JSPDF
@@ -319,7 +358,7 @@ function getPDF(){
 	};
 </script>
 
-<script type="module">
+<script type="module" defer>
 import {importschedule} from "./javascript/filehandler.js";
 //this is for file input
 const inputElement = document.getElementById("file_upload");

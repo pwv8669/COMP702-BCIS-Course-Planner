@@ -1,0 +1,12 @@
+{
+"selectedPathway":"doubleMajors",
+"selectedMajors": ["ComputerScience","SoftwareDevelopment"],
+"selectedMinors": ["null","null"],
+"selectedElectives": ["ELEC500","ELEC600","null","null"],
+"schedule": [["COMP500","COMP501","COMP507","COMP508"],
+["DIGD507","MATH503","COMP503","ELEC500"],
+["COMP610","COMP613","COMP603","COMP604"],
+["COMP611","COMP612","COMP602","ENSE707"],
+["COMP702","COMP711","COMP713","COMP721"],
+["COMP703","COMP712","COMP719","ELEC600"]]
+}

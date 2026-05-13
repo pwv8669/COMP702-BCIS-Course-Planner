@@ -1,0 +1,12 @@
+{
+"selectedPathway":"doubleMajors",
+"selectedMajors": ["DataScience","DigitalServices"],
+"selectedMinors": ["null","null"],
+"selectedElectives": ["null","null","null","null"],
+"schedule": [["COMP500","COMP501","COMP507","COMP508"],
+["DIGD507","MATH503","COMP517","INFS502"],
+["COMP615","COMP616","INFS603","INFS604"],
+["COMP610","STAT603","COMP607","INFS605"],
+["COMP702","COMP701","COMP717","COMP718"],
+["COMP703","COMP723","COMP726","COMP728"]]
+}
