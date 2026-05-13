@@ -1,0 +1,12 @@
+{
+"selectedPathway":"doubleMajors",
+"selectedMajors": ["NetworksAndCybersecurity","SoftwareDevelopment"],
+"selectedMinors": ["null","null"],
+"selectedElectives": ["null","null","null","null"],
+"schedule": [["COMP500","COMP501","COMP507","COMP508"],
+["DIGD507","MATH503","COMP504","COMP503"],
+["COMP604","ENEL611","COMP603","COMP610"],
+["COMP607","COMP609","COMP602","COMP611"],
+["COMP702","COMP716","COMP721","COMP719"],
+["COMP703","COMP714","COMP715","ENSE707"]]
+}

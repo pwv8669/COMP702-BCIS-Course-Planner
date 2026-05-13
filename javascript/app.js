@@ -1,9 +1,19 @@
 // Importing the state object from the state.js file which contains the coursePlan array. This allows us to manipulate the course plan data from this file globally.
 import { state, Pathways } from './state.js';
 import { loadCourses } from "./courseObjectConverter.js";
+import { numCoursesValidator } from './numCoursesValidator.js';
+import { renderCoursePlan } from './renderCoursePlan.js';
+import { updatePathwayOptions } from './pathwayManager.js';
+import { initPathwayOptions } from './pathwayManager.js';
+import './templatesController.js';
 
 let courses = {};
 async function init() {
+
+    if (document.readyState === "loading") {
+        await new Promise(resolve => document.addEventListener("DOMContentLoaded", resolve));
+    }
+
 	courses = await loadCourses();
 	console.log(courses);
 
@@ -18,7 +28,10 @@ async function init() {
 	placeCourse(5, 0, 'COMP703');
 	
 	await renderCoursePlan(state);
+	await initPathwayOptions(state, Pathways);
+
 	console.log(state.coursePlan);
+	console.log(numCoursesValidator());
 }
 
 
@@ -26,18 +39,6 @@ async function init() {
 export function placeCourse(row, col, code) {
 	state.coursePlan[row][col] = courses[code];
 }
-
-
-
-import { numCoursesValidator } from './numCoursesValidator.js';
-console.log(numCoursesValidator());
-
-
-import { renderCoursePlan } from './renderCoursePlan.js';
-await renderCoursePlan(state);
-
-import { updatePathwayOptions } from './pathwayManager.js';
-import { initPathwayOptions } from './pathwayManager.js';
 
 // alter state.selectedPathway to the pathway in the html form.
 const pathwaySelect = document.getElementById('pathwaySelect');
