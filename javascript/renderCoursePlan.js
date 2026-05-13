@@ -18,7 +18,7 @@ export async function renderCoursePlan(state) {
                         for(let and = 0; and < course.prerequisites.children.length;and++){
                             if(course.prerequisites.children[and].value != null){
                                 innertext += course.prerequisites.children[and].value;
-                                
+                                innertext += " ";
                             }
                             if(and % 2 == 0){
                                 innertext += '<br>';
