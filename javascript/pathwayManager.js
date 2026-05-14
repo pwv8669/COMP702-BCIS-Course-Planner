@@ -1,3 +1,4 @@
+import { ValidateChoices } from './coursecounter.js';
 import { state, Pathways } from './state.js';
 
 // Arrays to hold the majors and minors options fetched from the json files. These will be used to populate the dropdowns in the HTML form for selecting majors and minors.
@@ -87,7 +88,7 @@ function createMajorDropdowns()
 	major1Label.id = 'major1label';
     // Add an event listener to the major 1 select element to handle changes and validate the selected option.
     major1.addEventListener('change', (e) => {
-        checkValidOptionChange(state, major1, 'major1', e.target.value);
+        checkValidOptionChange(major1, 'major1', e.target.value);
     });
     pathwayOptionContainer.appendChild(major1Label);
     major1Label.appendChild(major1);
@@ -112,7 +113,7 @@ function createMajorDropdowns()
 		major2Label.id = 'major2label';
         // Add an event listener to the major 2 select element to handle changes and validate the selected option.
         major2.addEventListener('change', (e) => {
-            checkValidOptionChange(state, major2, 'major2', e.target.value);
+            checkValidOptionChange(major2, 'major2', e.target.value);
         });
         // Append the major 2 select element to the pathway option container in the HTML form.
         pathwayOptionContainer.appendChild(major2Label);
@@ -144,7 +145,7 @@ function createMinorDropdowns()
 		minor1Label.id = 'minor1label';
         // Add an event listener to the minor 1 select element to handle changes and validate the selected option.
         minor1.addEventListener('change', (e) => {
-            checkValidOptionChange(state, minor1, 'minor1', e.target.value);
+            checkValidOptionChange(minor1, 'minor1', e.target.value);
         });
         // Append the minor 1 select element to the pathway option container in the HTML form.
         pathwayOptionContainer.appendChild(minor1Label);
@@ -171,7 +172,7 @@ function createMinorDropdowns()
 		 minor2Label.id = 'minor2label';
         // Add an event listener to the minor 2 select element to handle changes and validate the selected option.
         minor2.addEventListener('change', (e) => {
-            checkValidOptionChange(state, minor2, 'minor2', e.target.value);
+            checkValidOptionChange(minor2, 'minor2', e.target.value);
         });
         // Append the minor 2 select element to the pathway option container in the HTML form.
         pathwayOptionContainer.appendChild(minor2Label);
@@ -191,6 +192,7 @@ function createMinorDropdowns()
 
 async function checkValidOptionChange(self, slot, target)
 {
+    console.log(target)
     await applyOptionChange(slot, null);
     // Always allow unselection.
     if (target == '---')
@@ -219,11 +221,15 @@ async function checkValidOptionChange(self, slot, target)
         return;
     }
     await applyOptionChange(slot, target);
-
+    if(target != '---'){
+        ValidateChoices();
+    }
 }
 
 async function applyOptionChange(slot, target)
 {
+    console.log(slot);
+    console.log(target);
     switch (slot)
     {
         case 'major1':
@@ -241,7 +247,7 @@ async function applyOptionChange(slot, target)
         default:
             console.log('Invalid slot type');
             break;
-    }
+    }   
     console.log('Selected Majors: ' + state.selectedMajors);
     console.log('Selected Minors: ' + state.selectedMinors);
 }
