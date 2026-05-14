@@ -14,8 +14,12 @@ export function validateStudyPlan(){
 
     const duplicateErrors = validateCourseAppearances();
     for (let i = 0; i<duplicateErrors.length; i++){
-        duplicateErrors[i]
         errors.push(duplicateErrors[i]);
+    }
+
+    const planErrors = validateNumberOfCourses();
+    for (let i = 0; i<planErrors.length; i++){
+        errors.push(planErrors[i]);
     }
     console.log(errors);
 }
