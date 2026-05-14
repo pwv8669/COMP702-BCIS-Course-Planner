@@ -1,7 +1,7 @@
 import { state } from './state.js';
 
 
-async function numCoursesValidator()
+async function validateNumberOfCourses()
 {
 	let coursePlan = state.coursePlan;
 	let courses = 0;
@@ -45,4 +45,4 @@ async function numCoursesValidator()
 	}
 }
 
-export { numCoursesValidator };
+export { validateNumberOfCourses };

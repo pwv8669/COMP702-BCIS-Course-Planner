@@ -1,0 +1,21 @@
+// Import sub-validators
+import { validateNumberOfCourses } from "./numCoursesValidator.js";
+import { validateCourseAppearances } from "./duplicateCoursesValidator.js";
+import { validatePrerequisites } from "./prerequisiteValidator.js";
+
+// Returns an array of error objects.
+export function validateStudyPlan(){
+    const errors = [];
+    
+    const prereqErrors = validatePrerequisites();
+    for (let i = 0; i<prereqErrors.length; i++){
+        errors.push(prereqErrors[i]);
+    }
+
+    const duplicateErrors = validateCourseAppearances();
+    for (let i = 0; i<duplicateErrors.length; i++){
+        duplicateErrors[i]
+        errors.push(duplicateErrors[i]);
+    }
+    console.log(errors);
+}

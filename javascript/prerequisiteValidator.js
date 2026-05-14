@@ -1,5 +1,6 @@
 import { state } from './state.js';
 import { NodeType } from './courseObjectConverter.js';
+import { PlanError } from './objects/planError.js';
 
 // Returns all codes for courses completed prior to a given semester.
 function getCompletedCourses(currentSemester){
@@ -22,7 +23,6 @@ function evaluatePrerequisiteTree(node, completedCourses) {
 
     switch (node.type){
         case NodeType.COURSE:
-            console.log("Checking:", node.value, "→", completedCourses.has(node.value));
             return completedCourses.has(node.value);
         case NodeType.AND:
             return node.children.every(child =>
@@ -37,7 +37,7 @@ function evaluatePrerequisiteTree(node, completedCourses) {
     return false;
 }
 
-export async function validatePrerequisites(){
+export function validatePrerequisites(){
     const errors = [];
     for (let semester = 0; semester < state.coursePlan.length; semester++){
         const completedCourses = getCompletedCourses(semester);
@@ -53,13 +53,12 @@ export async function validatePrerequisites(){
             )
 
             if (!valid){
-                errors.push({
-                    code: currentCourse.code,
-                    message: `The prerequisites for ${currentCourse.code} are not met by semester ${semester+1}.`
-                });
+                let message = `The prerequisites for ${currentCourse.code} are not met by semester ${semester+1}.`; 
+                let errorMsg = new PlanError(currentCourse.code, message);
+                errorMsg.positions[semester][slot] = true;
+                errors.push(errorMsg);
             }
         }
     }
-    console.log(errors);
     return errors;
 }
