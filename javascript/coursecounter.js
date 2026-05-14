@@ -54,29 +54,30 @@ async function Validate(MajorCode,IsMinor){
     const fetchedoptions = await fetch('json/options.json');//get majors
 	const index = await fetchedoptions.json();//turn into json file
     let majorcourses = index.Options.find(({Code}) => Code === MajorCode); //get major from index
-    let coursearray = majorcourses.Courses;//grab the course array
-    let coursesnotfound = coursearray;//make a copy of courses, all unfound courses will sit here
-                      
+     let coursearray = majorcourses.Courses;//grab the course array
 
-    for (let row = 0; row < state.coursePlan.length; row++) {//go through each row of state
-        //for each row
-        //console.log(state.coursePlan[row]);
-		for (let course = 0; course < coursearray.length; course++) {//go through all courses in the major's course array 
-            try{
-                if(state.coursePlan[row].some(Course => Course.code === coursearray[course])){//check if given row contains this course in a major
-                    let i = coursesnotfound.findIndex(Code => Code === coursearray[course]);//get index
-                    coursesnotfound.splice(i,1);//remove from missing courses, this is just so we have a point of reference if needed in future
-                    coursenumber -= 1;//if it does include it, reduce number of missing courses by 1
-                    break;
-                }
-            }
-            catch{
+    
+    let statecopy = state.coursePlan;
+    for(let row = 0; row < 6;row++){
+        statecopy[row] = state.coursePlan[row].filter((entry) => entry != undefined);
+    }
 
+    let coursesnotfound = coursearray.slice();//make a copy of courses, all unfound courses will sit here
+    console.log(coursearray);
+
+    for (let course = 0; course < coursearray.length; course++) {//go through all courses in the major's course array 
+        for(let row = 0; row < 6;row++){
+            if(statecopy[row].find(Course => Course.code === coursearray[course])){//check if given row contains this course in a major
+                let i = coursesnotfound.findIndex(Code => Code === coursesnotfound[course]);//get index
+                coursesnotfound.splice(i,1);//remove from missing courses, this is just so we have a point of reference if needed in future
+                coursenumber -= 1;//if it does include it, reduce number of missing courses by 1
             }
-		}
-	}
+        }
+       
+    }
     if(coursenumber > 0){
-        alert(majorcourses.Name + "is missing " + coursenumber + "courses!");//output error 
+        alert(majorcourses.Name + "is missing " + coursenumber + " courses!");//output error 
+        console.log("Available classes array: "+coursesnotfound);
     }
 }
 
@@ -88,6 +89,7 @@ function ValidateElectives(){//we dont need to take any inputs because its too s
         }
     }
     if(coursenumber > 0 && majorcourses != undefined){//if courses missing is greater than 0
-        alert(majorcourses.Name + "is missing " + coursenumber + "courses!");//output error 
+        alert(majorcourses.Name + "is missing " + coursenumber + "electives!");//output error 
+        
     }
 }
