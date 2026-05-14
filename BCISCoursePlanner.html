@@ -358,14 +358,6 @@ function getPDF(){
 	};
 </script>
 
-
-<script type="module">
-  import {ValidateChoices} from "./javascript/coursecounter.js";
-  //this will check if theres any missing courses from the course planner
-  const selectmenu = document.getElementById("pathwaySelect");
-  await selectmenu.addEventListener("change",ValidateChoices());
-</script>
-
 <script type="module" defer>
 import {importschedule} from "./javascript/filehandler.js";
 //this is for file input

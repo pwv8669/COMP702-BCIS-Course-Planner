@@ -1,6 +1,5 @@
 import { state,Pathways } from "./state.js";
 export function ValidateChoices(){
-    console.log("test");
     if(state.selectedMajors[0] != undefined){
         Validate(state.selectedMajors[0],false);
     }
@@ -45,22 +44,34 @@ export function ValidateChoices(){
 
 
 async function Validate(MajorCode,IsMinor){
+    let coursenumber = 0;
     if(IsMinor == true){
-        let coursenumber = 4;//set the required courses to be validated to be 4 instead of 8
+        coursenumber = 4;//set the required courses to be validated to be 4 instead of 8
     }
     else{
-        let coursenumber = 8;//else just set to the default of searching for 8 courses
+        coursenumber = 8;//else just set to the default of searching for 8 courses
     } 
-   
     const fetchedoptions = await fetch('json/options.json');//get majors
 	const index = await fetchedoptions.json();//turn into json file
-    let majorcourses = index.find(obj => obj.Code === MajorCode); //get major from index
+    let majorcourses = index.Options.find(({Code}) => Code === MajorCode); //get major from index
     let coursearray = majorcourses.Courses;//grab the course array
+    let coursesnotfound = coursearray;//make a copy of courses, all unfound courses will sit here
+                      
+
     for (let row = 0; row < state.coursePlan.length; row++) {//go through each row of state
         //for each row
+        //console.log(state.coursePlan[row]);
 		for (let course = 0; course < coursearray.length; course++) {//go through all courses in the major's course array 
-			if(state.coursePlan[row].includes(majorcourses[course])){//check if given row contains this course in a major
-                coursenumber -= 1;//if it does include it, reduce number of missing courses by 1
+            try{
+                if(state.coursePlan[row].some(Course => Course.code === coursearray[course])){//check if given row contains this course in a major
+                    let i = coursesnotfound.findIndex(Code => Code === coursearray[course]);//get index
+                    coursesnotfound.splice(i,1);//remove from missing courses, this is just so we have a point of reference if needed in future
+                    coursenumber -= 1;//if it does include it, reduce number of missing courses by 1
+                    break;
+                }
+            }
+            catch{
+
             }
 		}
 	}
