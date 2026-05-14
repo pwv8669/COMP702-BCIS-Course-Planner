@@ -21,5 +21,5 @@ export function validateStudyPlan(){
     for (let i = 0; i<planErrors.length; i++){
         errors.push(planErrors[i]);
     }
-    console.log(errors);
+    return errors;
 }
