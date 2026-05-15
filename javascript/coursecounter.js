@@ -1,47 +1,59 @@
 import { state,Pathways } from "./state.js";
-export function ValidateChoices(){
+import { PlanError } from './objects/planError.js';
+var errors = [];
+export async function ValidateChoices(){
     if(state.selectedMajors[0] != undefined){
-        Validate(state.selectedMajors[0],false);
+        await Validate(state.selectedMajors[0],false);
     }
     else{
-        console.log("First major is missing!");
+        let message = ("First major is missing!");//output error 
+        let errorMsg = new PlanError(null, message);
+        errors.push(errorMsg);
     }
 
 
     if(state.selectedPathway == Pathways.doubleMajors){//if chosen pathway is double major
         if(state.selectedMajors[1] != undefined){//check other major
-            Validate(state.selectedMajors[1],false);
+            await Validate(state.selectedMajors[1],false);
         }
         else{
-            console.log("Second major is missing!");
+            let message = ("Second major is missing!");//output error 
+            let errorMsg = new PlanError(null, message);
+            errors.push(errorMsg);
         }
     }
 
 
     else{//else just run it on the first minor since we know that at minimum the user will have picked 1 minor if not using double majors
         if(state.selectedMinors[0] != undefined){
-            Validate(state.selectedMinors[0],true);//isminor is set to true here
+            await Validate(state.selectedMinors[0],true);//isminor is set to true here
         }
         else{
-            console.log("First Minor is missing!");
+            let message = ("First Minor is missing!");//output error 
+            let errorMsg = new PlanError(null, message);
+            errors.push(errorMsg);
         }
 
 
         if(state.selectedPathway == Pathways.doubleMinors){//if chosen pathway is double minor, check the second minor
             if(state.selectedMinors[1] != undefined){//check other minor
-                Validate(state.selectedMinors[1],true);
+                await Validate(state.selectedMinors[1],true);
             }
             else{
-                console.log("Second Minor is missing!");
+                let message = ("Second Minor is missing!");//output error 
+                let errorMsg = new PlanError(null, message);
+                errors.push(errorMsg);
             }
         }
         else{//its electives instead of minors
              ValidateElectives();
         }
     }
+    let errorstoreturn = errors.slice();//make copy of errors array, as we'll need to reset the original global array
+    
+    errors = [];//reset original global array
+    return errorstoreturn;//return copy containing errors from this call
 }
-
-
 
 async function Validate(MajorCode,IsMinor){
     let coursenumber = 0;
@@ -63,7 +75,7 @@ async function Validate(MajorCode,IsMinor){
     }
 
     let coursesnotfound = coursearray.slice();//make a copy of courses, all unfound courses will sit here
-    console.log(coursearray);
+    //console.log(coursearray);
 
     for (let course = 0; course < coursearray.length; course++) {//go through all courses in the major's course array 
         for(let row = 0; row < 6;row++){
@@ -76,8 +88,10 @@ async function Validate(MajorCode,IsMinor){
        
     }
     if(coursenumber > 0){
-        alert(majorcourses.Name + "is missing " + coursenumber + " courses!");//output error 
-        console.log("Available classes array: "+coursesnotfound);
+        let message = (majorcourses.Name + "is missing " + coursenumber + " courses!");//output error 
+        let errorMsg = new PlanError(majorcourses.Code, message);
+        //console.log(errorMsg.message);
+        errors.push(errorMsg);
     }
 }
 
@@ -89,7 +103,8 @@ function ValidateElectives(){//we dont need to take any inputs because its too s
         }
     }
     if(coursenumber > 0 && majorcourses != undefined){//if courses missing is greater than 0
-        alert(majorcourses.Name + "is missing " + coursenumber + "electives!");//output error 
-        
+        let message = (majorcourses.Name + "is missing " + coursenumber + "electives!");//output error 
+        let errorMsg = new PlanError(majorcourses.Code, message);
+        errors.push(errorMsg);
     }
 }

@@ -32,15 +32,13 @@ async function init() {
 	placeCourse(2, 2, 'COMP603');
 	
 	await renderCoursePlan(state);
-	await initPathwayOptions(state, Pathways);
 }
 
 
 // Function to place a course in the course plan at a specific row and column.
-export function placeCourse(row, col, code) {
+export async function placeCourse(row, col, code) {
 	state.coursePlan[row][col] = courses[code];
-	let planErrors = validateStudyPlan();
-	console.log(planErrors);
+	let planErrors = await validateStudyPlan();	
 }
 
 // alter state.selectedPathway to the pathway in the html form.
