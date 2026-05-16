@@ -8,8 +8,9 @@ import { Pathway } from "./objects/pathway.js";
 const pathways = await loadPathways();
 const majorMinorOptions = await loadMajorMinorOptions();
 
+var errors = [];
 export function validateChoices(){
-    var errors = [];
+    errors = [];
     // Derive the json data for the selected pathway in order to determine the number of majors and minors required.
     const selectedPathway = state.selectedPathway;
     const pathway = pathways[selectedPathway];
@@ -51,16 +52,25 @@ function validate(majorCode, isMajor){
     let minimumCourses = isMajor ? 8 : 4;
 
     let major = majorMinorOptions[majorCode];
+    console.log(major);
     let coursearray = major.Courses;
+    console.log(coursearray);
     let coursePlan = state.coursePlan;
 
     let coursesPresent = 0;
     for (let semester = 0; semester < coursePlan.length; semester++){
 		for (let slot = 0; slot < state.coursePlan[semester].length; slot++){
-			if (coursearray.includes(coursePlan[semester][slot].Code)) {
+            if (!coursePlan[semester][slot]) continue;
+			if (coursearray.includes(coursePlan[semester][slot].code)) {
 			    coursesPresent++;
                 console.log(`${majorCode}: ${coursePlan[semester][slot]} found.`)
 			}
 		}
 	}
+    if (coursesPresent<minimumCourses){
+        let message = `Only ${coursesPresent}/${minimumCourses} courses for ${major.Name} are selected.`;
+        console.log(message);
+        let errorMsg = new PlanError(null, message);
+        errors.push(errorMsg);
+    }
 }

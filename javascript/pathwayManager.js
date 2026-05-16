@@ -1,4 +1,4 @@
-import { validateChoices } from './courseCounter.js';
+import { validateStudyPlan } from './planValidator.js';
 import { state, Pathways } from './state.js';
 
 // Arrays to hold the majors and minors options fetched from the json files. These will be used to populate the dropdowns in the HTML form for selecting majors and minors.
@@ -222,7 +222,7 @@ async function checkValidOptionChange(self, slot, target)
     }
     await applyOptionChange(slot, target);
     if(target != '---'){
-        ValidateChoices();
+        validateStudyPlan();
     }
 }
 

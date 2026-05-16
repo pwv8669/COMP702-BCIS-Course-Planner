@@ -13,12 +13,10 @@ export async function loadMajorMinorOptions() {
     const data = await response.json();
 
     const majors = Object.fromEntries(
-        Object.entries(data).map(
-            ([code, data]) => [
-                code,
-                new MajorMinorOption(data)
-            ]
-        )
+        data.Options.map(option => [
+            option.Code,
+            new MajorMinorOption(option)
+        ])
     )   
 
     return majors;
