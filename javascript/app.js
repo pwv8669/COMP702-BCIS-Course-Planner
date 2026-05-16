@@ -43,7 +43,6 @@ async function init() {
 export function placeCourse(row, col, code) {
 	state.coursePlan[row][col] = courses[code];
 	let planErrors = validateStudyPlan();
-	console.log(planErrors);
 }
 
 // alter state.selectedPathway to the pathway in the html form.

@@ -36,9 +36,9 @@ export async function updatePathwayOptions(pathway)
     pathwayOptionContainer.innerHTML = ''; 
 
     // Log the current selected majors, minors, and electives for debugging purposes.
-    console.log(`Majors Array: ${state.selectedMajors}`);
-    console.log(`Minors Array: ${state.selectedMinors}`);
-    console.log(`Electives Array: ${state.selectedElectives}`);
+    //console.log(`Majors Array: ${state.selectedMajors}`);
+    //console.log(`Minors Array: ${state.selectedMinors}`);
+    //console.log(`Electives Array: ${state.selectedElectives}`);
 
     // Based on the selected pathway, create the appropriate dropdowns for majors, minors, and electives.
     createMajorDropdowns(state, Pathways);
