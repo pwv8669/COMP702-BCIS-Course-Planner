@@ -1,26 +1,20 @@
 {
     "doubleMajors": 
-    [
-        {
-            "numMajors": 2,
-            "numMinors": 0,
-            "numElectives": 0
-        }
-    ],
+    {
+        "numMajors": 2,
+        "numMinors": 0,
+        "numElectives": 0
+    },
     "doubleMinors": 
-    [
-        {
-            "numMajors": 1,
-            "numMinors": 2,
-            "numElectives": 0
-        }
-    ],
+    {
+        "numMajors": 1,
+        "numMinors": 2,
+        "numElectives": 0
+    },
     "electives": 
-    [
-        {
-            "numMajors": 1,
-            "numMinors": 1,
-            "numElectives": 4
-        }
-    ]
+    {
+        "numMajors": 1,
+        "numMinors": 1,
+        "numElectives": 4
+    }
 }

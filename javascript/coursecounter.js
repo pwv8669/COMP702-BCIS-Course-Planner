@@ -1,95 +1,65 @@
-import { state,Pathways } from "./state.js";
-export function ValidateChoices(){
-    if(state.selectedMajors[0] != undefined){
-        Validate(state.selectedMajors[0],false);
-    }
-    else{
-        console.log("First major is missing!");
-    }
+import { state, Pathways } from "./state.js";
+import { PlanError } from './objects/planError.js';
+import { Pathway } from "./objects/pathway.js";
 
+export async function validateChoices(){
+    var errors = [];
+    // Derive the json data for the selected pathway in order to determine the number of majors and minors required.
+    const selectedPathway = state.selectedPathway;
+    const jsonPath = "json/pathways.json"
+    const response = await fetch(jsonPath);
+    const data = await response.json();
+    const pathway = data[selectedPathway];
 
-    if(state.selectedPathway == Pathways.doubleMajors){//if chosen pathway is double major
-        if(state.selectedMajors[1] != undefined){//check other major
-            Validate(state.selectedMajors[1],false);
-        }
-        else{
-            console.log("Second major is missing!");
-        }
-    }
-
-
-    else{//else just run it on the first minor since we know that at minimum the user will have picked 1 minor if not using double majors
-        if(state.selectedMinors[0] != undefined){
-            Validate(state.selectedMinors[0],true);//isminor is set to true here
-        }
-        else{
-            console.log("First Minor is missing!");
-        }
-
-
-        if(state.selectedPathway == Pathways.doubleMinors){//if chosen pathway is double minor, check the second minor
-            if(state.selectedMinors[1] != undefined){//check other minor
-                Validate(state.selectedMinors[1],true);
-            }
-            else{
-                console.log("Second Minor is missing!");
-            }
-        }
-        else{//its electives instead of minors
-             ValidateElectives();
+    // Loop through the slected majors and minors to ensure that they are selected.
+    for (let i = 0; i < pathway.numMajors; i++){
+        if(state.selectedMajors[i] != undefined){
+            await validate(state.selectedMajors[i], true);
+        } else{
+            let message = `Major ${i} is missing!`;
+            let errorMsg = new PlanError(null, message);
+            errors.push(errorMsg);
         }
     }
+    for (let i = 0; i < pathway.numMinors; i++){
+        if(state.selectedMinors[i] != undefined){
+            await validate(state.selectedMinors[i], false);
+        } else{
+            let message = `Minor ${i} is missing!`;
+            let errorMsg = new PlanError(null, message);
+            errors.push(errorMsg);
+        }
+    }
+    for (let i = 0; i < pathway.numElectives; i++){
+        if(state.selectedElectives[i] != undefined){
+            await validate(state.selectedElectives[i], false);
+        } else{
+            let message = `Elective ${i} is missing!`;
+            let errorMsg = new PlanError(null, message);
+            errors.push(errorMsg);
+        }
+    }
+
+    return errors;
 }
 
+async function validate(majorCode, isMajor){
+    // Set minimum courses to 4, unless this is a major, in which it will be 8. 
+    let minimumCourses = isMajor ? 8 : 4;
 
-
-async function Validate(MajorCode,IsMinor){
-    let coursenumber = 0;
-    if(IsMinor == true){
-        coursenumber = 4;//set the required courses to be validated to be 4 instead of 8
-    }
-    else{
-        coursenumber = 8;//else just set to the default of searching for 8 courses
-    } 
     const fetchedoptions = await fetch('json/options.json');//get majors
 	const index = await fetchedoptions.json();//turn into json file
-    let majorcourses = index.Options.find(({Code}) => Code === MajorCode); //get major from index
-     let coursearray = majorcourses.Courses;//grab the course array
+    let majorcourses = index.Options.find(({Code}) => Code === majorCode); //get major from index
+    let coursearray = majorcourses.Courses;//grab the course array
+    let coursePlan = state.coursePlan;
 
-    
-    let statecopy = state.coursePlan;
-    for(let row = 0; row < 6;row++){
-        statecopy[row] = state.coursePlan[row].filter((entry) => entry != undefined);
-    }
-
-    let coursesnotfound = coursearray.slice();//make a copy of courses, all unfound courses will sit here
-    console.log(coursearray);
-
-    for (let course = 0; course < coursearray.length; course++) {//go through all courses in the major's course array 
-        for(let row = 0; row < 6;row++){
-            if(statecopy[row].find(Course => Course.code === coursearray[course])){//check if given row contains this course in a major
-                let i = coursesnotfound.findIndex(Code => Code === coursesnotfound[course]);//get index
-                coursesnotfound.splice(i,1);//remove from missing courses, this is just so we have a point of reference if needed in future
-                coursenumber -= 1;//if it does include it, reduce number of missing courses by 1
-            }
-        }
-       
-    }
-    if(coursenumber > 0){
-        alert(majorcourses.Name + "is missing " + coursenumber + " courses!");//output error 
-        console.log("Available classes array: "+coursesnotfound);
-    }
-}
-
-function ValidateElectives(){//we dont need to take any inputs because its too specific of a use case
-    let coursenumber = 4;//see if user has added 4 electives
-    for(let course = 0; course < state.selectedElectives.length;course++){//go through electives selected
-        if(state.selectedElectives[course] != undefined){//if electives is not undefined
-            coursenumber -=1;//minus 1 missing course
-        }
-    }
-    if(coursenumber > 0 && majorcourses != undefined){//if courses missing is greater than 0
-        alert(majorcourses.Name + "is missing " + coursenumber + "electives!");//output error 
-        
-    }
+    let coursesPresent = 0;
+    for (let semester = 0; semester < coursePlan.length; semester++){
+		for (let slot = 0; slot < state.coursePlan[semester].length; slot++){
+			if (coursearray.includes(coursePlan[semester][slot].Code)) {
+			    coursesPresent++;
+                console.log(`${majorCode}: ${coursePlan[semester][slot]} found.`)
+			}
+		}
+	}
 }

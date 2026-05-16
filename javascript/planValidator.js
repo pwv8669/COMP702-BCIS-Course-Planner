@@ -2,9 +2,10 @@
 import { validateNumberOfCourses } from "./numCoursesValidator.js";
 import { validateCourseAppearances } from "./duplicateCoursesValidator.js";
 import { validatePrerequisites } from "./prerequisiteValidator.js";
+import { validateChoices } from "./courseCounter.js";
 
 // Returns an array of error objects.
-export function validateStudyPlan(){
+export async function validateStudyPlan(){
     const errors = [];
     
     const prereqErrors = validatePrerequisites();
@@ -21,5 +22,11 @@ export function validateStudyPlan(){
     for (let i = 0; i<planErrors.length; i++){
         errors.push(planErrors[i]);
     }
+
+    const majorErrors = await validateChoices()
+    for(let i = 0; i<duplicateErrors.length; i++){
+        errors.push(majorErrors[i]);
+    }
+
     return errors;
 }
