@@ -222,7 +222,7 @@ async function checkValidOptionChange(self, slot, target)
     }
     await applyOptionChange(slot, target);
     if(target != '---'){
-        validateStudyPlan();
+        let errors = validateStudyPlan();
     }
 }
 

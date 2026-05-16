@@ -24,9 +24,10 @@ export function validateStudyPlan(){
     }
 
     const majorErrors = validateChoices()
-    for(let i = 0; i<duplicateErrors.length; i++){
+    for(let i = 0; i<majorErrors.length; i++){
         errors.push(majorErrors[i]);
     }
 
+    console.log(errors);
     return errors;
 }

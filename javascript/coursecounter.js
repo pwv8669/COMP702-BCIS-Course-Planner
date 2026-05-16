@@ -1,9 +1,8 @@
 import { loadPathways } from "./objects/pathway.js";
 import { loadMajorMinorOptions } from "./objects/majorMinorOption.js";
 
-import { state, Pathways } from "./state.js";
+import { state } from "./state.js";
 import { PlanError } from './objects/planError.js';
-import { Pathway } from "./objects/pathway.js";
 
 const pathways = await loadPathways();
 const majorMinorOptions = await loadMajorMinorOptions();
@@ -15,30 +14,37 @@ export function validateChoices(){
     const selectedPathway = state.selectedPathway;
     const pathway = pathways[selectedPathway];
 
+    if(!pathway) {
+        let message = "No valid pathway is selected.";
+        let errorMsg = new PlanError(null, message);
+        errors.push(errorMsg);
+        return errors;
+    }
+
     // Loop through the slected majors and minors to ensure that they are selected.
     for (let i = 0; i < pathway.numMajors; i++){
-        if(state.selectedMajors[i] != undefined){
+        if(state.selectedMajors[i]){
             validate(state.selectedMajors[i], true);
         } else{
-            let message = `Major ${i} is missing!`;
+            let message = `Major ${i+1} is missing!`;
             let errorMsg = new PlanError(null, message);
             errors.push(errorMsg);
         }
     }
     for (let i = 0; i < pathway.numMinors; i++){
-        if(state.selectedMinors[i] != undefined){
+        if(state.selectedMinors[i]){
             validate(state.selectedMinors[i], false);
         } else{
-            let message = `Minor ${i} is missing!`;
+            let message = `Minor ${i+1} is missing!`;
             let errorMsg = new PlanError(null, message);
             errors.push(errorMsg);
         }
     }
     for (let i = 0; i < pathway.numElectives; i++){
-        if(state.selectedElectives[i] != undefined){
+        if(state.selectedElectives[i]){
             validate(state.selectedElectives[i], false);
         } else{
-            let message = `Elective ${i} is missing!`;
+            let message = `Elective ${i+1} is missing!`;
             let errorMsg = new PlanError(null, message);
             errors.push(errorMsg);
         }
@@ -52,9 +58,7 @@ function validate(majorCode, isMajor){
     let minimumCourses = isMajor ? 8 : 4;
 
     let major = majorMinorOptions[majorCode];
-    console.log(major);
     let coursearray = major.Courses;
-    console.log(coursearray);
     let coursePlan = state.coursePlan;
 
     let coursesPresent = 0;
@@ -63,13 +67,11 @@ function validate(majorCode, isMajor){
             if (!coursePlan[semester][slot]) continue;
 			if (coursearray.includes(coursePlan[semester][slot].code)) {
 			    coursesPresent++;
-                console.log(`${majorCode}: ${coursePlan[semester][slot]} found.`)
 			}
 		}
 	}
     if (coursesPresent<minimumCourses){
         let message = `Only ${coursesPresent}/${minimumCourses} courses for ${major.Name} are selected.`;
-        console.log(message);
         let errorMsg = new PlanError(null, message);
         errors.push(errorMsg);
     }
