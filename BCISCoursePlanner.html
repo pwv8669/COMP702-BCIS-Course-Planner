@@ -48,8 +48,76 @@ td{
   text-transform: uppercase;
   vertical-align: top;
 }
-tr:nth-child(even){background-color: #cac7c4;}  /* Alternate between light and dark cells */
-tr:nth-child(odd){background-color: #a2a19f;}
+.schedule-table td:nth-child(even){background-color: #cac7c4;}  /* Alternate between light and dark cells */
+.schedule-table td:nth-child(odd) {background-color: #a2a19f;}
+
+.schedule-table {
+    width: 80%;
+    border-collapse: collapse;
+    table-layout: fixed; /* Forces all 6 columns to stay exactly the same width */
+    font-family: Arial, sans-serif;
+}
+
+.schedule-table td {
+    background-color: #9c9c9c;
+    color: white;
+    padding: 12px 8px;
+    height: 90px;
+    vertical-align: top;
+    font-size: 12px;
+    border: 1px solid #fff;
+    word-wrap: break-word; 
+}
+
+.year-headers th {
+    background-color: #6ba4c4;
+    color: white;
+    padding: 8px;
+    border: 1px solid #fff;
+}
+
+.semester-headers th {
+    background-color: #5289a8;
+    color: white;
+    padding: 10px 4px;
+    font-size: 14px;
+    border: 1px solid #fff;
+}
+
+.schedule-table td.cell-red-error {
+    background-color: #b23b3b !important; 
+    border: 2px solid #ff4d4d;
+}
+.schedule-table td.cell-yellow-warning {
+    background-color: #d1a119 !important; 
+    border: 2px solid #ffdb4d;
+}
+
+.error-text-item {
+    padding: 10px 14px;
+    margin-bottom: 8px;
+    font-family: Arial, sans-serif;
+    font-size: 13px;
+    border-radius: 4px;
+    font-weight: 500;
+}
+
+.error-text-item.red-alert {
+    background-color: #fdf2f2;
+    color: #b81d1d;
+    border-left: 5px solid #de2a2a;
+}
+
+.error-text-item.yellow-alert {
+    background-color: #fefaf0;
+    color: #8a6d1c;
+    border-left: 5px solid #e3b022;
+}
+
+.success-msg {
+    color: #1e7e34;
+    font-weight: bold;
+}
 
 
 
@@ -142,178 +210,130 @@ select:hover,button:hover{
 </head>
 <body>
 
- 
 
-  <!-- table setup -->
-<div class="canvas_div_pdf"style="float: left; width:100%;margin-left: -0.1%;">
-    
-<div style="float: none;">
-  <div class="yearheading">Year 1</div>
-  <div class="yearheading">Year 2</div>
-  <div class="yearheading">Year 3</div>
-</div>
-<table>
-  <tr>
-   <th>Semester 1</th>
-    <!-- im thinking we do 8 arrays representing each semester -->
-      <!-- but atm the IDs are set as "Year-Class" eg year:1 class:2 is Class 1-2 -->
-       <!-- we can likely use for loops to change these cells-->
-  <tr>
-    <td  class=""id="cell-0-0"></td>
-   
-  </tr>
-    <tr>
-    <td  class=""id="cell-0-1"></td>
-  </tr>
-    <tr>
-    <td  class=""id="cell-0-2"></td>
-  </tr>
-    <tr>
-    <td  class=""id="cell-0-3"></td>
-  </tr>
-</table>
-<table>
-</tr>
-   <th>Semester 2</th>
-  <tr>
-    <td  class=""id="cell-1-0"></td>
-  </tr>
-    <tr>
-    <td  class=""id="cell-1-1"></td>
-  </tr>
-    <tr>
-    <td  class=""id="cell-1-2"></td>
-  </tr>
-    <tr>
-    <td  class=""id="cell-1-3"></td>
-  </tr>
-</table>
-<table>
-  <tr>
-   <th>Semester 1</th>
-  <tr>
-    <td   class=""id="cell-2-0"></td>
-  </tr>
-    <tr>
-    <td   class=""id="cell-2-1"></td>
-  </tr>
-    <tr>
-    <td   class=""id="cell-2-2"></td>
-  </tr>
-    <tr>
-    <td class=""id="cell-2-3"></td>
-  </tr>
-</table>
-<table>
-</tr>
-   <th>Semester 2</th>
-  <tr>
-    <td   class=""id="cell-3-0"></td>
-  </tr>
-    <tr>
-    <td   class=""id="cell-3-1"></td>
-  </tr>
-    <tr>
-    <td class=""id="cell-3-2"></td>
-  </tr>
-    <tr>
-    <td  class=""id="cell-3-3"></td>
-  </tr>
-</table>
-<table>
-  <tr>
-   <th>Semester 1</th>
-  <tr>
-    <td id="cell-4-0"></td>
-  </tr>
-    <tr>
-    <td id="cell-4-1"></td>
-  </tr>
-    <tr>
-    <td id="cell-4-2"></td>
-  </tr>
-    <tr>
-    <td id="cell-4-3"></td>
-  </tr>
-</table>
-<table>
-</tr>
-   <th>Semester 2</th>
-  <tr>
-    <td id="cell-5-0"></td>
-  </tr>
-    <tr>
-    <td id="cell-5-1"></td>
-  </tr>
-    <tr>
-    <td id="cell-5-2"></td>
-  </tr>
-    <tr>
-    <td id="cell-5-3"></td>
-  </tr>
-</table>
-</div>
 
-<div style="float:right;width:400px" >
-   <button style="float:right;"id="SaveFileButton">Save Schedule as File</button>
-  <button style="float:right;"onclick="getPDF()">Save as PDF</button><br><br>
-    <div>
-    <label style="width: 250px; margin-left: 120px;" for="file_uploads">Choose File to upload
-    <input
-      type="file"
-      id="file_upload"
-      name="file_uploads"
-      accept=".txt, .json"
-      multiple />
-  </div>
-</div>
+    <!-- table setup -->
+    <div class="canvas_div_pdf" style="float: left; width:100%;margin-left: -0.1%;">
 
-<div style="float:right;">
-    <!-- Main interface button to view saved/pre-made plans -->
-    <button id="openTemplates">Pre-made study plans</button>
-    
-    <!-- Main interface button to save current workspace changes -->
-    <button id="saveTemplateBtn" type="button">Save Current Plan</button>
-     
-    <dialog id="templates">
-       
-        <form id="uploadTemplateForm">
-            <input type="file" id="localJsonFileInput" accept=".json">
-            <button type="submit" id="uploadSubmitBtn">Load Local File</button>
-            <button type="button" id="closeTemplates">Close</button>
-        </form>
+        <table class="schedule-table">
+            <thead>
+                <!-- Year Headers spanning two columns each -->
+                <tr class="year-headers">
+                    <th colspan="2">Year 1</th>
+                    <th colspan="2">Year 2</th>
+                    <th colspan="2">Year 3</th>
+                </tr>
+                <!-- Semester Sub-headers -->
+                <tr class="semester-headers">
+                    <th>Sem 1</th>
+                    <th>Sem 2</th>
+                    <th>Sem 1</th>
+                    <th>Sem 2</th>
+                    <th>Sem 1</th>
+                    <th>Sem 2</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td id="cell-0-0"></td>
+                    <td id="cell-1-0"></td>
+                    <td id="cell-2-0"></td>
+                    <td id="cell-3-0"></td>
+                    <td id="cell-4-0"></td>
+                    <td id="cell-5-0"></td>
+                </tr>
+                <tr>
+                    <td id="cell-0-1"></td>
+                    <td id="cell-1-1"></td>
+                    <td id="cell-2-1"></td>
+                    <td id="cell-3-1"></td>
+                    <td id="cell-4-1"></td>
+                    <td id="cell-5-1"></td>
+                </tr>
+                <tr>
+                    <td id="cell-0-2"></td>
+                    <td id="cell-1-2"></td>
+                    <td id="cell-2-2"></td>
+                    <td id="cell-3-2"></td>
+                    <td id="cell-4-2"></td>
+                    <td id="cell-5-2"></td>
+                </tr>
+                <tr>
+                    <td id="cell-0-3"></td>
+                    <td id="cell-1-3"></td>
+                    <td id="cell-2-3"></td>
+                    <td id="cell-3-3"></td>
+                    <td id="cell-4-3"></td>
+                    <td id="cell-5-3"></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div id="error-list-container" style="clear: both; width: 100%; padding-top: 20px;">
         
-        <div id="templateBtnContainer" style="margin-top: 15px;"></div>
-    </dialog>
-</div>
-    
+    </div>
 
-</div>
+    <div style="float:right;width:400px">
+        <button style="float:right;" id="SaveFileButton">Save Schedule as File</button>
+        <button style="float:right;" onclick="getPDF()">Save as PDF</button><br><br>
+        <div>
+            <label style="width: 250px; margin-left: 120px;" for="file_uploads">
+                Choose File to upload
+                <input type="file"
+                       id="file_upload"
+                       name="file_uploads"
+                       accept=".txt, .json"
+                       multiple />
+        </div>
+    </div>
+
+    <div style="float:right;">
+        <!-- Main interface button to view saved/pre-made plans -->
+        <button id="openTemplates">Pre-made study plans</button>
+
+        <!-- Main interface button to save current workspace changes -->
+        <button id="saveTemplateBtn" type="button">Save Current Plan</button>
+
+        <dialog id="templates">
+
+            <form id="uploadTemplateForm">
+                <input type="file" id="localJsonFileInput" accept=".json">
+                <button type="submit" id="uploadSubmitBtn">Load Local File</button>
+                <button type="button" id="closeTemplates">Close</button>
+            </form>
+
+            <div id="templateBtnContainer" style="margin-top: 15px;"></div>
+        </dialog>
+    </div>
 
 
-   <!-- Form for selecting course pathway. -->
-  <form id="pathwayForm">
-    <div style="float: left;background-color: #dd6e46;"></div>
-  <label class=pathwayselector style="margin-right: -6px;"for="pathwaySelect">Course Pathway:
-  <div style="height: 10px;"></div>
-  <select id="pathwaySelect" name="pathwaySelect" style="float:right">
-    <option value="doubleMajors" selected>
-      Double Majors
-    </option>
-    <option value="doubleMinors">
-      Single Major + Double Minors
-    </option>
-    <option value="electives">
-      Single Major + Single Minor + Electives
-    </option>
-  </select>
-  </label>
-  </div>
-  </form>
-  <div style="margin-top: 5px;"></div>
-  <!-- Handled in app.js -->
-  <form id="pathwayOptionContainer">
-  </form>
+    </div>
+
+
+    <!-- Form for selecting course pathway. -->
+    <form id="pathwayForm">
+        <div style="float: left;background-color: #dd6e46;"></div>
+        <label class=pathwayselector style="margin-right: -6px;" for="pathwaySelect">
+            Course Pathway:
+            <div style="height: 10px;"></div>
+            <select id="pathwaySelect" name="pathwaySelect" style="float:right">
+                <option value="doubleMajors" selected>
+                    Double Majors
+                </option>
+                <option value="doubleMinors">
+                    Single Major + Double Minors
+                </option>
+                <option value="electives">
+                    Single Major + Single Minor + Electives
+                </option>
+            </select>
+        </label>
+        </div>
+    </form>
+    <div style="margin-top: 5px;"></div>
+    <!-- Handled in app.js -->
+    <form id="pathwayOptionContainer"></form>
 
 
 

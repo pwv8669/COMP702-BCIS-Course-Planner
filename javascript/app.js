@@ -6,6 +6,7 @@ import { renderCoursePlan } from './renderCoursePlan.js';
 import { updatePathwayOptions } from './pathwayManager.js';
 import { initPathwayOptions } from './pathwayManager.js';
 import './templatesController.js';
+import { errorDisplay } from './errorDisplay.js';
 
 let courses = {};
 async function init() {
@@ -22,40 +23,38 @@ async function init() {
 	placeCourse(0, 1, 'COMP501');
 	placeCourse(0, 2, 'COMP508');
 	placeCourse(0, 3, 'MATH503');
+
 	placeCourse(1, 0, 'COMP507');
 	placeCourse(1, 1, 'DIGD507');
-
 	placeCourse(1, 2, 'COMP503');
+	placeCourse(1, 3, 'COMP603');
+
+	placeCourse(2, 1, 'COMP612');
 
 	placeCourse(4, 0, 'COMP702');
 	placeCourse(5, 0, 'COMP703');
-
-	placeCourse(2, 0, 'COMP500');
-	placeCourse(2, 1, 'COMP612');
-	placeCourse(2, 2, 'COMP603');
 	
 	await renderCoursePlan(state);
 	await initPathwayOptions(state, Pathways);
+	errorDisplay();
 }
 
 
 // Function to place a course in the course plan at a specific row and column.
 export function placeCourse(row, col, code) {
 	state.coursePlan[row][col] = courses[code];
-	let planErrors = validateStudyPlan();
 }
 
 // alter state.selectedPathway to the pathway in the html form.
 const pathwaySelect = document.getElementById('pathwaySelect');
 pathwaySelect.addEventListener('change', (e) => {
-	updatePathwayOptions(e.target.value);
+    updatePathwayOptions(e.target.value);
 });
 
 export function PathwayRefresh(pathway){
-	updatePathwayOptions(pathway);
+    updatePathwayOptions(pathway);
 }
 
 // This function fetches the available majors and minors from the json files and populates the majorsArray and minorsArray with the data. It then calls the updatePathwayOptions function to update the dropdown options in the HTML form based on the selected pathway.
 
-await initPathwayOptions();
-init();
+await init();

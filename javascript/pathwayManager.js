@@ -251,3 +251,17 @@ async function applyOptionChange(slot, target)
     console.log('Selected Majors: ' + state.selectedMajors);
     console.log('Selected Minors: ' + state.selectedMinors);
 }
+
+import { errorDisplay } from './errorDisplay.js';
+
+document.getElementById('pathwayOptionContainer')?.addEventListener('change', () => {
+    setTimeout(() => {
+        errorDisplay();
+    }, 50); 
+});
+
+const originalUpdatePathwayOptions = updatePathwayOptions;
+updatePathwayOptions = async function(pathway) {
+    await originalUpdatePathwayOptions(pathway);
+    errorDisplay();
+};
