@@ -6,6 +6,7 @@ import { numCoursesValidator } from './numCoursesValidator.js';
 import { renderCoursePlan } from './renderCoursePlan.js';
 import { updatePathwayOptions } from './pathwayManager.js';
 import { initPathwayOptions } from './pathwayManager.js';
+import { placeCourseRecursive } from './recursivecourse.js';
 import './templatesController.js';
 
 let courses = {};
@@ -19,23 +20,24 @@ async function init() {
 	console.log(courses);
 
 	// Example usage of the placeCourse function.
-	placeCourse(0, 0, 'COMP500');
-	placeCourse(0, 1, 'COMP501');
-	placeCourse(0, 2, 'COMP508');
-	placeCourse(0, 3, 'MATH503');
-	placeCourse(1, 0, 'COMP507');
-	placeCourse(1, 1, 'DIGD507');
-	placeCourse(4, 0, 'COMP702');
-	placeCourse(5, 0, 'COMP703');
-	
-	validatePrerequisites();
+	// placeCourse(0, 0, 'COMP500');
+	// placeCourse(0, 1, 'COMP501');
+	// placeCourse(0, 2, 'COMP508');
+	// placeCourse(0, 3, 'MATH503');
+	// placeCourse(1, 0, 'COMP507');
+	// placeCourse(1, 1, 'DIGD507');
+	// placeCourse(4, 0, 'COMP702');
+	// placeCourse(5, 0, 'COMP703');
+	await placeCourseRecursive(6,'COMP703');
+	await placeCourseRecursive(3,'COMP602');
+	await validatePrerequisites();
 	await renderCoursePlan(state);
 	await initPathwayOptions(state, Pathways);
 
 	console.log(state.coursePlan);
 	console.log(numCoursesValidator());
 }
-init();
+
 
 
 // Function to place a course in the course plan at a specific row and column.
