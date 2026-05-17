@@ -1,5 +1,5 @@
 import { state } from './state.js'
-console.log("Loaded");
+import { PlanError } from './objects/planError.js';
 
 function getCourseCounts(){
     const appearances = new Map();
@@ -25,13 +25,22 @@ export function validateCourseAppearances() {
     const appearances = getCourseCounts();
     appearances.forEach((count, code) => {
         if (count > 1) {
-            errors.push({
-                code: code,
-                appearances: count,
-                message: `${code} appears ${count} times. You can only take each class once.`
-            });
+            let message = `${code} appears in the study plan ${count} times. You can only take each class once.`
+            let errorMsg = new PlanError(code, message);
+            errorMsg.occurences = count
+
+            for (let semester = 0; semester < state.coursePlan.length; semester++){
+                for (let slot = 0; slot < state.coursePlan[semester].length; slot++){
+                    const course = state.coursePlan[semester][slot]
+                    if (!course) continue;
+                    if (course.code === code) {
+                        errorMsg.positions[semester][slot] = true;
+                    } 
+                }
+            }
+
+            errors.push(errorMsg);
         }
     });
-    console.log(errors);
     return errors;
 }

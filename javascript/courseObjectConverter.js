@@ -14,7 +14,6 @@ class Course {
             ? flattenTree(parse(tokenize(data.Corequisites)))
             : null;
     }
-    
 }
 
 // Enum for the node types in the prerequisite and corequisite trees. This is used to distinguish between AND, OR, and COURSE nodes when building the tree structure.
