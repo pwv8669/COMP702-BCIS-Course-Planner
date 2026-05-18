@@ -5,7 +5,8 @@ import { renderCoursePlan } from "./renderCoursePlan.js";
 export async function placeCourseRecursive(semester,code){
 	let coursemap = await loadCourses();
 
-
+    let placedrow = 0;
+    let placedcol = 0;
 
     const SEMESTERS = {
         FIRST: 1,
@@ -21,6 +22,8 @@ export async function placeCourseRecursive(semester,code){
     for(let col = 0; col < 4;col++){//go through all 4 cells
         if(state.coursePlan[semester-1][col] == undefined){//if empty
             placeCourse(semester-1,col,code);//place course there
+            placedrow = semester-1;
+            placedcol = col;
             placed = true;
             break;
         }
@@ -31,6 +34,8 @@ export async function placeCourseRecursive(semester,code){
         for(let col = 0; col < 4;col++){
             if(state.coursePlan[semester][col] == undefined){//try place it in the second semester of the year
                     placeCourse(semester,col,code);//place course
+                    placedrow = semester;
+                    placedcol = col;
                     placed = true;
                     break;
             }
@@ -43,7 +48,7 @@ export async function placeCourseRecursive(semester,code){
         let shouldplace = false;
         try{
             let prerequisitelist = coursemap[code].prerequisites;
-                console.log("list" +  coursemap[code].name);
+                //console.log("list" +  coursemap[code].name);
             if(prerequisitelist.type == 'COURSE'){
                 Prerequesitearray.push(prerequisitelist.course.code);
             }
@@ -58,20 +63,55 @@ export async function placeCourseRecursive(semester,code){
             }
             
             for(let add = 0; add < Prerequesitearray.length;add++){
-                console.log("cehckchechk" + Prerequesitearray[add]);
-                placeCourseRecursive(semester-1,Prerequesitearray[add]);
-                switch(Prerequesitearray[add].level){
-            
-                case 5:
-                    console.log("Level5");
-                    break;
-                case 6:
-                    console.log("Level6");
-                    break;
-                case 7:
-                    console.log("Level7");
+                let found = false;
+                //CHECK IF ALREADY IN STATE ARRAY
+                for(let c =0;c< state.coursePlan.length;c++){
+                    for(let d = 0; d < state.coursePlan[c].length;d++){
+                        if(state.coursePlan[c][d] != undefined){
+                            if(state.coursePlan[c][d].code == Prerequesitearray[add]){
+                                console.log(state.coursePlan[c][d].code + "already present!");
+                                if(semester-1== c){
+                                    console.log("same semester!");
+                                    state.coursePlan[c][d] = null;
+                                    state.coursePlan[placedrow][placedcol] = null;
+                                    found = true;
+                                    placeCourseRecursive(semester,code);
+                                }
+                                else{
+                                    found = true;
+                                }
+                               
+                                break;
+                            }
+                            else{
+                                console.log(state.coursePlan[c][d].code + " PReq" + Prerequesitearray[add]);
+                            }
+                        }
+                       
+                    }
+                   
+                }
+                if(found){
                     break;
                 }
+
+                //console.log("cehckchechk" + Prerequesitearray[add]);
+                if(coursemap[Prerequesitearray[add]].level < coursemap[code].level//if not the same level, add to previous year
+                    && code != "COMP702"
+                ){
+                    if(semesterplacement ==1){//if first semester, we can put in the previous semester
+                        placeCourseRecursive(semester-1,Prerequesitearray[add]);
+                    }
+                    else{
+                        placeCourseRecursive(semester-2,Prerequesitearray[add]);//else jump back further
+                    }
+                   
+                }
+                else{
+                    placeCourseRecursive(semester-1,Prerequesitearray[add]);
+                }
+               
+                
             }
         }
         catch{

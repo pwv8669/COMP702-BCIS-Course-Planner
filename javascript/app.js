@@ -29,7 +29,14 @@ async function init() {
 	// placeCourse(4, 0, 'COMP702');
 	// placeCourse(5, 0, 'COMP703');
 	await placeCourseRecursive(6,'COMP703');
-	await placeCourseRecursive(3,'COMP602');
+	await placeCourseRecursive(6,'COMP711');
+	await placeCourseRecursive(6,'COMP721');
+	await placeCourseRecursive(6,'COMP719');
+	
+	await placeCourseRecursive(5,'ENSE707');
+	await placeCourseRecursive(5,'COMP613');
+		await placeCourseRecursive(5,'COMP717');
+			await placeCourseRecursive(5,'COMP702');
 	await validatePrerequisites();
 	await renderCoursePlan(state);
 	await initPathwayOptions(state, Pathways);
