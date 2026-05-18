@@ -75,7 +75,7 @@ export async function placeCourseRecursive(semester,code){
                                     state.coursePlan[c][d] = null;
                                     state.coursePlan[placedrow][placedcol] = null;
                                     found = true;
-                                    placeCourseRecursive(semester,code);
+                                    await placeCourseRecursive(semester,code);
                                 }
                                 else{
                                     found = true;
@@ -100,15 +100,15 @@ export async function placeCourseRecursive(semester,code){
                     && code != "COMP702"
                 ){
                     if(semesterplacement ==1){//if first semester, we can put in the previous semester
-                        placeCourseRecursive(semester-1,Prerequesitearray[add]);
+                        await placeCourseRecursive(semester-1,Prerequesitearray[add]);
                     }
                     else{
-                        placeCourseRecursive(semester-2,Prerequesitearray[add]);//else jump back further
+                        await placeCourseRecursive(semester-2,Prerequesitearray[add]);//else jump back further
                     }
                    
                 }
                 else{
-                    placeCourseRecursive(semester-1,Prerequesitearray[add]);
+                    await placeCourseRecursive(semester-1,Prerequesitearray[add]);
                 }
                
                 

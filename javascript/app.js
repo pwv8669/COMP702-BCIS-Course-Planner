@@ -37,6 +37,13 @@ async function init() {
 	await placeCourseRecursive(5,'COMP613');
 		await placeCourseRecursive(5,'COMP717');
 			await placeCourseRecursive(5,'COMP702');
+
+	await placeCourseRecursive(4,'STAT603');
+	await placeCourseRecursive(4,'COMP612');
+	await placeCourseRecursive(4,'COMP611');
+	await placeCourseRecursive(3,'COMP604');
+	await placeCourseRecursive(3,'COMP615');
+	await placeCourseRecursive(3,'COMP610');
 	await validatePrerequisites();
 	await renderCoursePlan(state);
 	await initPathwayOptions(state, Pathways);

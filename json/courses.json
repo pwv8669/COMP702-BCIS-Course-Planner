@@ -116,7 +116,7 @@
         "Level": "6",
         "Semester1Offered": true,
         "Semester2Offered": true,
-        "Prerequisites": "COMP603",
+        "Prerequisites": "COMP503",
         "Corequisites": ""
     },
     "COMP611": {
