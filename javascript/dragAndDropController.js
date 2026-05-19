@@ -12,17 +12,20 @@ export function initDragAndDrop(onPlanChange) {
     const courseCards = document.querySelectorAll('.course-card');
     courseCards.forEach(card => {
         card.addEventListener('dragstart', (e) => {
-            draggedCourseCode = e.target.getAttribute('data-code');
+            const cardEl = e.currentTarget;
+
+            draggedCourseCode = cardEl.getAttribute('data-code');
             e.dataTransfer.setData('text/plain', draggedCourseCode);
 
             sourceSemesterIndex = null;
             sourceSlotIndex = null;
 
-            e.target.style.opacity = '0.6';
+            cardEl.style.opacity = '0.6';
         });
 
         card.addEventListener('dragend', (e) => {
-            e.target.style.opacity = '1.0';
+            const cardEl = e.currentTarget;
+            cardEl.style.opacity = '1.0';
         });
     });
 
