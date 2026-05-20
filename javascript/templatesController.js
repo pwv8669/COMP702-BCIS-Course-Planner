@@ -1,6 +1,8 @@
-import { placeCourse, PathwayRefresh } from './app.js';
+import { placeCourse, PathwayRefresh, refreshStudyPlan } from './app.js';
 import { renderCoursePlan } from './renderCoursePlan.js';
 import { state, Pathways } from './state.js';
+import { initDragAndDrop } from './dragAndDropController.js';
+
 
 document.addEventListener('DOMContentLoaded', () => {
     // 1. UI ELEMENT SELECTION TARGETS
@@ -197,6 +199,7 @@ document.addEventListener('DOMContentLoaded', () => {
             
             PathwayRefresh();
             renderCoursePlan(state); 
+            refreshStudyPlan();
             console.log("State updated successfully:", state);
         } catch (err) {
             console.error(err);
