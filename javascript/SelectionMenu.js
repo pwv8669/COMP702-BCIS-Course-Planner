@@ -1,11 +1,11 @@
 // Importing the state object from the state.js file which contains the coursePlan array. This allows us to manipulate the course plan data from this file globally.
-import { state } from './javascript/state.js';
+import { state } from './state.js';
 
 
 
 async function SetupSelections()
 {
-	const coursesData = await fetch('./json/courses.json');//open file
+	const coursesData = await fetch('json/courses.json');//open file
 	const courses = await coursesData.json();
 	
 	let text = "<select id=\"courseselectionedit\" onchange=\"setInput()\">"//this will be the 
