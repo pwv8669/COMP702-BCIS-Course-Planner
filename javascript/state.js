@@ -35,16 +35,16 @@ export async function updatePoints()
         {
             if (course != null)
             {
-                switch (parseInt(course.Level))
+                switch (course.level)
                 {
                     case 5:
-                        state.points[0] += parseInt(course.Points);
+                        state.points[0] += course.points;
                         break;
                     case 6:
-                        state.points[1] += parseInt(course.Points);
+                        state.points[1] += course.points;
                         break;
                     case 7:
-                        state.points[2] += parseInt(course.Points);
+                        state.points[2] += course.points;
                         break;
                     default:
                         console.log('Not a level 5, 6 or 7 course.');
@@ -55,8 +55,10 @@ export async function updatePoints()
     }
     const pointsDisplay = document.getElementById('pointsDisplay');
     pointsDisplay.innerHTML =
-    `<p>Level 5: ${state.points[0]} - Level 6: ${state.points[1]} - Level 7: ${state.points[2]}<br>
-    Total: ${state.points[0]+state.points[1]+state.points[2]}/360 </p>`;
+    `<p>
+    Level 5: ${state.points[0]} - Level 6: ${state.points[1]} - Level 7: ${state.points[2]}<br>
+    Total: ${state.points[0]+state.points[1]+state.points[2]}/360
+    </p>`;
     console.log('POINTS: '+state.points);
 };
 
