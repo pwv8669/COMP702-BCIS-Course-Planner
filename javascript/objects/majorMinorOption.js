@@ -11,9 +11,11 @@ export class MajorMinorOption {
 export async function loadMajorMinorOptions() {
     const response = await fetch("json/options.json");
     const data = await response.json();
-
+    let optionsarray = Object.values(data)[0];
+    console.log(optionsarray);
+    
     const majors = Object.fromEntries(
-        data.Options.map(option => [
+        data.Options.map(option => [    
             option.Code,
             new MajorMinorOption(option)
         ])
