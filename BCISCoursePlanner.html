@@ -280,7 +280,6 @@ select:hover,button:hover{
     <div class="main-layout-container">
 
 
-        <div class="canvas_div_pdf">
             <table class="schedule-table">
                 <thead>
                     <tr class="year-headers">
@@ -339,12 +338,10 @@ select:hover,button:hover{
             <h3>Available Courses</h3>
         </div>
 
-    </div>
 
     <div id="error-list-container" style="clear: both; width: 100%; padding-top: 20px;">
 
     </div>
-
     <div style="float:right;width:400px">
         <button style="float:right;" id="SaveFileButton">Save Schedule as File</button>
         <button style="float:right;" onclick="getPDF()">Save as PDF</button><br><br>
@@ -417,8 +414,8 @@ select:hover,button:hover{
 //Create PDf from HTML...
 function getPDF(){
 
-		var HTML_Width = $(".canvas_div_pdf").width();
-		var HTML_Height = $(".canvas_div_pdf").height();
+		var HTML_Width = $(".schedule-table").width();
+		var HTML_Height = $(".schedule-table").height();
 		var top_left_margin = 15;
 		var PDF_Width = HTML_Width+(top_left_margin*2);
 		var PDF_Height = (PDF_Width*1.5)+(top_left_margin*2);
@@ -428,7 +425,7 @@ function getPDF(){
 		var totalPDFPages = Math.ceil(HTML_Height/PDF_Height)-1;
 		
 
-		html2canvas($(".canvas_div_pdf")[0],{allowTaint:true}).then(function(canvas) {
+		html2canvas($(".schedule-table")[0],{allowTaint:true}).then(function(canvas) {
 			canvas.getContext('2d');
 			
 			console.log(canvas.height+"  "+canvas.width);
