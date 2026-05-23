@@ -139,14 +139,14 @@ select {
   <script type="module" src="./javascript/SelectionMenu.js">
   </script>
 </head>
-<title>BCIS Course Creator</title>
+<title>BCIS Major/Minor Editor</title>
 <body>
   <div style="width: 45%; padding-bottom: 2px;padding-top: 0.5px;padding-left: 1%;">
-  <h1>BCIS Course Creator</h1>
+  <h1>BCIS Major/Minor Editor</h1>
 
   <form method="POST" action="./php/editMajor.php">
-    <input name="Code" type="text" placeholder="Course Code" required><br>
-    <input name="Name" type="text" placeholder="Course Name" required><br>
+    <input name="Code" type="text" placeholder="Major/Minor Code" required><br>
+    <input name="Name" type="text" placeholder="Major/Minor Name" required><br>
     Offered As:<br>Major <input id="Major"name="MajorOffered" type="checkbox"><label for="Major"></label>
     <br>Minor<input id="Minor"name="MinorOffered" type="checkbox"> <label for="Minor"></label><br>
     Courses : <input name="Courses" type="text" placeholder="e.g. MATH503 AND (COMP603 OR COMP610)"><br>
@@ -159,7 +159,7 @@ select {
 
   <!-- Selection Dropdown -->
    <br>
-  <div for="majortoedit">Choose a major to edit:
+  <div for="majortoedit">Choose an option to edit:
     <!-- This part will be directly modified by selection menu with a list containing all the names
    of the courses, as well as their indexin optionobjectsstore array (see below) -->
   <p id="majortoedit" style="margin-top: 0%; "></p></div>
