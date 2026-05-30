@@ -23,6 +23,12 @@ export const state = {
     selectedMajors: [null, null],
     selectedMinors: [null, null],
     selectedElectives: [null, null, null, null],
-    points: [null, null, null]
+    points: 
+    [
+        [null, null, null],
+        [null, null, null],
+        [null, null, null],
+        [null, null, null]
+    ]
 };
 

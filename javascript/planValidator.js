@@ -3,6 +3,7 @@ import { validateNumberOfCourses } from "./numCoursesValidator.js";
 import { validateCourseAppearances } from "./duplicateCoursesValidator.js";
 import { validatePrerequisites } from "./prerequisiteValidator.js";
 import { validateChoices } from "./courseCounter.js";
+import { validatePoints } from "./pointsValidator.js";
 
 // Returns an array of error objects.
 export function validateStudyPlan(){
@@ -23,9 +24,14 @@ export function validateStudyPlan(){
         errors.push(planErrors[i]);
     }
 
-    const majorErrors = validateChoices()
+    const majorErrors = validateChoices();
     for(let i = 0; i<majorErrors.length; i++){
         errors.push(majorErrors[i]);
+    }
+
+    const pointsErrors = validatePoints();
+    for(let i = 0; i<pointsErrors.length; i++){
+        errors.push(pointsErrors[i]);
     }
 
     console.log(errors);
