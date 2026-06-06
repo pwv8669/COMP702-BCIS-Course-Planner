@@ -171,6 +171,7 @@ export function validatePoints()
         state.totalPoints += p.Points;
     }
     const pointsDisplay = document.getElementById('pointsDisplay');
+    pointsDisplay = '';
     pointsDisplay.innerHTML +=
     `<p>
     Core - ${state.points[0][0] + state.points[0][1] + state.points[0][2]}/120
