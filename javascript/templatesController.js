@@ -175,7 +175,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 state.selectedMinors[1] = null;
             }
             
-            PathwayRefresh();
+            PathwayRefresh(""+JsonInput.selectedPathway);
             
             state.selectedElectives = JsonInput.selectedElectives;
             state.selectedMajors = JsonInput.selectedMajors;
@@ -197,7 +197,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             }
             
-            PathwayRefresh();
+            PathwayRefresh(""+JsonInput.selectedPathway);
             renderCoursePlan(state); 
             refreshStudyPlan();
             console.log("State updated successfully:", state);
