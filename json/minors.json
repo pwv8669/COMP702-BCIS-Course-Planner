@@ -1,0 +1,126 @@
+{
+    "ArtificialIntelligence": {
+        "Code": "ArtificialIntelligence",
+        "Name": "Artificial Intelligence",
+        "Requirements": [
+            {
+                "Type": "Required",
+                "Courses": ["COMP517"]
+            },
+            {
+                "Type": "ChooseN",
+                "Count": 1,
+                "Courses": ["COMP610", "COMP613", "COMP615"]
+            },
+            {
+                "Type": "ChooseN",
+                "Count": 1,
+                "Courses": ["COMP700", "COMP701"]
+            },
+            {
+                "Type": "Required",
+                "Courses": ["COMP717"]
+            }
+        ]
+    },
+    "ComputerScience": {
+        "Code": "ComputerScience",
+        "Name": "Computer Science",
+        "Requirements": [
+            {
+                "Type": "Required",
+                "Courses": ["COMP503"]
+            },
+            {
+                "Type": "ChooseN",
+                "Count": 2,
+                "Courses": ["COMP610", "COMP611", "COMP612", "COMP613"]
+            },
+            {
+                "Type": "ChooseN",
+                "Count": 1,
+                "Courses": ["COMP711", "COMP712", "COMP713", "COMP719"]
+            }
+        ]
+    },
+    "DataScience": {
+        "Code": "DataScience",
+        "Name": "Data Science",
+        "Requirements": [
+            {
+                "Type": "Required",
+                "Courses": ["COMP517"]
+            },
+            {
+                "Type": "ChooseN",
+                "Count": 2,
+                "Courses": ["COMP610", "COMP613", "COMP615", "COMP616", "STAT603"]
+            },
+            {
+                "Type": "ChooseN",
+                "Count": 1,
+                "Courses": ["COMP700", "COMP701", "COMP717", "COMP723"]
+            }
+        ]
+    },
+    "DigitalServices": {
+        "Code": "DigitalServices",
+        "Name": "Digital Services",
+        "Requirements": [
+            {
+                "Type": "Required",
+                "Courses": ["INFS502"]
+            },
+            {
+                "Type": "ChooseN",
+                "Count": 2,
+                "Courses": ["COMP603", "COMP607", "INFS603", "INFS604", "INFS605"]
+            },
+            {
+                "Type": "ChooseN",
+                "Count": 1,
+                "Courses": ["COMP718", "COMP726", "COMP728", "INFS704"]
+            }
+        ]
+    },
+    "NetworksAndCybersecurity": {
+        "Code": "NetworksAndCybersecurity",
+        "Name": "Networks and Cybersecurity",
+        "Requirements": [
+            {
+                "Type": "Required",
+                "Courses": ["COMP504"]
+            },
+            {
+                "Type": "ChooseN",
+                "Count": 2,
+                "Courses": ["COMP604", "COMP607", "COMP609", "ENEL611"]
+            },
+             {
+                "Type": "ChooseN",
+                "Count": 1,
+                "Courses": ["COMP714", "COMP729", "COMP715", "COMP716", "COMP718"]
+            }
+        ]
+    },
+    "SoftwareDevelopment": {
+        "Code": "SoftwareDevelopment",
+        "Name": "Software Development",
+        "Requirements": [
+            {
+                "Type": "Required",
+                "Courses": ["COMP503"]
+            },
+            {
+                "Type": "ChooseN",
+                "Count": 2,
+                "Courses": ["COMP602", "COMP603", "COMP604", "COMP611", "COMP610"]
+            },
+            {
+                "Type": "ChooseN",
+                "Count": 1,
+                "Courses": ["COMP705", "ENSE707", "COMP713", "COMP721", "COMP719"]
+            }
+        ]
+    }
+}
