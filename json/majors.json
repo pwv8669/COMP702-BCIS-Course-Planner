@@ -233,7 +233,7 @@
                 "Courses": ["COMP719"]
             }
         ],
-        "GameProgrammingRequirements": [
+        "AlternativeRequirements": [
             {
                 "Type": "Required",
                 "Courses": ["COMP503"]
