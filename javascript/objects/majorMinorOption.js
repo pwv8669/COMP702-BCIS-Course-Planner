@@ -37,7 +37,7 @@ export async function loadMinorOptions() {
     const minors = Object.fromEntries(
         Object.entries(data).map(([code, option]) => [
             code,
-            new MajorOption(option)
+            new MinorOption(option)
         ])
     )   
 
