@@ -177,18 +177,18 @@
                 "Courses": ["ENEL611"]
             },
             {
-                "Type": "Required",
-                "Courses": ["COMP717"]
-            },
-            {
                 "Type": "ChooseN",
                 "Count": 1,
-                "Courses": ["COMP718", "COMP726", "COMP728"]
+                "Courses": ["COMP714", "COMP729"]
+            },
+            {
+                "Type": "Required",
+                "Courses": ["COMP715"]
             },
              {
                 "Type": "ChooseN",
                 "Count": 1,
-                "Courses": ["COMP719", "COMP729"]
+                "Courses": ["COMP716", "COMP718"]
             }
         ],
         "IsCore": false
@@ -215,8 +215,7 @@
                 "Courses": ["COMP604", "COMP611"]
             },
             {
-                "Type": "ChooseN",
-                "Count": 1,
+                "Type": "Required",
                 "Courses": ["COMP610"]
             },
             {
@@ -231,7 +230,44 @@
             },
             {
                 "Type": "Required",
-                "Courses": ["ENSE719"]
+                "Courses": ["COMP719"]
+            }
+        ],
+        "GameProgrammingRequirements": [
+            {
+                "Type": "Required",
+                "Courses": ["COMP503"]
+            },
+            {
+                "Type": "Required",
+                "Courses": ["COMP612"]
+            },
+            {
+                "Type": "Required",
+                "Courses": ["COMP603"]
+            },
+            {
+                "Type": "ChooseN",
+                "Count": 1,
+                "Courses": ["COMP604", "COMP611"]
+            },
+            {
+                "Type": "ChooseN",
+                "Count": 1,
+                "Courses": ["COMP610"]
+            },
+            {
+                "Type": "ChooseN",
+                "Count": 1,
+                "Courses": ["COMP705", "ENSE707"]
+            },
+            {
+                "Type": "Required",
+                "Courses": ["COMP710"]
+            },
+            {
+                "Type": "Required",
+                "Courses": ["COMP719"]
             }
         ],
         "IsCore": false
