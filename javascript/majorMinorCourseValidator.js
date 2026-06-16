@@ -55,7 +55,6 @@ export function validateMajorMinorRequirements(){
 }
 
 function validate(majorCode, isMajor){
-    
     let major = isMajor ? majorOptions[majorCode] : minorOptions[majorCode];
     let requirements = major.Requirements;
     let coursePlan = state.coursePlan;
@@ -65,7 +64,7 @@ function validate(majorCode, isMajor){
     for (let semester = 0; semester < coursePlan.length; semester++){
 		for (let slot = 0; slot < state.coursePlan[semester].length; slot++){
             if (!coursePlan[semester][slot]) continue;
-            courseSet.add(coursePlan[semester][slot].Code);
+            courseSet.add(coursePlan[semester][slot].code);
 		}
 	}
     
@@ -78,19 +77,19 @@ function validate(majorCode, isMajor){
         let requirementSatisfied = false;
         if (type === "Required"){
             // Check that all courses in the requirement are present in the course plan.
-            requirementSatisfied = courses.every(course => courseSet.has(course.Code));
+            requirementSatisfied = courses.every(course => courseSet.has(course.code));
             if (!requirementSatisfied){
-                let missingCourses = courses.filter(course => !courseSet.has(course.Code)).map(course => course.Code);
+                let missingCourses = courses.filter(course => !courseSet.has(course.code)).map(course => course.code);
                 let message = `Missing required courses for ${major.Name}: ${missingCourses.join(", ")}.`;
                 let errorMsg = new PlanError(null, message);
                 errors.push(errorMsg);
             }
         } else if (type === "ChooseN"){
             // Check that at least N courses in the requirement are present in the course plan.
-            let count = courses.filter(course => courseSet.has(course.Code)).length;
+            let count = courses.filter(course => courseSet.has(course.code)).length;
             requirementSatisfied = count >= requirement.Count;
             if (!requirementSatisfied){
-                let missingCourses = courses.filter(course => !courseSet.has(course.Code)).map(course => course.Code);
+                let missingCourses = courses.filter(course => !courseSet.has(course.code)).map(course => course.code);
                 let message = `Missing courses for ${major.Name}: choose at least ${requirement.Count} of ${missingCourses.join(", ")}.`;
                 let errorMsg = new PlanError(null, message);
                 errors.push(errorMsg);
