@@ -9,7 +9,7 @@ const majorOptions = await loadMajorOptions();
 const minorOptions = await loadMinorOptions();
 
 var errors = [];
-export function validateChoices(){
+export function validateMajorMinorRequirements(){
     errors = [];
     // Derive the json data for the selected pathway in order to determine the number of majors and minors required.
     const selectedPathway = state.selectedPathway;
