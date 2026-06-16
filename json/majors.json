@@ -233,7 +233,7 @@
                 "Courses": ["COMP719"]
             }
         ],
-        "AlternativeRequirements": [
+        "AlternativePathwayRequirements": [
             {
                 "Type": "Required",
                 "Courses": ["COMP503"]
@@ -252,8 +252,7 @@
                 "Courses": ["COMP604", "COMP611"]
             },
             {
-                "Type": "ChooseN",
-                "Count": 1,
+                "Type": "Required",
                 "Courses": ["COMP610"]
             },
             {

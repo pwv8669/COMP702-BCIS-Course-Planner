@@ -6,8 +6,8 @@ export class MajorOption {
         this.Code = data.Code;
         this.Name = data.Name;
         this.Requirements = resolveRequirements(data.Requirements, courses);
-        this.AlternativeRequirements = data.AlternativeRequirements
-            ? resolveRequirements(data.AlternativeRequirements, courses)
+        this.AlternativePathwayRequirements = data.AlternativePathwayRequirements
+            ? resolveRequirements(data.AlternativePathwayRequirements, courses)
             : null;
         this.IsCore = data.IsCore ?? false;
     }
