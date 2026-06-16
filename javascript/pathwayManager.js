@@ -35,43 +35,33 @@ export async function updatePathwayOptions(pathway)
     // Clear the container before adding new options.
     pathwayOptionContainer.innerHTML = ''; 
 
-    // Log the current selected majors, minors, and electives for debugging purposes.
-    //console.log(`Majors Array: ${state.selectedMajors}`);
-    //console.log(`Minors Array: ${state.selectedMinors}`);
-    //console.log(`Electives Array: ${state.selectedElectives}`);
-
     // Based on the selected pathway, create the appropriate dropdowns for majors, minors, and electives.
-    createMajorDropdowns(state, Pathways);
-    createMinorDropdowns(state, Pathways);
+    createMajorDropdowns();
+    createMinorDropdowns();
 
     // If the selected pathway does not match any of the defined pathways, log an error message to the console.
     if (state.selectedPathway != Pathways.doubleMajors && state.selectedPathway != Pathways.doubleMinors && state.selectedPathway != Pathways.electives)
     {
-        console.log(`Could not update pathway options`);
+        console.log(`Could not update pathway options because of invalid pathway selection: ${state.selectedPathway}`);
     }
 }
 
 // This function fetches the available majors and minors from the json files and populates the majorsArray and minorsArray with the data. It then calls the updatePathwayOptions function to update the dropdown options in the HTML form based on the selected pathway.
 export async function initPathwayOptions()
 {
-	// Fetch the options.json file which contains the list of available majors and minors.
-	const optionsResource = await fetch('./json/options.json');
-	const options = await optionsResource.json();
+    // Clear the majors and minors arrays before fetching new data.
+    majorsArray = [];
+    minorsArray = [];
 
-	// Loop through the list of in the options.json file, and push the data into the majorsArray and minorsArray.
-	for (const option of options.Options)
-	{
-        
-		if (option.AvailableAsMajor)
-		{
-			majorsArray.push(option);
-		}
-		
-		if (option.AvailableAsMinor)
-		{
-			minorsArray.push(option);
-		}
-	}
+	// Fetch the options.json file which contains the list of available majors and minors.
+	const majorOptionsResource = await fetch('./json/majors.json');
+    const minorOptionsResource = await fetch('./json/minors.json');
+	const majorOptions = await majorOptionsResource.json();
+	const minorOptions = await minorOptionsResource.json();
+
+	// Populate the majorsArray and minorsArray with the data from the json files. We filter out the core options from the majors array since they are not selectable by the user.
+	majorsArray = Object.values(majorOptions).filter(option => !option.IsCore);
+    minorsArray = Object.values(minorOptions);
     // After fetching the majors and minors data, call the updatePathwayOptions function to populate the dropdowns in the HTML form based on the selected pathway.
     updatePathwayOptions();
 }
@@ -101,7 +91,8 @@ function createMajorDropdowns()
         major1.appendChild(newOption);
     }
     // Set the value of the major 1 select element to the currently selected major in the state, or '---' if no major is selected.
-    major1.value = state.selectedMajors[0] || '---';
+    addPlaceholderOption(major1);
+    major1.value = state.selectedMajors[0] ?? "";
 
     // If the selected pathway is double majors, we create the major 2 select element as well.
     if (state.selectedPathway == Pathways.doubleMajors){
@@ -127,7 +118,8 @@ function createMajorDropdowns()
             major2.appendChild(newOption);
         }
         // Set the value of the major 2 select element to the currently selected major in the state, or '---' if no major is selected.
-        major2.value = state.selectedMajors[1] || '---';
+        addPlaceholderOption(major2);
+        major2.value = state.selectedMajors[1] ?? "";
     }
 }
 
@@ -159,7 +151,8 @@ function createMinorDropdowns()
             minor1.appendChild(newOption);
         }
         // Set the value of the minor 1 select element to the currently selected minor in the state, or '---' if no minor is selected.
-        minor1.value = state.selectedMinors[0] || '---';
+        addPlaceholderOption(minor1);
+        minor1.value = state.selectedMinors[0] ?? "";
     }
     // If the selected pathway is double minors, we create the minor 2 select element as well.
     if (state.selectedPathway == Pathways.doubleMinors)
@@ -186,16 +179,16 @@ function createMinorDropdowns()
             minor2.appendChild(newOption);
         }	
         // Set the value of the minor 2 select element to the currently selected minor in the state, or '---' if no minor is selected.
-        minor2.value = state.selectedMinors[1] || '---';
+        addPlaceholderOption(minor2);
+        minor2.value = state.selectedMinors[1] ?? "";
     }
 }
 
 async function checkValidOptionChange(self, slot, target)
 {
-    console.log(target)
     await applyOptionChange(slot, null);
     // Always allow unselection.
-    if (target == '---')
+    if (target == "")
     {
         console.log('Unselecting');
         return;
@@ -205,7 +198,7 @@ async function checkValidOptionChange(self, slot, target)
     if (state.selectedMajors.includes(target) || state.selectedMinors.includes(target))
     {
         alert(`You cannot take the same major/minor twice.`);
-        self.value = '---';
+        self.value = "";
         return;
     }
 
@@ -217,19 +210,17 @@ async function checkValidOptionChange(self, slot, target)
 	)
     {
         alert(`Data Science and Artificial Intelligence cannot be taken together.`);
-        self.value = '---';
+        self.value = "";
         return;
     }
     await applyOptionChange(slot, target);
-    if(target != '---'){
+    if(target != ""){
         let errors = validateStudyPlan();
     }
 }
 
 async function applyOptionChange(slot, target)
 {
-    console.log(slot);
-    console.log(target);
     switch (slot)
     {
         case 'major1':
@@ -265,3 +256,10 @@ updatePathwayOptions = async function(pathway) {
     await originalUpdatePathwayOptions(pathway);
     errorDisplay();
 };
+
+function addPlaceholderOption(selectElement) {
+    const placeholder = document.createElement('option');
+    placeholder.value = "";
+    placeholder.textContent = "---";
+    selectElement.appendChild(placeholder);
+}
