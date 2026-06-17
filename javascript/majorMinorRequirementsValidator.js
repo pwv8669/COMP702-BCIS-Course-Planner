@@ -11,6 +11,7 @@ const minorOptions = await loadMinorOptions();
 var errors = [];
 const attributedCourses = new Map();
 const coursePlanCourses = new Set();
+let selectedOptions = [];
 
 export function validateMajorMinorRequirements(){
     // Clear the errors course sets before validating.
@@ -50,6 +51,23 @@ export function validateMajorMinorRequirements(){
             errors.push(errorMsg);
         }
     }
+
+
+    selectedOptions = [];
+
+    for (let i = 0; i < pathway.numMajors; i++) {
+        if (state.selectedMajors[i]) {
+            selectedOptions.push(majorOptions[state.selectedMajors[i]]);
+        }
+    }
+
+    for (let i = 0; i < pathway.numMinors; i++) {
+        if (state.selectedMinors[i]) {
+            selectedOptions.push(minorOptions[state.selectedMinors[i]]);
+        }
+    }
+
+
 
     // Assign required courses only, to make overlap solving easier in the future.
     for (let i = 0; i < pathway.numMajors; i++) {
@@ -126,6 +144,12 @@ function attributeChooseNCourses(majorOrMinor){
 
         let courses = requirement.Courses;
         let availableCourses = courses.filter(course => coursePlanCourses.has(course.code) && !attributedCourses.has(course.code));
+
+        availableCourses.sort((a, b) => {
+            return getCourseUsefulness(a.code, majorOrMinor)
+                - getCourseUsefulness(b.code, majorOrMinor);
+        });
+
         if (availableCourses.length < requirement.Count){
             let courseCodes = requirement.Courses.map(course => course.code);
 
@@ -139,4 +163,30 @@ function attributeChooseNCourses(majorOrMinor){
             attributedCourses.set(availableCourses[i].code, majorOrMinor.Code);
         }
     }
+}
+
+function getCourseUsefulness(courseCode, currentMajorOrMinor) {
+    let usefulness = 0;
+
+    for (let option of selectedOptions) {
+        if (option.Code === currentMajorOrMinor.Code) {
+            continue;
+        }
+
+        for (let requirement of option.Requirements) {
+            if (requirement.Type !== "ChooseN") {
+                continue;
+            }
+
+            let courseIsInRequirement = requirement.Courses.some(
+                course => course.code === courseCode
+            );
+
+            if (courseIsInRequirement) {
+                usefulness++;
+            }
+        }
+    }
+
+    return usefulness;
 }
