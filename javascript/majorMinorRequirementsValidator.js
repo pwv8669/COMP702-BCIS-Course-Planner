@@ -100,7 +100,6 @@ export function validateMajorMinorRequirements(){
 
     // Check for overlaps of "Required" courses, substitute with any still unassigned courses in either major/minor.
     for (const [courseCode, unfufilledMajorOrMinor] of requiredCourseOverlaps) {
-        console.log(`${courseCode} is missing from ${unfufilledMajorOrMinor}`);
         substituteCourse(courseCode, unfufilledMajorOrMinor);
     }
     
@@ -128,10 +127,6 @@ function attributeRequiredCourses(majorOrMinor){
             }
             // Course already attributed to another requirement
             if (attributedCourses.has(course.code)){
-                let otherMajorOrMinor = majorOptions[attributedCourses.get(course.code)] || minorOptions[attributedCourses.get(course.code)];
-                let message = `Course ${course.code} is required for ${majorOrMinor.Name} but is already attributed to ${otherMajorOrMinor.Name}.`;
-                let errorMsg = new PlanError(course.code, message);
-                errors.push(errorMsg);
                 requiredCourseOverlaps.set(course.code, majorOrMinor.Code);
                 continue;
             }
