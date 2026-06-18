@@ -11,6 +11,7 @@ const minorOptions = await loadMinorOptions();
 var errors = [];
 const attributedCourses = new Map();
 const coursePlanCourses = new Set();
+const requiredCourseOverlaps = new Map();
 let selectedOptions = [];
 
 export function validateMajorMinorRequirements(){
@@ -52,22 +53,18 @@ export function validateMajorMinorRequirements(){
         }
     }
 
-
+    // Populate an array of all selected options.
     selectedOptions = [];
-
     for (let i = 0; i < pathway.numMajors; i++) {
         if (state.selectedMajors[i]) {
             selectedOptions.push(majorOptions[state.selectedMajors[i]]);
         }
     }
-
     for (let i = 0; i < pathway.numMinors; i++) {
         if (state.selectedMinors[i]) {
             selectedOptions.push(minorOptions[state.selectedMinors[i]]);
         }
     }
-
-
 
     // Assign required courses only, to make overlap solving easier in the future.
     for (let i = 0; i < pathway.numMajors; i++) {
@@ -100,7 +97,14 @@ export function validateMajorMinorRequirements(){
             );
         }
     }
+
+    // Check for overlaps of "Required" courses, substitute with any still unassigned courses in either major/minor.
+    for (const [courseCode, unfufilledMajorOrMinor] of requiredCourseOverlaps) {
+        console.log(`${courseCode} is missing from ${unfufilledMajorOrMinor}`);
+        substituteCourse(courseCode, unfufilledMajorOrMinor);
+    }
     
+    // Uncomment below to see which courses correspond to which major/minor.
     console.log(attributedCourses);
     return errors;
 }
@@ -128,6 +132,7 @@ function attributeRequiredCourses(majorOrMinor){
                 let message = `Course ${course.code} is required for ${majorOrMinor.Name} but is already attributed to ${otherMajorOrMinor.Name}.`;
                 let errorMsg = new PlanError(course.code, message);
                 errors.push(errorMsg);
+                requiredCourseOverlaps.set(course.code, majorOrMinor.Code);
                 continue;
             }
             // Attribute course to this major/minor
@@ -189,4 +194,95 @@ function getCourseUsefulness(courseCode, currentMajorOrMinor) {
     }
 
     return usefulness;
+}
+
+function findReplacementCourse(majorOrMinor, blockedCourseCode) {
+    for (let requirement of majorOrMinor.Requirements) {
+        if (requirement.Type !== "ChooseN") {
+            continue;
+        }
+
+        for (let course of requirement.Courses) {
+            if (
+                course.code !== blockedCourseCode &&
+                coursePlanCourses.has(course.code) &&
+                !attributedCourses.has(course.code)
+            ) {
+                return course;
+            }
+        }
+    }
+
+    return null;
+}
+
+function substituteCourse(courseCode, unfulfilledMajorOrMinorCode) {
+    const possessingOptionCode = attributedCourses.get(courseCode);
+
+    const possessingOption = selectedOptions.find(option =>
+        option.Code === possessingOptionCode
+    );
+
+    const unfulfilledOption = selectedOptions.find(option =>
+        option.Code === unfulfilledMajorOrMinorCode
+    );
+
+    console.log(`${unfulfilledOption.Name} needs a substitute for ${courseCode}.`);
+
+    const requiredCourse = findCourseInOption(courseCode, unfulfilledOption);
+
+    const possibleCourses = [
+        ...getCoursesOfferedBy(possessingOption),
+        ...getCoursesOfferedBy(unfulfilledOption)
+    ];
+
+    const replacementCourses = possibleCourses.filter(course =>
+        course.code !== courseCode &&
+        coursePlanCourses.has(course.code) &&
+        !attributedCourses.has(course.code) &&
+        course.level >= requiredCourse.level
+    );
+
+    replacementCourses.sort((a, b) =>
+        getCourseUsefulness(a.code, unfulfilledOption) -
+        getCourseUsefulness(b.code, unfulfilledOption)
+    );
+
+    const replacementCourse = replacementCourses[0];
+
+    if (!replacementCourse) {
+        errors.push(new PlanError(
+            courseCode,
+            `Course ${courseCode} is required for ${unfulfilledOption.Name} but is already attributed to ${possessingOption.Name}, and no suitable substitute course was found.`
+        ));
+        return;
+    }
+
+    attributedCourses.set(replacementCourse.code, unfulfilledOption.Code);
+
+    console.log(`${replacementCourse.code} substituted for ${courseCode} in ${unfulfilledOption.Name}.`);
+}
+
+function getCoursesOfferedBy(majorOrMinor) {
+    const courseMap = new Map();
+
+    for (const requirement of majorOrMinor.Requirements) {
+        for (const course of requirement.Courses) {
+            courseMap.set(course.code, course);
+        }
+    }
+
+    return [...courseMap.values()];
+}
+
+function findCourseInOption(courseCode, majorOrMinor) {
+    for (const requirement of majorOrMinor.Requirements) {
+        for (const course of requirement.Courses) {
+            if (course.code === courseCode) {
+                return course;
+            }
+        }
+    }
+
+    return null;
 }
