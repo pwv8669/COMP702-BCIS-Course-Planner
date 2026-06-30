@@ -151,9 +151,11 @@ function attributeChooseNCourses(majorOrMinor){
         });
 
         if (availableCourses.length < requirement.Count){
-            let courseCodes = requirement.Courses.map(course => course.code);
+            const missingCourses = requirement.Courses
+                .filter(course => !coursePlanCourses.has(course.code))
+                .map(course => course.code);
 
-            let message = `Missing courses for ${majorOrMinor.Name}: choose at least ${requirement.Count} of ${courseCodes.join(", ")}.`;
+            let message = `Missing courses for ${majorOrMinor.Name}: choose at least ${requirement.Count} of ${missingCourses.join(", ")}.`;
             let errorMsg = new PlanError(null, message);
             errors.push(errorMsg);
             continue;
