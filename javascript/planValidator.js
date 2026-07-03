@@ -2,7 +2,7 @@
 import { validateNumberOfCourses } from "./numCoursesValidator.js";
 import { validateCourseAppearances } from "./duplicateCoursesValidator.js";
 import { validatePrerequisites } from "./prerequisiteValidator.js";
-import { validateMajorMinorRequirements } from "./majorMinorCourseValidator.js";
+import { validateMajorMinorRequirements } from "./majorMinorRequirementsValidator.js";
 
 // Returns an array of error objects.
 export function validateStudyPlan(){
