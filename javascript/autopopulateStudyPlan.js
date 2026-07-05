@@ -24,9 +24,17 @@ function autocompleteStudyPlan() {
     const requiredMajorsCount = selectedPathway.numMajors;
     const selectedMajors = state.selectedMajors;
     const numSelectedMajors = selectedMajors.filter(major => major !== null).length;
-    console.log(`Required majors: ${requiredMajorsCount}, Selected majors: ${numSelectedMajors}`);
     if (numSelectedMajors < requiredMajorsCount) {
         alert(`Please select at least ${requiredMajorsCount} major(s) for the chosen pathway.`);
+        return;
+    }
+
+    // Check that the enough minors are selected for the chosen pathway.
+    const requiredMinorsCount = selectedPathway.numMinors;
+    const selectedMinors = state.selectedMinors;
+    const numSelectedMinors = selectedMinors.filter(minor => minor !== null).length;
+    if (numSelectedMinors < requiredMinorsCount) {
+        alert(`Please select at least ${requiredMinorsCount} minor(s) for the chosen pathway.`);
         return;
     }
 }
