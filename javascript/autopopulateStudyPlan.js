@@ -18,11 +18,14 @@ function autocompleteStudyPlan() {
         alert("Please select a pathway before autopopulating the study plan.");
         return;
     }
+    const selectedPathway = state.selectedPathway;
+    console.log(`Selected pathway: ${selectedPathway.name}`);
     // Check that the enough majors are selected for the chosen pathway.
-    const selectedMajors = state.selectedMajors || [];
-    const requiredMajorsCount = Pathways[state.selectedPathway].requiredMajors;
-    console.log(`Selected majors: ${selectedMajors.length}, Required majors: ${requiredMajorsCount}`);
-    if (selectedMajors.length < requiredMajorsCount) {
+    const requiredMajorsCount = selectedPathway.numMajors;
+    const selectedMajors = state.selectedMajors;
+    const numSelectedMajors = selectedMajors.filter(major => major !== null).length;
+    console.log(`Required majors: ${requiredMajorsCount}, Selected majors: ${numSelectedMajors}`);
+    if (numSelectedMajors < requiredMajorsCount) {
         alert(`Please select at least ${requiredMajorsCount} major(s) for the chosen pathway.`);
         return;
     }

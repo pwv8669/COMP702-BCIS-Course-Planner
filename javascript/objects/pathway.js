@@ -1,5 +1,6 @@
 export class Pathway {
     constructor(data) {
+        this.name = data.name;
         this.numMajors = Number(data.numMajors);
         this.numMinors = Number(data.numMinors);
         this.numElectives = Number(data.numElectives);
