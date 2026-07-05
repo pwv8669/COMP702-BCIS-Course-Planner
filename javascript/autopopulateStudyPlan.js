@@ -1,8 +1,8 @@
 import { placeCourse, PathwayRefresh, refreshStudyPlan } from './app.js';
-import { renderCoursePlan } from './renderCoursePlan.js';
 import { state, Pathways } from './state.js';
-import { initDragAndDrop } from './dragAndDropController.js';
+import { loadPathways } from "./objects/pathway.js";
 
+const pathways = await loadPathways();
     
 const button = document.getElementById('AutocompletePlanButton');
 
@@ -18,7 +18,7 @@ function autocompleteStudyPlan() {
         alert("Please select a pathway before autopopulating the study plan.");
         return;
     }
-    const selectedPathway = state.selectedPathway;
+    const selectedPathway = pathways[state.selectedPathway];
     console.log(`Selected pathway: ${selectedPathway.name}`);
     // Check that the enough majors are selected for the chosen pathway.
     const requiredMajorsCount = selectedPathway.numMajors;
