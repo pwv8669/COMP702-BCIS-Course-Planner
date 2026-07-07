@@ -22,12 +22,13 @@ export function errorDisplay()
         // Determine error classification
         const isPrereqOrDuplicate = 
             errorObj.message.toLowerCase().includes('prerequisites') || 
-            errorObj.message.toLowerCase().includes('appears');
+            errorObj.message.toLowerCase().includes('appears') ||
+            errorObj.message.toLowerCase().includes('major') ;
 
         // Renders the text element with specific theme classes
         if (errorTextContainer) {
             const msgDiv = document.createElement('div');
-            // Assigns 'error-red' for prequisite and duplicate errors, or 'warning-yellow' for anything else
+            // Assigns 'error-red' for prequisite, duplicate, and major errors or 'warning-yellow' for anything else
             msgDiv.className = isPrereqOrDuplicate ? 'error-text-item red-alert' : 'error-text-item yellow-alert';
             msgDiv.textContent = errorObj.message;
             errorTextContainer.appendChild(msgDiv);

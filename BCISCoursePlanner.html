@@ -24,6 +24,7 @@ th {
 }
 
 .hidden-element {
+  display: none; /*temporarily removing hidden elements*/
   opacity: 0;
   transition: opacity 0.3s ease;
 }
@@ -101,7 +102,7 @@ td{
 
 .error-text-item {
     padding: 10px 14px;
-    margin-bottom: 8px;
+    margin-bottom: 6px;
     font-family: Arial, sans-serif;
     font-size: 13px;
     border-radius: 4px;
@@ -119,6 +120,19 @@ td{
     color: #8a6d1c;
     border-left: 5px solid #e3b022;
 }
+
+    #error-list-container {
+        max-height: 100px;
+        overflow-y: auto;
+        overflow-x: hidden;
+        padding: 10px;
+        background-color: #6e7475;
+        border: 1px solid #ccc;
+        border-radius: 6px;
+        margin-top: 20px;
+        float: left;
+        width: 70%;
+    }
 
 .success-msg {
     color: #1e7e34;
@@ -154,6 +168,17 @@ td{
         grid-template-columns: repeat(2, 1fr);
         gap: 8px;
         padding: 10px 0;
+    }
+
+    #dynamic-course-sidebar {
+        margin-top: 100px;
+        max-height: 550px;
+        overflow-y: auto;
+        overflow-x: hidden;
+        padding-right: 4px;
+        border: 1px solid #ccc;
+        border-radius: 6px;
+        background: #6eacc4;
     }
 
     /* Draggable Items */
@@ -339,7 +364,7 @@ select:hover,button:hover{
         </div>
 
 
-    <div id="error-list-container" style="clear: both; width: 100%; padding-top: 20px;">
+    <div id="error-list-container">
 
     </div>
     <div style="float:right;width:400px">
