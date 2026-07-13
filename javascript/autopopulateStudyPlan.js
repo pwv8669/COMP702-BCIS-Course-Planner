@@ -23,20 +23,36 @@ function autocompleteStudyPlan() {
 }
 
 function getMissingRequiredCourses() {
+    const courseSet = new Set();
+    for (let semester = 0; semester < state.coursePlan.length; semester++) {
+        for (let slot = 0; slot < state.coursePlan[semester].length; slot++) {
+            if (state.coursePlan[semester][slot]) {
+                const course = state.coursePlan[semester][slot];
+                courseSet.add(course);
+            }
+        }
+    }
+
     const selectedPathway = pathways[state.selectedPathway];
     for (let i = 0; i < selectedPathway.numMajors; i++) {
-            if (state.selectedMajors[i] && majorOptions[state.selectedMajors[i]]) {
-                const major = majorOptions[state.selectedMajors[i]];
-                console.log(major);
-                for (const requirement of major.Requirements) {
-                    if (requirement.Type === "Required"){
-                        for (const course of requirement.Courses) {
-                            let placed = false;
-                            for (let semester = 0; semester < state.coursePlan.length && !placed; semester++) {
+        if (state.selectedMajors[i] && majorOptions[state.selectedMajors[i]]) {
+            const major = majorOptions[state.selectedMajors[i]];
+            for (const requirement of major.Requirements) {
+                if (requirement.Type === "Required"){
+                    for (const course of requirement.Courses) {
+                        if (courseSet.has(course)) continue;
+
+                        let placed = false;
+                        for (let semester = 0; semester < state.coursePlan.length && !placed; semester++) {
+                            const isSem1 = semester % 2 === 0;
+                            if (isSem1 && !course.semester1Offered) continue;
+                            if (!isSem1 && !course.semester2Offered) continue;
+
                             for (let slot = 0; slot < state.coursePlan[semester].length; slot++) {
-                                
+                            
                                 if (state.coursePlan[semester][slot] === null) {
                                     state.coursePlan[semester][slot] = course;
+                                    courseSet.add(course);
                                     placed = true;
                                     break;
                                 }
@@ -52,6 +68,12 @@ function getMissingRequiredCourses() {
             
         }
     }
+}
+
+function canPlaceCourse(course, semester) {
+    return (
+        prereq
+    )
 }
 
 function checkIfMajorsAndMinorsSelected() {
