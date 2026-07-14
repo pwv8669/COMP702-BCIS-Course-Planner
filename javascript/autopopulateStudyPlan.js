@@ -15,7 +15,6 @@ button.addEventListener('click', () => {
     // Call the function to autopopulate the study plan
     autocompleteStudyPlan();
     refreshStudyPlan();
-    console.log(state.coursePlan);
 });
 
 function autocompleteStudyPlan() {
@@ -26,15 +25,20 @@ function autocompleteStudyPlan() {
 function getMissingRequiredCourses() {
     const coursesToPlace = [];
 
-    const courseSet = new Set();
+    const placedCourses = new Map();
     for (let semester = 0; semester < state.coursePlan.length; semester++) {
         for (let slot = 0; slot < state.coursePlan[semester].length; slot++) {
-            if (state.coursePlan[semester][slot]) {
-                const course = state.coursePlan[semester][slot];
-                courseSet.add(course);
-            }
+            const course = state.coursePlan[semester][slot];
+            if (!course) continue
+            
+            placedCourses.set(course.code, semester);
         }
     }
+    console.log("Courses to place:");
+    console.table(coursesToPlace.map(course => ({
+        code: course.code,
+        prerequisites: course.prerequisites
+    })));
 
     const selectedPathway = pathways[state.selectedPathway];
     for (let i = 0; i < selectedPathway.numMajors; i++) {
@@ -43,7 +47,7 @@ function getMissingRequiredCourses() {
             for (const requirement of major.Requirements) {
                 if (requirement.Type === "Required"){
                     for (const course of requirement.Courses) {
-                        if (courseSet.has(course)) continue; // TEMP NEED TO INSTEAD FIND REPLACEMENT COURSE.
+                        if (placedCourses.has(course.code)) continue; // TEMP NEED TO INSTEAD FIND REPLACEMENT COURSE.
 
                         coursesToPlace.push(course);
                     }
@@ -51,7 +55,7 @@ function getMissingRequiredCourses() {
             }
         }
     }
-    for (let i = 0; i < state.selectedPathway.numMinors; i++) {
+    for (let i = 0; i < selectedPathway.numMinors; i++) {
         if (state.selectedMinors[i]) {
             
         }
@@ -64,13 +68,25 @@ function getMissingRequiredCourses() {
             let placed = false;
             
             for (let semester = 0; semester < state.coursePlan.length && !placed; semester++) {
-                if (!canPlaceCourse(course, semester)) continue;
+                console.log(`Trying ${course.code} in semester ${semester + 1}`);
+                if (!canPlaceCourse(course, semester, placedCourses)) continue;
+                if (!offeredThisSemester(course, semester)) {
+                    console.log(`${course.code} not offered in semester ${semester + 1}`);
+                    continue;
+                }
+
+                if (!prerequisitesMet(course, semester, placedCourses)) {
+                    console.log(`${course.code} prerequisites not met in semester ${semester + 1}`);
+                    continue;
+                }
 
                 for (let slot = 0; slot < state.coursePlan[semester].length; slot++) {
                     if (state.coursePlan[semester][slot] !== null) continue;
 
                     state.coursePlan[semester][slot] = course;
-                    courseSet.add(course);
+                    console.log(`Placed ${course.code} in semester ${semester + 1}`);
+                    
+                    placedCourses.set(course.code, semester);
 
                     coursesToPlace.splice(i, 1);
                     i--;
@@ -89,11 +105,11 @@ function getMissingRequiredCourses() {
     }
 }
 
-function canPlaceCourse(course, semester) {
+function canPlaceCourse(course, semester, placedCourses) {
     return (
         offeredThisSemester(course, semester) &&
-        prerequisitesMet(course, semester)
-    )
+        prerequisitesMet(course, semester, placedCourses)
+    );
 }
 
 function offeredThisSemester(course, semester) {
@@ -103,9 +119,21 @@ function offeredThisSemester(course, semester) {
     return course.semester2Offered;
 }
 
-function prerequisitesMet(course, semester) {
-    const completedCourses = getCompletedCourses(semester);
+function prerequisitesMet(course, semester, placedCourses) {
+    const completedCourses = getCompletedCoursesForSemester(placedCourses, semester);
     return evaluatePrerequisiteTree(course.prerequisites, completedCourses);
+}
+
+function getCompletedCoursesForSemester(placedCourses, semester) {
+    const completedCourses = new Set();
+
+    for (const [courseCode, completedSemester] of placedCourses) {
+        if (completedSemester < semester) {
+            completedCourses.add(courseCode);
+        }
+    }
+
+    return completedCourses;
 }
 
 function checkIfMajorsAndMinorsSelected() {
