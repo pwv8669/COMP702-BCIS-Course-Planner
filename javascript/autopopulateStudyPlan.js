@@ -2,6 +2,7 @@ import { placeCourse, PathwayRefresh, refreshStudyPlan } from './app.js';
 import { state, Pathways } from './state.js';
 import { loadPathways } from "./objects/pathway.js";
 import { loadMajorOptions, loadMinorOptions } from "./objects/majorMinorOption.js";
+import { getCompletedCourses, evaluatePrerequisiteTree } from './prerequisiteValidator.js';
 
 const pathways = await loadPathways();
 const majorOptions = await loadMajorOptions();
@@ -40,13 +41,11 @@ function getMissingRequiredCourses() {
             for (const requirement of major.Requirements) {
                 if (requirement.Type === "Required"){
                     for (const course of requirement.Courses) {
-                        if (courseSet.has(course)) continue;
+                        if (courseSet.has(course)) continue; // TEMP NEED TO INSTEAD FIND REPLACEMENT COURSE.
 
                         let placed = false;
                         for (let semester = 0; semester < state.coursePlan.length && !placed; semester++) {
-                            const isSem1 = semester % 2 === 0;
-                            if (isSem1 && !course.semester1Offered) continue;
-                            if (!isSem1 && !course.semester2Offered) continue;
+                            if (!canPlaceCourse(course, semester)) continue;
 
                             for (let slot = 0; slot < state.coursePlan[semester].length; slot++) {
                             
@@ -72,8 +71,21 @@ function getMissingRequiredCourses() {
 
 function canPlaceCourse(course, semester) {
     return (
-        prereq
+        offeredThisSemester(course, semester) &&
+        prerequisitesMet(course, semester)
     )
+}
+
+function offeredThisSemester(course, semester) {
+    const isSemester1 = semester % 2 === 0;
+
+    if (isSemester1) return course.semester1Offered;
+    return course.semester2Offered;
+}
+
+function prerequisitesMet(course, semester) {
+    const completedCourses = getCompletedCourses(semester);
+    return evaluatePrerequisiteTree(course.prerequisites, completedCourses);
 }
 
 function checkIfMajorsAndMinorsSelected() {
