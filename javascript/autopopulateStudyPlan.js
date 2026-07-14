@@ -24,6 +24,8 @@ function autocompleteStudyPlan() {
 }
 
 function getMissingRequiredCourses() {
+    const coursesToPlace = [];
+
     const courseSet = new Set();
     for (let semester = 0; semester < state.coursePlan.length; semester++) {
         for (let slot = 0; slot < state.coursePlan[semester].length; slot++) {
@@ -43,20 +45,7 @@ function getMissingRequiredCourses() {
                     for (const course of requirement.Courses) {
                         if (courseSet.has(course)) continue; // TEMP NEED TO INSTEAD FIND REPLACEMENT COURSE.
 
-                        let placed = false;
-                        for (let semester = 0; semester < state.coursePlan.length && !placed; semester++) {
-                            if (!canPlaceCourse(course, semester)) continue;
-
-                            for (let slot = 0; slot < state.coursePlan[semester].length; slot++) {
-                            
-                                if (state.coursePlan[semester][slot] === null) {
-                                    state.coursePlan[semester][slot] = course;
-                                    courseSet.add(course);
-                                    placed = true;
-                                    break;
-                                }
-                            }
-                        }
+                        coursesToPlace.push(course);
                     }
                 }
             }
@@ -65,6 +54,37 @@ function getMissingRequiredCourses() {
     for (let i = 0; i < state.selectedPathway.numMinors; i++) {
         if (state.selectedMinors[i]) {
             
+        }
+    }
+    while (coursesToPlace.length > 0) {
+        let placedSomething = false;
+
+        for (let i = 0; i < coursesToPlace.length; i++) {
+            const course = coursesToPlace[i];
+            let placed = false;
+            
+            for (let semester = 0; semester < state.coursePlan.length && !placed; semester++) {
+                if (!canPlaceCourse(course, semester)) continue;
+
+                for (let slot = 0; slot < state.coursePlan[semester].length; slot++) {
+                    if (state.coursePlan[semester][slot] !== null) continue;
+
+                    state.coursePlan[semester][slot] = course;
+                    courseSet.add(course);
+
+                    coursesToPlace.splice(i, 1);
+                    i--;
+
+                    placed = true;
+                    placedSomething = true;
+                    break;
+                }
+            }
+        }
+
+        if (!placedSomething) {
+            console.warn("Unable to place remaining courses:", coursesToPlace);
+            break;
         }
     }
 }
