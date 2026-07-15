@@ -2,7 +2,7 @@
 import { validateNumberOfCourses } from "./numCoursesValidator.js";
 import { validateCourseAppearances } from "./duplicateCoursesValidator.js";
 import { validatePrerequisites } from "./prerequisiteValidator.js";
-import { validateChoices } from "./courseCounter.js";
+import { validateMajorMinorRequirements } from "./majorMinorRequirementsValidator.js";
 
 // Returns an array of error objects.
 export function validateStudyPlan(){
@@ -23,7 +23,7 @@ export function validateStudyPlan(){
         errors.push(planErrors[i]);
     }
 
-    const majorErrors = validateChoices()
+    const majorErrors = validateMajorMinorRequirements();
     for(let i = 0; i<majorErrors.length; i++){
         errors.push(majorErrors[i]);
     }
