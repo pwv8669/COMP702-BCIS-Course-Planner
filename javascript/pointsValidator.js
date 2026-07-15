@@ -1,10 +1,11 @@
 import { state, Pathways } from './state.js'
 import { PlanError } from './objects/planError.js';
 import { loadPathways } from "./objects/pathway.js";
-import { loadMajorMinorOptions } from "./objects/majorMinorOption.js";
+import { loadMajorOptions, loadMinorOptions } from "./objects/majorMinorOption.js";
 
 const pathways = await loadPathways();
-const majorMinorOptions = await loadMajorMinorOptions();
+const majorOptions = await loadMajorOptions();
+const minorOptions = await loadMinorOptions();
 
 var errors = [];
 var allPointsSources = [];
