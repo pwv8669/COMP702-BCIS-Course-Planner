@@ -46,7 +46,6 @@ td{
      font-size: 80%;
 
   font-weight: bolder;
-  text-transform: uppercase;
   vertical-align: top;
 }
 .schedule-table td:nth-child(even){background-color: #3abd3a;}  /* Alternate between light and dark cells */
@@ -225,6 +224,24 @@ tr{
 .core{
   background-color: #4285b9;
 }
+.prereq-btn {
+    width: 40%;
+    float: right;
+    padding: 4px;
+    font-size: 12px;
+    border-radius: 0px;
+    background: #5a2ea6;
+    color: white;
+    border: none;
+    cursor: pointer;
+    margin-bottom: 0px;
+    margin-right; 2px;
+}
+.prereq-list {
+    margin-bottom: 30px; /* space so button doesn't overlap text */
+    padding: 6px;
+    border-radius: 0px;
+}
 
 
 .major{
@@ -258,10 +275,10 @@ button {
 
     .button-grid {
         display: grid;
-        grid-template-columns: repeat(2, 1fr); /* 2 columns */
-        gap: 12px; /* spacing between buttons */
-        width: 300px; /* adjust to your layout */
-        float: left; /* keeps it on the right side if you want */
+        grid-template-columns: repeat(2, 1fr); 
+        gap: 12px; 
+        width: 300px; 
+        float: left; 
         padding: 10px;
     }
 
@@ -474,11 +491,12 @@ function getPDF(){
 	};
 </script>
 
-<script type="module" defer>
+<!-- 
+ <script type="module" defer>
 import {importschedule} from "./javascript/filehandler.js";
 //this is for file input
 const inputElement = document.getElementById("file_upload");
-inputElement.addEventListener("change", handleFiles);
+inputElement.addEventListener("change", handleFiles); 
 
 
 function handleFiles() {
@@ -497,5 +515,6 @@ const reader = new FileReader();
  
 }
 </script>
+-->
 
 </html>

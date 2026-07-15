@@ -1,54 +1,98 @@
-export async function renderCoursePlan(state) {
-    // Loop through the course plan and update the corresponding cells in the HTML table with the course codes.
-    for (let row = 0; row < state.coursePlan.length; row++) {
-        for (let col = 0; col < state.coursePlan[row].length; col++) {
-            // Get the cell element by its id.
-            const cell = document.getElementById(`cell-${row}-${col}`);
-            // Get the course code from the course plan at the current row and column.
-            if (!cell) {
-                console.warn(`Cell element 'cell-${row}-${col}' not found in the HTML table.`);
-                continue; // Skip to the next cell safely
+function parsePrereqs(node) {
+    if (!node) return "No prerequisites";
+
+    // COURSE node
+    if (node.type === "COURSE") {
+        return node.value || (node.course?.code ?? "Unknown course");
+    }
+
+    // AND / OR nodes
+    if (node.type === "AND" || node.type === "OR") {
+
+        const op = node.type.toLowerCase(); // "and" / "or"
+        const children = Array.isArray(node.children) ? node.children : [];
+
+        // Single child so no operator needed
+        if (children.length === 1) {
+            return parsePrereqs(children[0]);
+        }
+
+        // No children so fallback
+        if (children.length === 0) {
+            return node.value || "Unknown prerequisite";
+        }
+
+        // Parse children recursively
+        const parsedChildren = children.map(child => parsePrereqs(child));
+
+        // OR groups always have parentheses + "or"
+        if (node.type === "OR") {
+            return `(${parsedChildren.join(` ${op} `)})`;
+        }
+
+        // AND groups have commas + "and" before last item
+        if (node.type === "AND") {
+            if (parsedChildren.length === 2) {
+             
+                return `${parsedChildren[0]} and ${parsedChildren[1]}`;
             }
 
+            // More than 2 items:
+            // "A, B, C, and D"
+            const last = parsedChildren.pop();
+            return `${parsedChildren.join(", ")}, and ${last}`;
+        }
+    }
+
+    return "Unknown prerequisite structure";
+}
+
+
+
+export async function renderCoursePlan(state) {
+    for (let row = 0; row < state.coursePlan.length; row++) {
+        for (let col = 0; col < state.coursePlan[row].length; col++) {
+
+            const cell = document.getElementById(`cell-${row}-${col}`);
+            if (!cell) continue;
+
             const course = state.coursePlan[row][col];
-            if (course) {
-                // If there is a course, update the cell's text content with the course code and name.
-              //  cell.textContent = `${course.code}: ${course.name}` || '';
-              let innertext = `${course.code}: ${course.name}<br><div class=hidden-element>Points:${course.points}</div>` || '';
-              if(course.prerequisites != null){
-                if(course.prerequisites.type != null){
-                    if(course.prerequisites.type == 'AND'){
-                         innertext += `<div class=hidden-element>Prerequisites:`;
-                        console.log('AND');
-                        for(let and = 0; and < course.prerequisites.children.length;and++){
-                            if(course.prerequisites.children[and].value != null){
-                                innertext += course.prerequisites.children[and].value;
-                                innertext += " ";
-                            }
-                            if(and % 2 == 0){
-                                innertext += '<br>';
-                            }
-                            
-                        }
-                        innertext += `</div>`;
-                    }
-                    else if(course.prerequisites.type == "COURSE"){
-                        console.log('output' + course.prerequisites.value);
-                        innertext += `<div class=hidden-element>Prerequisites:`;
-                        innertext += course.prerequisites.value;
-                        innertext += `</div>`;
-                    }
-                }
-             
-              }
-              
-              cell.innerHTML = innertext;
-              //cell.innerHTML += `\nPrerequisites:${course.prerequisites.course.code}`
-             
-            } else {
-                // If there is no course code, clear the cell's text content.
-                cell.textContent = '';
+
+            if (!course) {
+                cell.textContent = "";
+                continue;
             }
+
+            const prereqText = parsePrereqs(course.prerequisites);
+
+            cell.innerHTML = `
+                <div class="course-cell">
+                    <div class="course-name">${course.code}: ${course.name}</div>
+
+                    <button class="prereq-btn">
+                        Show reqs
+                    </button>
+
+                    <div class="prereq-list" style="display:none;">
+                        ${prereqText}
+                    </div>
+                </div>
+            `;
         }
     }
 }
+
+document.addEventListener("DOMContentLoaded", () => {
+    document.addEventListener("click", (e) => {
+        if (!e.target.classList.contains("prereq-btn")) return;
+
+        const box = e.target.nextElementSibling;
+        const hidden = box.style.display === "none";
+
+        box.style.display = hidden ? "block" : "none";
+        e.target.textContent = hidden ? "Hide reqs" : "Show reqs";
+    });
+});
+
+
+
