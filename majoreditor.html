@@ -110,13 +110,12 @@ select {
   <h1>BCIS Major/Minor Editor</h1>
 
       <label>Major or Minor:</label>
- <select id="MajorMinorSelection">
-<option>Major</option>
-<option>Minor</option>
-
-</select>
+ <select id="MajorMinorSelection" onchange = "SetupMajorMinorSelections()">
+  <option>Major</option>
+  <option>Minor</option>
+  </select>
 <br></br>
-  <form method="POST" action="./php/editMajor.php">
+  <form id="MajorMinorPostForm" method="POST" action="./php/editMajor.php">
     <input name="Code" type="text" placeholder="Code" required><br>
     <input name="Name" type="text" placeholder="Name" required><br><br>
   Courses: <input name="Courses" type="text" placeholder="e.g. MATH503 AND (COMP603 OR COMP610)"><br>
@@ -137,15 +136,24 @@ select {
   <p id="majortoedit" style="margin-top: 0%; "></p></div>
   </div>
 </body>
- 
-<script type="module" defer>
+<script type="module">
   import {SetupMajorMinorSelections} from "./javascript/SelectionMenu.js";
- document.getElementById("MajorMinorSelection").onchange = (SetupMajorMinorSelections());
-</script>
+  function testfunc(){
+    if(document.getElementById("MajorMinorSelection").value == "Major"){
+      document.getElementById("MajorMinorPostForm").action="./php/editMajor.php";
+    }
+    else{
+      document.getElementById("MajorMinorPostForm").action="./php/editMinor.php";
+      //console.log("setposttominor");
+    }
+    SetupMajorMinorSelections();
+  }
+  console.log(document.getElementById("MajorMinorSelection").onchange = testfunc);
 
+</script>
  <script>
 //array that stores all course objects in json
-const optionobjectsstore = [];//this is the array that will hold the objects for the auto-fill
+let optionobjectsstore = [];//this is the array that will hold the objects for the auto-fill
     function setInput(){
       var x = document.getElementById("majorselectionedit").value;//get value from selection
       console.log(x);
@@ -155,8 +163,33 @@ const optionobjectsstore = [];//this is the array that will hold the objects for
         document.getElementsByName("Code")[0].value = optionobjectsstore[x].Code;
         document.getElementsByName("Name")[0].value = optionobjectsstore[x].Name;
        
-       
-        document.getElementsByName("Courses")[0].value = optionobjectsstore[x].Courses;
+
+        //creating the text for the courses
+        let coursetext = "";
+        for(const required in optionobjectsstore[x].Requirements){
+         
+          if((optionobjectsstore[x].Requirements[required].Courses.length) > 1){
+
+            for(const multicourse in optionobjectsstore[x].Requirements[required].Courses){
+              coursetext +=(optionobjectsstore[x].Requirements[required].Courses[multicourse])
+               if(multicourse != optionobjectsstore[x].Requirements[required].Courses.length - 1){
+                  coursetext += " OR ";
+                }
+            }
+          }
+          else{
+            coursetext +=(optionobjectsstore[x].Requirements[required].Courses[0])
+          }
+          if(required != optionobjectsstore[x].Requirements.length - 1){
+            coursetext += ", ";
+          }
+          console.log(coursetext);
+        }
+
+
+
+        document.getElementsByName("Courses")[0].value = coursetext;
+        //console.log(optionobjectsstore[x].Requirements[1].Courses);
       }
       else{//if its the null selection
          document.getElementsByName("Code")[0].value = "";//reset
@@ -165,7 +198,5 @@ const optionobjectsstore = [];//this is the array that will hold the objects for
       }
      
     }
-    
-
 </script>
 </html>

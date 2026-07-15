@@ -1,6 +1,6 @@
 <?php
 if($_SERVER["REQUEST_METHOD"] == "POST"){
-    $filePath = "../json/options.json";
+    $filePath = "../json/majors.json";
     
     // Load existing options from the JSON file.
     if (file_exists($filePath)) {
@@ -16,7 +16,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
     }
 
     $found = false;
-    foreach ($options["Options"] as $key => $obj) {//go through each entry 
+    foreach ($options as $key => $obj) {//go through each entry 
     echo($obj['Name']);
     echo($key);
         if($obj['Name'] == $_POST["Name"]){
@@ -26,24 +26,25 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
             $option = [
                 "Code" => $code,
                 "Name" => $_POST["Name"],
-                "Courses" => preg_split("/[\s,]+/", $_POST["Courses"])?? "",
-                "AvailableAsMajor" => isset($_POST["MajorOffered"]) ? true : false,
-                "AvailableAsMinor" => isset($_POST["MinorOffered"]) ? true : false,
+                "Requirements" => preg_split("/[\s,]+/", $_POST["Courses"])?? "",
+                "IsCore" => false,
             ];
+            if(strcmp($code, "Core") == 1){
+                    $option['IsCore'] = true;
+                }
             // Add/overwrite the course.
-            $options["Options"][$key] = $option;
+            $options[$key] = $option;
             }
     }
     if($found == false){
          $option = [
                 "Code" => $code,
                 "Name" => $_POST["Name"],
-                "Courses" => preg_split("/[\s,]+/", $_POST["Courses"])?? "",
-                "AvailableAsMajor" => isset($_POST["MajorOffered"]) ? true : false,
-                "AvailableAsMinor" => isset($_POST["MinorOffered"]) ? true : false,
+                "Requirements" => preg_split("/[\s,]+/", $_POST["Courses"])?? "",
+                "IsCore" => false,
             ];
             // Add/overwrite the course.
-            array_push($options["Options"], $option);
+            $options[$option['Code']] = $option;
     }
     // Sort the courses alphabetically by course code.
     ksort($options);
