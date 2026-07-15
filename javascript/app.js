@@ -29,10 +29,6 @@ async function init() {
 
 	placeCourse(1, 0, 'COMP507');
 	placeCourse(1, 1, 'DIGD507');
-	placeCourse(1, 2, 'COMP503');
-	placeCourse(1, 3, 'COMP603');
-
-	placeCourse(2, 1, 'COMP612');
 
 	placeCourse(4, 0, 'COMP702');
 	placeCourse(5, 0, 'COMP703');
