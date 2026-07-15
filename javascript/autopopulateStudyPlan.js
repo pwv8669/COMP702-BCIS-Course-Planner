@@ -2,7 +2,8 @@ import { placeCourse, PathwayRefresh, refreshStudyPlan } from './app.js';
 import { state, Pathways } from './state.js';
 import { loadPathways } from "./objects/pathway.js";
 import { loadMajorOptions, loadMinorOptions } from "./objects/majorMinorOption.js";
-import { getCompletedCourses, evaluatePrerequisiteTree } from './prerequisiteValidator.js';
+import { evaluatePrerequisiteTree } from './prerequisiteValidator.js';
+import { getCourseUsefulness } from './majorMinorRequirementsValidator.js';
 
 const pathways = await loadPathways();
 const majorOptions = await loadMajorOptions();
@@ -10,21 +11,30 @@ const minorOptions = await loadMinorOptions();
     
 const button = document.getElementById('AutocompletePlanButton');
 
+const coursesToSubstitute = new Map();
+
 button.addEventListener('click', () => {
     console.log("Autopopulate Plan button clicked");
     // Call the function to autopopulate the study plan
     autocompleteStudyPlan();
-    refreshStudyPlan();
 });
 
 function autocompleteStudyPlan() {
     if (!checkIfMajorsAndMinorsSelected()) return;
-    const missingRequiredCourses = getMissingRequiredCourses();
+    buildCourseList();
+    scheduleCourses();
+    refreshStudyPlan();
 }
 
-function getMissingRequiredCourses() {
-    const coursesToPlace = [];
+function buildCourseList() {
+    
+}
 
+function scheduleCourses() {
+    
+}
+
+function getPlacedCourses() {
     const placedCourses = new Map();
     for (let semester = 0; semester < state.coursePlan.length; semester++) {
         for (let slot = 0; slot < state.coursePlan[semester].length; slot++) {
@@ -34,32 +44,10 @@ function getMissingRequiredCourses() {
             placedCourses.set(course.code, semester);
         }
     }
-    console.log("Courses to place:");
-    console.table(coursesToPlace.map(course => ({
-        code: course.code,
-        prerequisites: course.prerequisites
-    })));
+    return placedCourses;
+}
 
-    const selectedPathway = pathways[state.selectedPathway];
-    for (let i = 0; i < selectedPathway.numMajors; i++) {
-        if (state.selectedMajors[i] && majorOptions[state.selectedMajors[i]]) {
-            const major = majorOptions[state.selectedMajors[i]];
-            for (const requirement of major.Requirements) {
-                if (requirement.Type === "Required"){
-                    for (const course of requirement.Courses) {
-                        if (placedCourses.has(course.code)) continue; // TEMP NEED TO INSTEAD FIND REPLACEMENT COURSE.
-
-                        coursesToPlace.push(course);
-                    }
-                }
-            }
-        }
-    }
-    for (let i = 0; i < selectedPathway.numMinors; i++) {
-        if (state.selectedMinors[i]) {
-            
-        }
-    }
+function placeCourses(coursesToPlace, placedCourses) {
     while (coursesToPlace.length > 0) {
         let placedSomething = false;
 
@@ -68,23 +56,10 @@ function getMissingRequiredCourses() {
             let placed = false;
             
             for (let semester = 0; semester < state.coursePlan.length && !placed; semester++) {
-                console.log(`Trying ${course.code} in semester ${semester + 1}`);
                 if (!canPlaceCourse(course, semester, placedCourses)) continue;
-                if (!offeredThisSemester(course, semester)) {
-                    console.log(`${course.code} not offered in semester ${semester + 1}`);
-                    continue;
-                }
-
-                if (!prerequisitesMet(course, semester, placedCourses)) {
-                    console.log(`${course.code} prerequisites not met in semester ${semester + 1}`);
-                    continue;
-                }
 
                 for (let slot = 0; slot < state.coursePlan[semester].length; slot++) {
                     if (state.coursePlan[semester][slot] !== null) continue;
-
-                    state.coursePlan[semester][slot] = course;
-                    console.log(`Placed ${course.code} in semester ${semester + 1}`);
                     
                     placedCourses.set(course.code, semester);
 
@@ -132,7 +107,6 @@ function getCompletedCoursesForSemester(placedCourses, semester) {
             completedCourses.add(courseCode);
         }
     }
-
     return completedCourses;
 }
 
@@ -143,7 +117,6 @@ function checkIfMajorsAndMinorsSelected() {
         return false;
     }
     const selectedPathway = pathways[state.selectedPathway];
-    console.log(`Selected pathway: ${selectedPathway.name}`);
     // Check that the enough majors are selected for the chosen pathway.
     const requiredMajorsCount = selectedPathway.numMajors;
     const selectedMajors = state.selectedMajors;
