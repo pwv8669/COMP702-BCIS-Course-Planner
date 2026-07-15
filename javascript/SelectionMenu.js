@@ -33,11 +33,15 @@ export async function SetupSelections()
 
 export async function SetupMajorMinorSelections()
 {
-
-	const optionsData = await fetch('json/options.json');//open file
+	console.log("test");
+	const majorminor = document.getElementById("MajorMinorSelection").text;
+	const optionsData  = await fetch('json/majors.json');
+	if(majorminor == "Minor"){
+			optionsData = await fetch('json/minors.json');//open file
+	}
 	const options = await optionsData.json();
-	console.log(options.Options);
-	const optionarray = options.Options;
+	console.log(options);
+	const optionarray = options;
 	let text = "<select id=\"majorselectionedit\" onchange=\"setInput()\">"//this will be the 
 	
 	//selection menu, and will replace the empty coursetoedit <p>

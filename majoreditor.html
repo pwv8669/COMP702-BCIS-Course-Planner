@@ -33,41 +33,6 @@ input {
 
 
 /* input styling */
-label {
-  display: inline-block;
-  cursor: pointer;
-  position: relative;
-  padding-left: 25px;
-  margin-left: 15px;
-  margin-top: 25px;
-  vertical-align: center;
-  font-size: 11px;
-     transition: transform .2s;
-}
-
-label:hover {
-     transform: scale(1.2);
-}
-
-
-
-label:before {
-  content: "";
-  display: inline-block;
-
-
-  width: 16px;
-  height: 16px;
-
-
-  margin-right: 10px;
-  position: absolute;
-  left: 0;
-  bottom: 1px;
-  background-color: #396b8a;
-}
-
-
 input[type="checkbox"] {
     display: none;
 }
@@ -144,12 +109,19 @@ select {
   <div style="width: 45%; padding-bottom: 2px;padding-top: 0.5px;padding-left: 1%;">
   <h1>BCIS Major/Minor Editor</h1>
 
+      <label>Major or Minor:</label>
+ <select id="MajorMinorSelection">
+<option>Major</option>
+<option>Minor</option>
+
+</select>
+<br></br>
   <form method="POST" action="./php/editMajor.php">
-    <input name="Code" type="text" placeholder="Major/Minor Code" required><br>
-    <input name="Name" type="text" placeholder="Major/Minor Name" required><br>
-    Offered As:<br>Major <input id="Major"name="MajorOffered" type="checkbox"><label for="Major"></label>
-    <br>Minor<input id="Minor"name="MinorOffered" type="checkbox"> <label for="Minor"></label><br>
-    Courses : <input name="Courses" type="text" placeholder="e.g. MATH503 AND (COMP603 OR COMP610)"><br>
+    <input name="Code" type="text" placeholder="Code" required><br>
+    <input name="Name" type="text" placeholder="Name" required><br><br>
+  Courses: <input name="Courses" type="text" placeholder="e.g. MATH503 AND (COMP603 OR COMP610)"><br>
+
+   
    <br>
     <input class="submit" type="submit" value="Edit Option">
   </form>
@@ -166,43 +138,34 @@ select {
   </div>
 </body>
  
-<script>
+<script type="module" defer>
+  import {SetupMajorMinorSelections} from "./javascript/SelectionMenu.js";
+ document.getElementById("MajorMinorSelection").onchange = (SetupMajorMinorSelections());
+</script>
+
+ <script>
 //array that stores all course objects in json
 const optionobjectsstore = [];//this is the array that will hold the objects for the auto-fill
     function setInput(){
       var x = document.getElementById("majorselectionedit").value;//get value from selection
+      console.log(x);
       if(x != ""){//if its not the null selection
         //replace with their respective information
         console.log(optionobjectsstore[x]);
         document.getElementsByName("Code")[0].value = optionobjectsstore[x].Code;
         document.getElementsByName("Name")[0].value = optionobjectsstore[x].Name;
        
-        if(optionobjectsstore[x].AvailableAsMajor == true){//set checks based on if true or not
-          document.getElementsByName("MajorOffered")[0].checked = 1;//check if true
-        }
-        else{
-           document.getElementsByName("MajorOffered")[0].checked = 0;//uncheck if false
-        }
-
-        if(optionobjectsstore[x].AvailableAsMinor == true){//refer to above, this time for semester 2
-          document.getElementsByName("MinorOffered")[0].checked = 1;
-        }
-        else{
-           document.getElementsByName("MinorOffered")[0].checked = 0;
-        }
+       
         document.getElementsByName("Courses")[0].value = optionobjectsstore[x].Courses;
       }
       else{//if its the null selection
          document.getElementsByName("Code")[0].value = "";//reset
       document.getElementsByName("Name")[0].value = "";
-      document.getElementsByName("Points")[0].value = 15;
-      document.getElementsByName("Semester1Offered")[0].checked = 0;
-      document.getElementsByName("Semester2Offered")[0].checked = 0;
-     document.getElementsByName("Prerequisites")[0].value = "";
-      document.getElementsByName("Corequisites")[0].value = "";
+      document.getElementsByName("Courses")[0].value = "";
       }
      
     }
+    
 
 </script>
 </html>
