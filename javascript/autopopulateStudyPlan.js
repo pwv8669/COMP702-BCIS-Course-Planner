@@ -3,7 +3,6 @@ import { state, Pathways } from './state.js';
 import { loadPathways } from "./objects/pathway.js";
 import { loadMajorOptions, loadMinorOptions } from "./objects/majorMinorOption.js";
 import { evaluatePrerequisiteTree } from './prerequisiteValidator.js';
-import { getCourseUsefulness } from './majorMinorRequirementsValidator.js';
 
 const pathways = await loadPathways();
 const majorOptions = await loadMajorOptions();
@@ -21,13 +20,61 @@ button.addEventListener('click', () => {
 
 function autocompleteStudyPlan() {
     if (!checkIfMajorsAndMinorsSelected()) return;
-    buildCourseList();
-    scheduleCourses();
+    const selectedCourses = buildCourseList();
+    scheduleCourses(selectedCourses);
     refreshStudyPlan();
 }
 
 function buildCourseList() {
+    const selectedCourses = new Map();
+    addRequiredCourses(selectedCourses);
+    console.log(selectedCourses)
+    //satisfyChooseNRequirements(selectedCourses);
+    //resolveOverlappingRequiredCourses(selectedCourses);
+    return selectedCourses;
+}
+
+// BuildCourseList() helper functions.
+function addRequiredCourses(selectedCourses) {
+    const selectedPathway = pathways[state.selectedPathway];
+    // Add major required courses
+    for (let i = 0; i < selectedPathway.numMajors; i++) {
+        const majorCode = state.selectedMajors[i];
+        if (!majorCode) continue;
+        const major = majorOptions[majorCode];
+        
+        for (const requirement of major.Requirements) {
+            if (requirement.Type !== "Required") continue;
+            
+            for (const course of requirement.Courses) {
+                if (selectedCourses.has(course.code)) continue;
+                selectedCourses.set(course.code, course);
+            }
+        }
+    }
+    // Add minor required courses
+    for (let i = 0; i < selectedPathway.numMinors; i++) {
+        const minorCode = state.selectedMinors[i];
+        if (!minorCode) continue;
+        const minor = minorOptions[minorCode];
+        
+        for (const requirement of minor.Requirements) {
+            if (requirement.Type !== "Required") continue;
+            
+            for (const course of requirement.Courses) {
+                if (selectedCourses.has(course.code)) continue;
+                selectedCourses.set(course.code, course);
+            }
+        }
+    }
+}
+
+function satisfyChooseNRequirements() {
+
+}
     
+function resolveOverlappingRequiredCourses() {
+
 }
 
 function scheduleCourses() {
