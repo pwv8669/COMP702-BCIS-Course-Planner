@@ -36,7 +36,7 @@ function buildCourseList() {
 }
 
 // --- BuildCourseList() helper functions --- //
-//
+// Adds core courses to the selectedCourses.
 function addCoreCourses(selectedCourses) {
     const core = majorOptions["Core"]
     if (!core) continue;
