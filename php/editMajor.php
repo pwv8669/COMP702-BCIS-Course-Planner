@@ -50,11 +50,28 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
                 $tempobject["Courses"] = preg_split("/OR+/", $temparray[$i]);
                  for( $c = 0; $c < count($tempobject["Courses"]);$c++){
                     $tempobject["Courses"][$c] = preg_replace('/\s+/', '', $tempobject["Courses"][$c]);
+                   // echo("     \n     ");
+                    //echo($tempobject["Courses"][$c]);
                  }
-               
+
                 if(count($tempobject["Courses"]) > 1){
                     $tempobject["Type"] = "ChooseN";
-                    $tempobject['Count'] = count($tempobject["Courses"]);
+
+
+                    //EXTRACT COUNT FROM END BRACKETS
+                    $countnumber = $tempobject["Courses"][count($tempobject["Courses"])-1];//get end element
+                    
+                    $tempobject["Courses"][count($tempobject["Courses"])-1] = preg_split('/\[+/', $countnumber)[0];//get non square bracket part and repair course ending element
+                    $countnumber = preg_split('/\[+/', $countnumber)[1];//extract square bracket part
+                    // echo($countnumber);
+                    
+                    $countnumber = preg_split('/\]+/', $countnumber);
+                    $tempobject['Count'] = intval($countnumber[0]);//get end count
+
+
+
+
+
                 }
                 else{
                     unset($tempobject['Count']);
@@ -124,5 +141,5 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
     $optionsData = json_encode($options, JSON_PRETTY_PRINT);
     file_put_contents($filePath, $optionsData);
 }
-header("Location: ../majoreditor.html");
+//header("Location: ../majoreditor.html");
 ?>

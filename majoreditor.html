@@ -119,7 +119,7 @@ select {
     <input name="Code" type="text" placeholder="Code" required><br>
     <input name="Name" type="text" placeholder="Name" required><br><br>
 <p>Courses: </p>
-  <textarea style="field-sizing: content;" name="Courses" type="text" placeholder="e.g. MATH503 AND (COMP603 OR COMP610)">
+  <textarea style="field-sizing: content;resize: vertical;" name="Courses" type="text" placeholder="e.g. MATH503 AND (COMP603 OR COMP610)">
 </textarea><br>
    
    <br>
@@ -179,6 +179,9 @@ let optionobjectsstore = [];//this is the array that will hold the objects for t
               coursetext +=(optionobjectsstore[x].Requirements[required].Courses[multicourse])
                if(multicourse != optionobjectsstore[x].Requirements[required].Courses.length - 1){
                   coursetext += " OR ";
+                }
+                else{
+                  coursetext += " ["+optionobjectsstore[x].Requirements[required].Count+"]";
                 }
             }
           }
