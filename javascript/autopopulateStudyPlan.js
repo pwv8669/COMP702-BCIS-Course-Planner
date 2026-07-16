@@ -27,21 +27,40 @@ function autocompleteStudyPlan() {
 
 function buildCourseList() {
     const selectedCourses = new Map();
+    addCoreCourses(selectedCourses);
     addRequiredCourses(selectedCourses);
-    console.log(selectedCourses)
-    //satisfyChooseNRequirements(selectedCourses);
+    satisfyChooseNRequirements(selectedCourses);
     //resolveOverlappingRequiredCourses(selectedCourses);
+    console.log(selectedCourses)
     return selectedCourses;
 }
 
-// BuildCourseList() helper functions.
+// --- BuildCourseList() helper functions --- //
+//
+function addCoreCourses(selectedCourses) {
+    const core = majorOptions["Core"]
+    if (!core) continue;
+
+    for (const requirement of major.Requirements) {
+        if (requirement.Type !== "Required") continue;
+            
+        for (const course of requirement.Courses) {
+            if (selectedCourses.has(course.code)) continue;
+            selectedCourses.set(course.code, course);
+        }
+    }
+}
+
+// Adds only the required courses to the selectedCourses map.
 function addRequiredCourses(selectedCourses) {
     const selectedPathway = pathways[state.selectedPathway];
     // Add major required courses
     for (let i = 0; i < selectedPathway.numMajors; i++) {
         const majorCode = state.selectedMajors[i];
         if (!majorCode) continue;
+        
         const major = majorOptions[majorCode];
+        if (!major) continue; 
         
         for (const requirement of major.Requirements) {
             if (requirement.Type !== "Required") continue;
@@ -56,8 +75,10 @@ function addRequiredCourses(selectedCourses) {
     for (let i = 0; i < selectedPathway.numMinors; i++) {
         const minorCode = state.selectedMinors[i];
         if (!minorCode) continue;
+
         const minor = minorOptions[minorCode];
-        
+        if (!minor) continue; 
+
         for (const requirement of minor.Requirements) {
             if (requirement.Type !== "Required") continue;
             
@@ -69,8 +90,56 @@ function addRequiredCourses(selectedCourses) {
     }
 }
 
+// 
 function satisfyChooseNRequirements() {
+    const selectedPathway = pathways[state.selectedPathway];
+    // Process majors
+    for (let i = 0; i < selectedPathway.numMajors; i++) {
+        const majorCode = state.selectedMajors[i];
+        if (!majorCode) continue;
+        
+        const major = majorOptions[majorCode];
+        if (!major) continue; 
 
+        processChooseNRequirements(major.Requirements, selectedCourses);
+    }
+    // Process minors
+    for (let i = 0; i < selectedPathway.numMinors; i++) {
+        const minorCode = state.selectedMinors[i];
+        if (!minorCode) continue;
+        
+        const minor = minorOptions[minorCode];
+        if (!minor) continue; 
+        
+        for (const requirement of minor.Requirements) {
+            if (requirement.Type !== "Required") continue;
+            
+            processChooseNRequirements(major.Requirements, selectedCourses);
+        }
+    }
+}
+
+function processChooseNRequirements(requirements, selectedCourses) {
+    for (const requirement of requirements) {
+        if (requirement.Type !== "ChooseN") continue;
+
+        const remainingOptions = requirement.Courses.filter(
+            course => !selectedCourses.has(course.code)
+        );
+
+        remainingOptions.sort((a, b) =>
+            getCourseUsefulness(a) - getCourseUsefulness(b)
+        );
+
+        const selected = availableCourses.slice(
+            0,
+            requirement.Count
+        );
+        
+        for (const course of selected) {
+            selectedCourses.set(course.code, course);
+        }
+    }
 }
     
 function resolveOverlappingRequiredCourses() {
