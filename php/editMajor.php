@@ -141,5 +141,5 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
     $optionsData = json_encode($options, JSON_PRETTY_PRINT);
     file_put_contents($filePath, $optionsData);
 }
-//header("Location: ../majoreditor.html");
+header("Location: ../majoreditor.html");
 ?>
