@@ -113,11 +113,11 @@ function satisfyChooseNRequirements(selectedCourses) {
             continue;
         }
 
-        availableCourses.sort(
+        /*availableCourses.sort(
             (a, b) => 
                 getCourseUsefulness(a, chooseNRequirements) - 
                 getCourseUsefulness(b, chooseNRequirements)
-        );
+        );*/
 
         const selected = availableCourses.slice(0, requirement.Count);
 
@@ -168,46 +168,6 @@ function getAvailableCourses(requirement, selectedCourses) {
     return requirement.Courses.filter(
         course => !selectedCourses.has(course.code)
     );
-}
-
-function processChooseNRequirements(requirements, selectedCourses) {
-    const chooseNRequirements = getAllChooseNRequirements();
-    for (const requirement of requirements) {
-        if (requirement.Type !== "ChooseN") continue;
-
-        const remainingOptions = getAvailableCourses();
-
-        remainingOptions.sort((a, b) =>
-            getCourseUsefulness(a, chooseNRequirements) - 
-            getCourseUsefulness(b, chooseNRequirements)
-        );
-
-        const selected = availableCourses.slice(
-            0,
-            requirement.Count
-        );
-        
-        for (const course of selected) {
-            selectedCourses.set(course.code, course);
-        }
-    }
-}
-
-// TEMP: REPEATED & SLIGHTLY EDITED CODE
-function getCourseUsefulness(course, requirements) {
-    let usefulness = 0;
-
-    for (const requirement of requirements) {
-        if (
-            requirement.Courses.some(
-                c => c.code === course.code
-            )
-        ) {
-            usefulness++;
-        }
-    }
-
-    return usefulness;
 }
     
 function resolveOverlappingRequiredCourses(selectedCourses) {
