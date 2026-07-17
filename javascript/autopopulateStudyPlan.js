@@ -235,6 +235,10 @@ function clearCoursePlan() {
 
 function scheduleCourses(selectedCourses) {
     clearCoursePlan();
+    state.coursePlan[4][0] = selectedCourses.get("COMP702");
+    selectedCourses.delete("COMP702");
+    state.coursePlan[5][0] = selectedCourses.get("COMP703");
+    selectedCourses.delete("COMP703");
     const coursesToPlace = Array.from(selectedCourses.values());
     const placedCourses = getPlacedCourses();
     placeCourses(coursesToPlace, placedCourses);
