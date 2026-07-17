@@ -39,9 +39,9 @@ function buildCourseList() {
 // Adds core courses to the selectedCourses.
 function addCoreCourses(selectedCourses) {
     const core = majorOptions["Core"]
-    if (!core) continue;
+    if (!core) return;
 
-    for (const requirement of major.Requirements) {
+    for (const requirement of core.Requirements) {
         if (requirement.Type !== "Required") continue;
             
         for (const course of requirement.Courses) {
@@ -91,30 +91,38 @@ function addRequiredCourses(selectedCourses) {
 }
 
 // 
-function satisfyChooseNRequirements() {
-    const selectedPathway = pathways[state.selectedPathway];
-    // Process majors
-    for (let i = 0; i < selectedPathway.numMajors; i++) {
-        const majorCode = state.selectedMajors[i];
-        if (!majorCode) continue;
-        
-        const major = majorOptions[majorCode];
-        if (!major) continue; 
+function satisfyChooseNRequirements(selectedCourses) {
+    const chooseNRequirements = getAllChooseNRequirements();
 
-        processChooseNRequirements(major.Requirements, selectedCourses);
-    }
-    // Process minors
-    for (let i = 0; i < selectedPathway.numMinors; i++) {
-        const minorCode = state.selectedMinors[i];
-        if (!minorCode) continue;
-        
-        const minor = minorOptions[minorCode];
-        if (!minor) continue; 
-        
-        for (const requirement of minor.Requirements) {
-            if (requirement.Type !== "Required") continue;
-            
-            processChooseNRequirements(major.Requirements, selectedCourses);
+    // Prioritise requirements with fewer available choices.
+    chooseNRequirements.sort((a, b) => {
+        const availableA = getAvailableCourses(a, selectedCourses).length;
+        const availableB = getAvailableCourses(b, selectedCourses).length;
+
+        if (availableA !== availableB) {
+            return availableA - availableB
+        }
+
+        return b.Count - a.Count
+    });
+
+    for (const requirement of chooseNRequirements) {
+        const availableCourses = getAvailableCourses(requirement, selectedCourses);
+
+        if(availableCourses.length < requirement.Count) {
+            continue;
+        }
+
+        availableCourses.sort(
+            (a, b) => 
+                getCourseUsefulness(a, chooseNRequirements) - 
+                getCourseUsefulness(b, chooseNRequirements)
+        );
+
+        const selected = availableCourses.slice(0, requirement.Count);
+
+        for (const course of selected) {
+            selectedCourses.set(course.code, course);
         }
     }
 }
@@ -163,13 +171,15 @@ function getAvailableCourses(requirement, selectedCourses) {
 }
 
 function processChooseNRequirements(requirements, selectedCourses) {
+    const chooseNRequirements = getAllChooseNRequirements();
     for (const requirement of requirements) {
         if (requirement.Type !== "ChooseN") continue;
 
         const remainingOptions = getAvailableCourses();
 
         remainingOptions.sort((a, b) =>
-            getCourseUsefulness(a) - getCourseUsefulness(b)
+            getCourseUsefulness(a, chooseNRequirements) - 
+            getCourseUsefulness(b, chooseNRequirements)
         );
 
         const selected = availableCourses.slice(
@@ -181,6 +191,23 @@ function processChooseNRequirements(requirements, selectedCourses) {
             selectedCourses.set(course.code, course);
         }
     }
+}
+
+// TEMP: REPEATED & SLIGHTLY EDITED CODE
+function getCourseUsefulness(course, requirements) {
+    let usefulness = 0;
+
+    for (const requirement of requirements) {
+        if (
+            requirement.Courses.some(
+                c => c.code === course.code
+            )
+        ) {
+            usefulness++;
+        }
+    }
+
+    return usefulness;
 }
     
 function resolveOverlappingRequiredCourses() {
