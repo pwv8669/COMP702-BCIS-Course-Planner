@@ -27,9 +27,20 @@ function autocompleteStudyPlan() {
 
 function buildCourseList() {
     const selectedCourses = new Map();
+    
     addCoreCourses(selectedCourses);
     addRequiredCourses(selectedCourses);
-    satisfyChooseNRequirements(selectedCourses);
+    
+    const chooseNRequirements = getAllChooseNRequirements();
+    if(!tryChooseNRequirements(
+        chooseNRequirements,
+        0,
+        selectedCourses
+    )) {
+        alert("Unable to generate a valid study plan.");
+        return null;
+    }
+
     resolveOverlappingRequiredCourses(selectedCourses);
     console.log(selectedCourses)
     return selectedCourses;
@@ -91,6 +102,73 @@ function addRequiredCourses(selectedCourses) {
 }
 
 // 
+function tryChooseNRequirements(requirements, index, selectedCourses) {
+    // Base case
+    if (index === requirements.length) {
+        return scheduleCourses(new Map(selectedCourses));
+    }
+
+    const requirement = requirements[index];
+
+    const availableCourses = requirement.Courses.filter(
+        course => !selectedCourses.has(course.code)
+    );
+
+    const combinations = getCombinations(
+        availableCourses,
+        requirement.Count
+    );
+
+    for (const combination of combinations) {
+
+        // Add this combination
+        for (const course of combination) {
+            selectedCourses.set(course.code, course);
+        }
+
+        // Recurse to next requirement
+        if (
+            tryChooseNRequirements(
+                requirements,
+                index + 1,
+                selectedCourses
+            )
+        ) {
+            return true;
+        }
+
+        // Backtrack
+        for (const course of combination) {
+            selectedCourses.delete(course.code);
+        }
+    }
+
+    return false;
+}
+
+function getCombinations(courses, count) {
+    const combinations = [];
+
+    function buildCombination(startIndex, currentCombination) {
+        if (currentCombination.length === count) {
+            combinations.push([...currentCombination]);
+            return;
+        }
+
+        for (let i = startIndex; i < courses.length; i++) {
+            currentCombination.push(courses[i]);
+
+            buildCombination(i + 1, currentCombination);
+
+            currentCombination.pop();
+        }
+    }
+
+    buildCombination(0, []);
+
+    return combinations;
+}
+
 function satisfyChooseNRequirements(selectedCourses) {
     const chooseNRequirements = getAllChooseNRequirements();
 
@@ -112,12 +190,6 @@ function satisfyChooseNRequirements(selectedCourses) {
         if(availableCourses.length < requirement.Count) {
             continue;
         }
-
-        /*availableCourses.sort(
-            (a, b) => 
-                getCourseUsefulness(a, chooseNRequirements) - 
-                getCourseUsefulness(b, chooseNRequirements)
-        );*/
 
         const selected = availableCourses.slice(0, requirement.Count);
 
@@ -196,15 +268,17 @@ function clearCoursePlan() {
 function scheduleCourses(selectedCourses) {
     clearCoursePlan();
     state.coursePlan[4][0] = selectedCourses.get("COMP702");
-    selectedCourses.delete("COMP702");
     state.coursePlan[5][0] = selectedCourses.get("COMP703");
-    selectedCourses.delete("COMP703");
 
-    const coursesToPlace = Array.from(selectedCourses.values());
+    const coursesToPlace = Array.from(selectedCourses.values())
+        .filter(course =>
+            course.code !== "COMP702" &&
+            course.code !== "COMP703"
+        );
     coursesToPlace.sort((a, b) => a.level - b.level);
 
     const placedCourses = getPlacedCourses();
-    placeCourses(coursesToPlace, placedCourses);
+    return placeCourses(coursesToPlace, placedCourses);
 }
 
 function getPlacedCourses() {
@@ -249,9 +323,10 @@ function placeCourses(coursesToPlace, placedCourses) {
 
         if (!placedSomething) {
             console.warn("Unable to place remaining courses:", coursesToPlace);
-            break;
+            return false;
         }
     }
+    return true;
 }
 
 function canPlaceCourse(course, semester, placedCourses) {
