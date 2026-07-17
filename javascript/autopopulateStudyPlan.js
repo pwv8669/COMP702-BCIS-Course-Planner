@@ -30,7 +30,7 @@ function buildCourseList() {
     addCoreCourses(selectedCourses);
     addRequiredCourses(selectedCourses);
     satisfyChooseNRequirements(selectedCourses);
-    //resolveOverlappingRequiredCourses(selectedCourses);
+    resolveOverlappingRequiredCourses(selectedCourses);
     console.log(selectedCourses)
     return selectedCourses;
 }
@@ -210,12 +210,31 @@ function getCourseUsefulness(course, requirements) {
     return usefulness;
 }
     
-function resolveOverlappingRequiredCourses() {
+function resolveOverlappingRequiredCourses(selectedCourses) {
+    const selectedPathway = pathways[state.selectedPathway];
+    const numSelectedCourses = selectedCourses.size;
+    const maxCourses = 24;
+    const missingCourses = maxCourses - numSelectedCourses;
+    let maxElectives = 0;
+    if (selectedPathway === pathways['doubleMajors']) {
+        maxElectives = 2;
+    } if (selectedPathway === pathways['electives']) {
+        maxElectives = 4;
+    }
 
+    console.log(`There are ${numSelectedCourses} courses selected, the chosen pathway allows ${maxElectives} electives, meaning that ${missingCourses - maxElectives} courses from the Major/Minor(s) with overlapping must be selected, and they must be at the level of the overlapping required course.`);
+}
+
+function clearCoursePlan() {
+    for (let semester = 0; semester < state.coursePlan.length; semester++) {
+        for (let slot = 0; slot < state.coursePlan[semester].length; slot++) {
+            state.coursePlan[semester][slot] = null;
+        }
+    }
 }
 
 function scheduleCourses() {
-    
+    clearCoursePlan();
 }
 
 function getPlacedCourses() {
