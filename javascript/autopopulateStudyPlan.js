@@ -156,13 +156,17 @@ function getAllChooseNRequirements() {
     return requirements;
 }
 
+function getAvailableCourses(requirement, selectedCourses) {
+    return requirement.Courses.filter(
+        course => !selectedCourses.has(course.code)
+    );
+}
+
 function processChooseNRequirements(requirements, selectedCourses) {
     for (const requirement of requirements) {
         if (requirement.Type !== "ChooseN") continue;
 
-        const remainingOptions = requirement.Courses.filter(
-            course => !selectedCourses.has(course.code)
-        );
+        const remainingOptions = getAvailableCourses();
 
         remainingOptions.sort((a, b) =>
             getCourseUsefulness(a) - getCourseUsefulness(b)
