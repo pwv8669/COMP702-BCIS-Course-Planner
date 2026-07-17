@@ -233,8 +233,11 @@ function clearCoursePlan() {
     }
 }
 
-function scheduleCourses() {
+function scheduleCourses(selectedCourses) {
     clearCoursePlan();
+    const coursesToPlace = Array.from(selectedCourses.values());
+    const placedCourses = getPlacedCourses();
+    placeCourses(coursesToPlace, placedCourses);
 }
 
 function getPlacedCourses() {
@@ -265,6 +268,7 @@ function placeCourses(coursesToPlace, placedCourses) {
                     if (state.coursePlan[semester][slot] !== null) continue;
                     
                     placedCourses.set(course.code, semester);
+                    state.coursePlan[semester][slot] = course;
 
                     coursesToPlace.splice(i, 1);
                     i--;
