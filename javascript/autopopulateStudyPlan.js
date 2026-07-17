@@ -119,6 +119,43 @@ function satisfyChooseNRequirements() {
     }
 }
 
+function getAllChooseNRequirements() {
+    const requirements = [];
+    const selectedPathway = pathways[state.selectedPathway];
+
+    // Majors
+    for (let i = 0; i < selectedPathway.numMajors; i++) {
+        const majorCode = state.selectedMajors[i];
+        if (!majorCode) continue;
+
+        const major = majorOptions[majorCode];
+        if (!major) continue;
+
+        requirements.push(
+            ...major.Requirements.filter(
+                requirement => requirement.Type === "ChooseN"
+            )
+        );
+    }
+
+    // Minors
+    for (let i = 0; i < selectedPathway.numMinors; i++) {
+        const minorCode = state.selectedMinors[i];
+        if (!minorCode) continue;
+
+        const minor = minorOptions[minorCode];
+        if (!minor) continue;
+
+        requirements.push(
+            ...minor.Requirements.filter(
+                requirement => requirement.Type === "ChooseN"
+            )
+        );
+    }
+
+    return requirements;
+}
+
 function processChooseNRequirements(requirements, selectedCourses) {
     for (const requirement of requirements) {
         if (requirement.Type !== "ChooseN") continue;
