@@ -239,7 +239,10 @@ function scheduleCourses(selectedCourses) {
     selectedCourses.delete("COMP702");
     state.coursePlan[5][0] = selectedCourses.get("COMP703");
     selectedCourses.delete("COMP703");
+
     const coursesToPlace = Array.from(selectedCourses.values());
+    coursesToPlace.sort((a, b) => a.level - b.level);
+
     const placedCourses = getPlacedCourses();
     placeCourses(coursesToPlace, placedCourses);
 }
