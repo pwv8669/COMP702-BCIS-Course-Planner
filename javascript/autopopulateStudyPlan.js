@@ -358,32 +358,31 @@ function getAvailableReplacementCourses(
         isDoubleMajor &&
         totalSubstitutes <= 2;
 
-
     if (canUseElectives) {
         return getAvailableElectiveCourses(
             selectedCourses
         );
     }
 
-
     const courses =
         getCoursesFromSelectedMajorsAndMinors();
 
-    return courses.filter(course => {
+    return courses
+        .filter(course => {
+            if (selectedCourses.has(course.code)) {
+                return false;
+            }
 
-        if (selectedCourses.has(course.code)) {
-            return false;
-        }
+            if (
+                course.level <
+                duplicatedCourse.level
+            ) {
+                return false;
+            }
 
-        if (
-            course.level <
-            duplicatedCourse.level
-        ) {
-            return false;
-        }
-
-        return true;
-    });
+            return true;
+        })
+        .sort((a, b) => a.level - b.level);
 }
 
 function getNumberOfSubstitutesNeeded() {
