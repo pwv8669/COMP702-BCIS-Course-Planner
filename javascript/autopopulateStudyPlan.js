@@ -22,20 +22,29 @@ button.addEventListener('click', () => {
 
 function autocompleteStudyPlan() {
     if (!checkIfMajorsAndMinorsSelected()) return;
+
     coursesToSubstitute.clear();
+
     const selectedCourses = buildCourseList();
-    scheduleCourses(selectedCourses);
+
+    if (!selectedCourses) {
+        alert("Unable to generate a valid study plan.");
+        return;
+    }
+
     refreshStudyPlan();
 }
 
 function buildCourseList() {
     const selectedCourses = new Map();
-    
+
     addCoreCourses(selectedCourses);
     addRequiredCourses(selectedCourses);
-    
-    const chooseNRequirements = getAllChooseNRequirements();
-    if(!tryChooseNRequirements(
+
+    const chooseNRequirements =
+        getAllChooseNRequirements();
+
+    if (!tryChooseNRequirements(
         chooseNRequirements,
         0,
         selectedCourses
@@ -43,8 +52,6 @@ function buildCourseList() {
         return null;
     }
 
-    resolveOverlappingRequiredCourses(selectedCourses);
-    console.log(selectedCourses)
     return selectedCourses;
 }
 
@@ -119,16 +126,20 @@ function addRequiredCourses(selectedCourses) {
 
 // 
 function tryChooseNRequirements(requirements, index, selectedCourses) {
-    // Base case
+    // All ChooseN requirements have been processed.
     if (index === requirements.length) {
-        return scheduleCourses(new Map(selectedCourses));
+        return tryOverlapSubstitutions(
+            selectedCourses
+        );
     }
 
     const requirement = requirements[index];
 
-    const availableCourses = requirement.Courses.filter(
-        course => !selectedCourses.has(course.code)
-    );
+    const availableCourses =
+        requirement.Courses.filter(
+            course =>
+                !selectedCourses.has(course.code)
+        );
 
     const combinations = getCombinations(
         availableCourses,
@@ -137,12 +148,15 @@ function tryChooseNRequirements(requirements, index, selectedCourses) {
 
     for (const combination of combinations) {
 
-        // Add this combination
+        // Add this ChooseN combination.
         for (const course of combination) {
-            selectedCourses.set(course.code, course);
+            selectedCourses.set(
+                course.code,
+                course
+            );
         }
 
-        // Recurse to next requirement
+        // Try to satisfy the next ChooseN requirement.
         if (
             tryChooseNRequirements(
                 requirements,
@@ -153,7 +167,7 @@ function tryChooseNRequirements(requirements, index, selectedCourses) {
             return true;
         }
 
-        // Backtrack
+        // Backtrack.
         for (const course of combination) {
             selectedCourses.delete(course.code);
         }
@@ -183,36 +197,6 @@ function getCombinations(courses, count) {
     buildCombination(0, []);
 
     return combinations;
-}
-
-function satisfyChooseNRequirements(selectedCourses) {
-    const chooseNRequirements = getAllChooseNRequirements();
-
-    // Prioritise requirements with fewer available choices.
-    chooseNRequirements.sort((a, b) => {
-        const availableA = getAvailableCoursesForRequirement(a, selectedCourses).length;
-        const availableB = getAvailableCoursesForRequirement(b, selectedCourses).length;
-
-        if (availableA !== availableB) {
-            return availableA - availableB
-        }
-
-        return b.Count - a.Count
-    });
-
-    for (const requirement of chooseNRequirements) {
-        const availableCourses = getAvailableCoursesForRequirement(requirement, selectedCourses);
-
-        if(availableCourses.length < requirement.Count) {
-            continue;
-        }
-
-        const selected = availableCourses.slice(0, requirement.Count);
-
-        for (const course of selected) {
-            selectedCourses.set(course.code, course);
-        }
-    }
 }
 
 function getAllChooseNRequirements() {
@@ -259,37 +243,246 @@ function getAvailableElectives(selectedCourses) {
     );
 }
 
-function getAvailableSubstituteCourses(selectedCourses) {
+function tryOverlapSubstitutions(selectedCourses) {
+    const replacementGroups =
+        getReplacementGroups();
 
-}
-
-function getAvailableCoursesForRequirement(requirement, selectedCourses) {
-    return requirement.Courses.filter(
-        course => !selectedCourses.has(course.code)
+    return tryReplacementGroups(
+        replacementGroups,
+        0,
+        selectedCourses
     );
 }
-    
-function resolveOverlappingRequiredCourses(selectedCourses) {
-    const numberOfSubstitutes =
-        getNumberOfSubstitutesNeeded();
 
-    if (numberOfSubstitutes === 0) {
-        return true;
-    }
-
-    const isDoubleMajor =
-        state.selectedPathway === "doubleMajors";
-
-    if (isDoubleMajor && numberOfSubstitutes <= 2) {
-        return addElectives(
-            selectedCourses,
-            numberOfSubstitutes
+function tryReplacementGroups(
+    replacementGroups,
+    index,
+    selectedCourses
+) {
+    // All overlap replacements have been selected.
+    if (index === replacementGroups.length) {
+        return scheduleCourses(
+            new Map(selectedCourses)
         );
     }
 
-    return addRequiredCourseSubstitutes(
-        selectedCourses
+    const group =
+        replacementGroups[index];
+
+    const availableCourses =
+        getAvailableReplacementCourses(
+            group.duplicatedCourse,
+            selectedCourses
+        );
+
+    const combinations =
+        getCombinations(
+            availableCourses,
+            group.count
+        );
+
+    for (const combination of combinations) {
+
+        // Add this replacement combination.
+        for (const course of combination) {
+            selectedCourses.set(
+                course.code,
+                course
+            );
+        }
+
+        // Try the next replacement group.
+        if (
+            tryReplacementGroups(
+                replacementGroups,
+                index + 1,
+                selectedCourses
+            )
+        ) {
+            return true;
+        }
+
+        // Backtrack.
+        for (const course of combination) {
+            selectedCourses.delete(
+                course.code
+            );
+        }
+    }
+
+    return false;
+}
+
+function getReplacementGroups() {
+    const replacementGroups = [];
+
+    for (
+        const [
+            duplicatedCourseCode,
+            numberOfSubstitutes
+        ]
+        of coursesToSubstitute
+    ) {
+        const duplicatedCourse =
+            getCourseByCode(duplicatedCourseCode);
+
+        if (!duplicatedCourse) {
+            continue;
+        }
+
+        replacementGroups.push({
+            duplicatedCourse,
+            count: numberOfSubstitutes
+        });
+    }
+
+    replacementGroups.sort(
+        (a, b) =>
+            a.count - b.count
     );
+
+    return replacementGroups;
+}
+
+function getAvailableReplacementCourses(
+    duplicatedCourse,
+    selectedCourses
+) {
+    const isDoubleMajor =
+        state.selectedPathway === "doubleMajors";
+
+    const totalSubstitutes =
+        getNumberOfSubstitutesNeeded();
+
+    const canUseElectives =
+        isDoubleMajor &&
+        totalSubstitutes <= 2;
+
+
+    if (canUseElectives) {
+        return getAvailableElectiveCourses(
+            selectedCourses
+        );
+    }
+
+
+    const courses =
+        getCoursesFromSelectedMajorsAndMinors();
+
+    return courses.filter(course => {
+
+        if (selectedCourses.has(course.code)) {
+            return false;
+        }
+
+        if (
+            course.level <
+            duplicatedCourse.level
+        ) {
+            return false;
+        }
+
+        return true;
+    });
+}
+
+function getNumberOfSubstitutesNeeded() {
+    let total = 0;
+
+    for (
+        const numberOfSubstitutes
+        of coursesToSubstitute.values()
+    ) {
+        total += numberOfSubstitutes;
+    }
+
+    return total;
+}
+
+function getAvailableElectiveCourses(selectedCourses) {
+    return Object.values(coursesObject).filter(
+        course => !selectedCourses.has(course.code)
+    );
+}
+
+function getCoursesFromSelectedMajorsAndMinors() {
+    const courses = new Map();
+
+    const selectedPathway =
+        pathways[state.selectedPathway];
+
+
+    // Selected majors
+    for (
+        let i = 0;
+        i < selectedPathway.numMajors;
+        i++
+    ) {
+        const majorCode =
+            state.selectedMajors[i];
+
+        if (!majorCode) continue;
+
+        const major =
+            majorOptions[majorCode];
+
+        if (!major) continue;
+
+        addCoursesFromOption(
+            major,
+            courses
+        );
+    }
+
+
+    // Selected minors
+    for (
+        let i = 0;
+        i < selectedPathway.numMinors;
+        i++
+    ) {
+        const minorCode =
+            state.selectedMinors[i];
+
+        if (!minorCode) continue;
+
+        const minor =
+            minorOptions[minorCode];
+
+        if (!minor) continue;
+
+        addCoursesFromOption(
+            minor,
+            courses
+        );
+    }
+
+
+    return Array.from(courses.values());
+}
+
+function addCoursesFromOption(
+    majorOrMinor,
+    courses
+) {
+    for (
+        const requirement
+        of majorOrMinor.Requirements
+    ) {
+        for (
+            const course
+            of requirement.Courses
+        ) {
+            courses.set(
+                course.code,
+                course
+            );
+        }
+    }
+}
+
+function getCourseByCode(courseCode) {
+    return coursesObject[courseCode];
 }
 
 function clearCoursePlan() {
@@ -419,14 +612,4 @@ function checkIfMajorsAndMinorsSelected() {
         return false;
     }
     return true;
-}
-
-function getNumberOfSubstitutesNeeded() {
-    let total = 0;
-
-    for (const numberOfSubstitutes of coursesToSubstitute.values()) {
-        total += numberOfSubstitutes;
-    }
-
-    return total;
 }
