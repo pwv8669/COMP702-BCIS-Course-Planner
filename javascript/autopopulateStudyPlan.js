@@ -3,8 +3,10 @@ import { state, Pathways } from './state.js';
 import { loadPathways } from "./objects/pathway.js";
 import { loadMajorOptions, loadMinorOptions } from "./objects/majorMinorOption.js";
 import { evaluatePrerequisiteTree } from './prerequisiteValidator.js';
+import { loadCourses } from './courseObjectConverter.js';
 
 const pathways = await loadPathways();
+const coursesObject = await loadCourses();
 const majorOptions = await loadMajorOptions();
 const minorOptions = await loadMinorOptions();
     
@@ -20,6 +22,7 @@ button.addEventListener('click', () => {
 
 function autocompleteStudyPlan() {
     if (!checkIfMajorsAndMinorsSelected()) return;
+    coursesToSubstitute.clear();
     const selectedCourses = buildCourseList();
     scheduleCourses(selectedCourses);
     refreshStudyPlan();
@@ -37,7 +40,6 @@ function buildCourseList() {
         0,
         selectedCourses
     )) {
-        alert("Unable to generate a valid study plan.");
         return null;
     }
 
@@ -77,7 +79,14 @@ function addRequiredCourses(selectedCourses) {
             if (requirement.Type !== "Required") continue;
             
             for (const course of requirement.Courses) {
-                if (selectedCourses.has(course.code)) continue;
+                if (selectedCourses.has(course.code)) {
+                    if (!coursesToSubstitute.has(course.code)) {
+                        coursesToSubstitute.set(course.code, 0);
+                    }
+
+                    coursesToSubstitute.set(course.code, coursesToSubstitute.get(course.code) + 1);
+                    continue;
+                }
                 selectedCourses.set(course.code, course);
             }
         }
@@ -94,7 +103,14 @@ function addRequiredCourses(selectedCourses) {
             if (requirement.Type !== "Required") continue;
             
             for (const course of requirement.Courses) {
-                if (selectedCourses.has(course.code)) continue;
+                if (selectedCourses.has(course.code)) {
+                    if (!coursesToSubstitute.has(course.code)) {
+                        coursesToSubstitute.set(course.code, 0);
+                    }
+
+                    coursesToSubstitute.set(course.code, coursesToSubstitute.get(course.code) + 1);
+                    continue;
+                }
                 selectedCourses.set(course.code, course);
             }
         }
@@ -174,8 +190,8 @@ function satisfyChooseNRequirements(selectedCourses) {
 
     // Prioritise requirements with fewer available choices.
     chooseNRequirements.sort((a, b) => {
-        const availableA = getAvailableCourses(a, selectedCourses).length;
-        const availableB = getAvailableCourses(b, selectedCourses).length;
+        const availableA = getAvailableCoursesForRequirement(a, selectedCourses).length;
+        const availableB = getAvailableCoursesForRequirement(b, selectedCourses).length;
 
         if (availableA !== availableB) {
             return availableA - availableB
@@ -185,7 +201,7 @@ function satisfyChooseNRequirements(selectedCourses) {
     });
 
     for (const requirement of chooseNRequirements) {
-        const availableCourses = getAvailableCourses(requirement, selectedCourses);
+        const availableCourses = getAvailableCoursesForRequirement(requirement, selectedCourses);
 
         if(availableCourses.length < requirement.Count) {
             continue;
@@ -236,25 +252,44 @@ function getAllChooseNRequirements() {
     return requirements;
 }
 
-function getAvailableCourses(requirement, selectedCourses) {
+function getAvailableElectives(selectedCourses) {
+    const coursesArray = Object.values(coursesObject);
+    return coursesArray.filter(
+        course => !selectedCourses.has(course.code)
+    );
+}
+
+function getAvailableSubstituteCourses(selectedCourses) {
+
+}
+
+function getAvailableCoursesForRequirement(requirement, selectedCourses) {
     return requirement.Courses.filter(
         course => !selectedCourses.has(course.code)
     );
 }
     
 function resolveOverlappingRequiredCourses(selectedCourses) {
-    const selectedPathway = pathways[state.selectedPathway];
-    const numSelectedCourses = selectedCourses.size;
-    const maxCourses = 24;
-    const missingCourses = maxCourses - numSelectedCourses;
-    let maxElectives = 0;
-    if (selectedPathway === pathways['doubleMajors']) {
-        maxElectives = 2;
-    } if (selectedPathway === pathways['electives']) {
-        maxElectives = 4;
+    const numberOfSubstitutes =
+        getNumberOfSubstitutesNeeded();
+
+    if (numberOfSubstitutes === 0) {
+        return true;
     }
 
-    console.log(`There are ${numSelectedCourses} courses selected, the chosen pathway allows ${maxElectives} electives, meaning that ${missingCourses - maxElectives} courses from the Major/Minor(s) with overlapping must be selected, and they must be at the level of the overlapping required course.`);
+    const isDoubleMajor =
+        state.selectedPathway === "doubleMajors";
+
+    if (isDoubleMajor && numberOfSubstitutes <= 2) {
+        return addElectives(
+            selectedCourses,
+            numberOfSubstitutes
+        );
+    }
+
+    return addRequiredCourseSubstitutes(
+        selectedCourses
+    );
 }
 
 function clearCoursePlan() {
@@ -384,4 +419,14 @@ function checkIfMajorsAndMinorsSelected() {
         return false;
     }
     return true;
+}
+
+function getNumberOfSubstitutesNeeded() {
+    let total = 0;
+
+    for (const numberOfSubstitutes of coursesToSubstitute.values()) {
+        total += numberOfSubstitutes;
+    }
+
+    return total;
 }
