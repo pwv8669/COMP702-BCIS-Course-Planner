@@ -14,7 +14,7 @@ export function validateStudyPlan(){
     const prereqErrors = validatePrerequisites();
     for (let i = 0; i < prereqErrors.length; i++) {
         const error = prereqErrors[i];
-        if (state.ignoredErrors[error.id]) continue; //Skips error message if it has been resolved with a saved note
+        if (state.ignoredErrors[error.id]) continue; //Skips error message if it is contained in state.ignoredErrors
         errors.push(error);
     }
 
