@@ -109,11 +109,26 @@ export function renderIgnoredErrors() {
             <strong>${id}</strong><br>
             <span>${data.note}</span><br>
             <small>${new Date(data.timestamp).toLocaleString()}</small>
+            <button class="delete-ignored-btn" data-error-id="${id}">Delete</button>
         `;
 
         container.appendChild(div);
+    }
+
+    // Delete button logic
+    document.querySelectorAll(".delete-ignored-btn").forEach(btn => {
+        btn.addEventListener("click", e => {
+            const id = e.target.dataset.errorId;
+
+            delete state.ignoredErrors[id];
+
+            renderIgnoredErrors();
+            errorDisplay();
+        });
+    });
 }
-}
+
+
 
 let currentErrorId = null;
 
