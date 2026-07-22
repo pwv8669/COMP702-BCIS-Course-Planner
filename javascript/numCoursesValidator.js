@@ -1,7 +1,6 @@
 import { PlanError } from './objects/planError.js';
 import { state } from './state.js';
 
-
 export function validateNumberOfCourses()
 {
 	let coursePlan = state.coursePlan;

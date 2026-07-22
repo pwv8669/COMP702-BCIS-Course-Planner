@@ -2,8 +2,12 @@ import { placeCourse, PathwayRefresh, refreshStudyPlan } from './app.js';
 import { renderCoursePlan } from './renderCoursePlan.js';
 import { state, Pathways } from './state.js';
 import { initDragAndDrop } from './dragAndDropController.js';
+import { importschedule } from './filehandler.js';
 
-
+/*This code handles all the premade studyplan template buttons it dynamically generates
+buttons based on the stored files in the json templates folder of the web app.
+This means study plans can be saved to the web app itself so that other programme leads can easily 
+share their unique solutions to common circumstances for students*/
 document.addEventListener('DOMContentLoaded', () => {
     //selecting the relevant html elements
     const panel = document.getElementById('templates');
@@ -15,7 +19,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const uploadForm = document.getElementById('uploadTemplateForm');
     const saveBtn = document.getElementById('saveTemplateBtn'); 
 
-    // event listeners
+    // adding event listeners to the open, close, upload, and save buttons
     if (openTemplates && panel) {
         openTemplates.addEventListener('click', () => {
             panel.showModal();
@@ -113,7 +117,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         if (!fileResponse.ok) throw new Error("Could not load template file.");
                         
                         const templateData = await fileResponse.json();
-                        executeScheduleImport(templateData);
+                        importschedule(templateData);
                         panel.close(); 
                     } catch (err) {
                         console.error(`Failed to process template file: ${file.filepath}`, err);
@@ -141,7 +145,7 @@ document.addEventListener('DOMContentLoaded', () => {
         reader.onload = function (event) {
             try {
                 const templateData = JSON.parse(event.target.result);
-                executeScheduleImport(templateData);
+                importschedule(templateData);
                 if (panel) panel.close();
             } catch (error) {
                 console.error("Malformed JSON file layout:", error);
@@ -151,62 +155,5 @@ document.addEventListener('DOMContentLoaded', () => {
         reader.readAsText(file);
     }
 
-    function executeScheduleImport(JsonInput) {
-        try {
-            const arraytoparse = JsonInput.schedule;
-            for (let semester = 0; semester < arraytoparse.length; semester++) {
-                for (let course = 0; course < arraytoparse[semester].length; course++) {
-                    placeCourse(semester, course, arraytoparse[semester][course]);
-                }
-            }
-
-            const pathwaySelect = document.getElementById('pathwaySelect');
-            if (pathwaySelect) pathwaySelect.value = JsonInput.selectedPathway;
-            
-            state.selectedPathway = JsonInput.selectedPathway;
-            
-            if (state.selectedPathway == Pathways.doubleMajors) {
-                state.selectedMinors = [null, null];
-                state.selectedElectives = [null, null, null, null];
-            } else if (state.selectedPathway == Pathways.doubleMinors) {
-                state.selectedMajors[1] = null;
-                state.selectedElectives = [null, null, null, null];
-            } else if (state.selectedPathway == Pathways.electives) {
-                state.selectedMajors[1] = null;
-                state.selectedMinors[1] = null;
-            }
-            
-            PathwayRefresh(""+JsonInput.selectedPathway);
-            
-            state.selectedElectives = JsonInput.selectedElectives;
-            state.selectedMajors = JsonInput.selectedMajors;
-            state.selectedMinors = JsonInput.selectedMinors;
-
-            state.ignoredErrors = JsonInput.ignoredErrors || {};
-            
-            const major1 = document.getElementById('major1');
-            const major2 = document.getElementById('major2');
-            const minor1 = document.getElementById('minor1');
-            const minor2 = document.getElementById('minor2');
-            
-            if (major1) major1.value = state.selectedMajors[0];
-            
-            if (state.selectedPathway == Pathways.doubleMajors) {
-                if (major2) major2.value = state.selectedMajors[1];
-            } else {
-                if (minor1) minor1.value = state.selectedMinors[0];
-                if (state.selectedPathway == Pathways.doubleMinors) {
-                    if (minor2) minor2.value = state.selectedMinors[1];
-                }
-            }
-            
-            PathwayRefresh(""+JsonInput.selectedPathway);
-            renderCoursePlan(state); 
-            refreshStudyPlan();
-            console.log("State updated successfully:", state);
-        } catch (err) {
-            console.error(err);
-            alert("Incompatible File!");
-        }
-    }
+    
 });

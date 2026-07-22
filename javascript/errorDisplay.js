@@ -2,10 +2,12 @@ import { validateStudyPlan } from './planValidator.js';
 import { state } from './state.js';
 import { SaveFile } from './filehandler.js';
 
+//Gets the Gets the error list container from the html and the error list from validateStudyPlan() populates it with error messages by calling renderErrors()
 export function errorDisplay()
 {
     const errors = validateStudyPlan();
 
+    //removes all old errors from the list before populating with new ones. This way duplicate errors are not shown
     clearPreviousErrors();
 
     const errorTextContainer = document.getElementById('error-list-container');
@@ -13,6 +15,7 @@ export function errorDisplay()
         errorTextContainer.innerHTML = '';
     }
 
+    //if there are no errors at all display a success message to the user
     if (!errors || errors.length === 0) {
         if (errorTextContainer) {
             errorTextContainer.innerHTML = '<p class="success-msg"> All requirements met!</p>';
@@ -30,13 +33,18 @@ function clearPreviousErrors() {
     document.querySelectorAll('.cell-yellow-warning').forEach(c => c.classList.remove('cell-yellow-warning'));
 }
 
+/*This function populates the error list on the html with the error list 
+passed in from errorDisplay each entry gets an ignore button which when pressed 
+opens a note creation panel.
+
+*/
 function renderErrors(errorList) {
     const container = document.getElementById("error-list-container");
     container.innerHTML = "";
 
     for (const error of errorList) {
 
-        //Classifying error message type
+        //Classifying error message type using string comparison. may change the error object struct to contain colour types instead. that way they could be more easily changed
         const isPrereqOrDuplicate =
             error.message.toLowerCase().includes('prerequisites') ||
             error.message.toLowerCase().includes('appears') ||
@@ -51,14 +59,13 @@ function renderErrors(errorList) {
 
         div.dataset.errorId = error.id;
 
-        div.innerHTML = `
-            <span>${error.message}</span>
-            <button class="ignore-error-btn">Ignore</button>
-        `;
+        div.innerHTML = 
+        `   <span>${error.message}</span>
+            <button class="ignore-error-btn">Ignore</button>`;
 
         container.appendChild(div);
 
-        //Schedule highlighting of errors
+        //Schedule table highlighting of errors
         if (error.positions) {
             error.positions.forEach((row, semIndex) => {
                 row.forEach((isError, slotIndex) => {
@@ -88,6 +95,7 @@ function renderErrors(errorList) {
     });
 }
 
+//This function populates the html ignored error list and adds delete buttons to each entry.
 export function renderIgnoredErrors() {
     const container = document.getElementById("ignored-errors-list");
     if (!container) return;
@@ -105,6 +113,7 @@ export function renderIgnoredErrors() {
         const div = document.createElement("div");
         div.className = "ignored-error-item";
 
+        //This is the structuring for ignored errors (how they are shown to the user)
         div.innerHTML = `
             <strong>${id}</strong><br>
             <span>${data.note}</span><br>
@@ -129,6 +138,7 @@ export function renderIgnoredErrors() {
 }
 
 
+//shows the note creation page when the ignore button is pressed on a particular error.
 
 let currentErrorId = null;
 
@@ -137,6 +147,7 @@ function openIgnoreModal(errorId) {
     document.getElementById("ignoreModal").classList.remove("hidden");
 }
 
+//When a note is added to an ignored error the error is removed from the error list this is done via validateStudyPlan()
 document.getElementById("saveIgnoreNoteBtn").addEventListener("click", () => {
     const noteInput = document.getElementById("ignoreNoteInput");
     const note = noteInput.value.trim();
@@ -146,7 +157,7 @@ document.getElementById("saveIgnoreNoteBtn").addEventListener("click", () => {
         return;
     }
 
-    //Storing the new note in state
+    //This stores the ignored error id and note into state so that when the plan is validated errors resolved via note will not show
     state.ignoredErrors[currentErrorId] = {
         note: note,
         timestamp: Date.now()
@@ -159,15 +170,14 @@ document.getElementById("saveIgnoreNoteBtn").addEventListener("click", () => {
         errorDiv.remove();
     }
 
-    //Hide the modal
+    //Hiding the modal
     document.getElementById("ignoreModal").classList.add("hidden");
 
     //Clearing the text
     noteInput.value = "";
 
 });
-
-// CANCEL BUTTON
+//Adding event listener to the cancel button on the note creation page. If pressed adds hidden attribute to the modal
 document.getElementById("cancelIgnoreBtn").addEventListener("click", () => {
     document.getElementById("ignoreModal").classList.add("hidden");
     document.getElementById("ignoreNoteInput").value = "";

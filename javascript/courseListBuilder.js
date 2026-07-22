@@ -27,7 +27,7 @@ export function generateDynamicCourseList(coursesMap) {
         groupedByLevel[level].push(course);
     });
 
-    // Sort academic levels numerically (Level 5 -> Level 6 -> Level 7)
+    // Sort academic levels numerically (Level 5, Level 6, Level 7)
     const sortedLevels = Object.keys(groupedByLevel).sort((a, b) => Number(a) - Number(b));
 
     // Render each level group
@@ -35,7 +35,7 @@ export function generateDynamicCourseList(coursesMap) {
         const details = document.createElement('details');
         details.className = 'course-category';
         
-        // Auto-expand the first level accordion panel
+        // expand the first level accordion panel
         if (index === 0) {
             details.open = true;
         }
@@ -69,6 +69,6 @@ export function generateDynamicCourseList(coursesMap) {
         sidebar.appendChild(details);
     });
 
-    // Bind event listeners to the fresh DOM objects
+    // Rebind event listeners
     initDragAndDrop(refreshStudyPlan);
 }
