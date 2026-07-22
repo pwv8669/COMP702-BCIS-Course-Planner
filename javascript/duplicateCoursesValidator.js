@@ -26,7 +26,8 @@ export function validateCourseAppearances() {
     appearances.forEach((count, code) => {
         if (count > 1) {
             let message = `${code} appears in the study plan ${count} times. You can only take each class once.`
-            let errorMsg = new PlanError(code, message);
+            let id = `DuplicateClass-${code}-${count}-Times`;
+            let errorMsg = new PlanError(code, message, id);
             errorMsg.occurences = count
 
             for (let semester = 0; semester < state.coursePlan.length; semester++){

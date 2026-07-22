@@ -15,150 +15,191 @@
         color: #ffffff;
         font-family: 'Trebuchet MS';
         font-weight: bolder;
-        background-color: #6e7475;
+        background-color: #373537;
     }
+.top-selector-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 20px;
+    margin-bottom: 10px;
+}
+
 th {
   background-color: #6eacc4;
   font-size: 20px;
   text-align: center;
 }
-
+.main-layout-container {
+    display: block;
+    width: 100vw;
+    margin: 0;
+    padding: 0;
+}
 .hidden-element {
+  display: none; /*temporarily removing hidden elements*/
   opacity: 0;
   transition: opacity 0.3s ease;
 }
 tr{
-  scale:1;
+  scale: 1;
   transition: transform .9s;
+  min-height: 120px;
 }
-
 tr:hover {
  scale:(1.025);
 }
-
 td:hover .hidden-element {
   opacity: 1;
 }
-
 td{
-  height: 120px;
-     font-size: 80%;
+  height: 100px;
+  font-size: 80%;
 
   font-weight: bolder;
-  text-transform: uppercase;
   vertical-align: top;
 }
-.schedule-table td:nth-child(even){background-color: #cac7c4;}  /* Alternate between light and dark cells */
-.schedule-table td:nth-child(odd) {background-color: #a2a19f;}
+.schedule-table td:nth-child(even){background-color: #3abd3a;}  /* Alternate between light and dark cells */
+.schedule-table td:nth-child(odd) {background-color: #298429;}
 
 .schedule-table {
-    width: 80%;
     border-collapse: collapse;
     table-layout: fixed; /* Forces all 6 columns to stay exactly the same width */
     font-family: Arial, sans-serif;
 }
-
-    .schedule-table td {
-        background-color: #9c9c9c;
-        color: white;
-        padding: 12px 8px;
-        height: 90px;
-        vertical-align: top;
-        font-size: 12px;
-        border: 1px solid #6e7475;
-        word-wrap: break-word;
-    }
-
-    .year-headers th {
-        background-color: #5289a8;
-        color: white;
-        padding: 8px;
-        border: 1px solid #6e7475;
-    }
-
-    .semester-headers th {
-        background-color: #6ba4c4;
-        color: white;
-        padding: 10px 4px;
-        font-size: 14px;
-        border: 1px solid #6e7475;
-    }
-    .schedule-table,
-    .schedule-table th
-    {
-        border: 1px solid #6e7475 !important; 
-    }
-    
-
-    .schedule-table td.cell-red-error {
-        background-color: #b23b3b !important;
-        border: 2px solid #ff4d4d;
-    }
+.schedule-table td {
+    background-color: #9c9c9c;
+    color: white;
+    padding: 12px 8px;
+    vertical-align: top;
+    font-size: 12px;
+    border: 1px solid #6e7475;
+    word-wrap: break-word;
+}
+.year-headers th {
+    background-color: #822787;
+    color: white;
+    padding: 8px;
+    border: 1px solid #6e7475;
+}
+.semester-headers th {
+    background-color: #bd6fc1;
+    color: white;
+    padding: 10px 4px;
+    font-size: 14px;
+    border: 1px solid #6e7475;
+}
+.schedule-table,
+.schedule-table th{
+    border: 1px solid #373537 !important; 
+}
+.schedule-table td.cell-red-error {
+    background-color: #b23b3b !important;
+    border: 2px solid #ff4d4d;
+}
 .schedule-table td.cell-yellow-warning {
     background-color: #d1a119 !important; 
     border: 2px solid #ffdb4d;
 }
-
 .error-text-item {
     padding: 10px 14px;
-    margin-bottom: 8px;
+    margin-bottom: 6px;
     font-family: Arial, sans-serif;
     font-size: 13px;
     border-radius: 4px;
     font-weight: 500;
 }
-
 .error-text-item.red-alert {
     background-color: #fdf2f2;
     color: #b81d1d;
     border-left: 5px solid #de2a2a;
 }
-
 .error-text-item.yellow-alert {
     background-color: #fefaf0;
     color: #8a6d1c;
     border-left: 5px solid #e3b022;
 }
-
+#error-list-container {
+    max-height: 120px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding: 10px;
+    background-color: #6e7475;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    margin-top: 20px;
+    float: left;
+    width: 60%;
+}
 .success-msg {
-    color: #1e7e34;
+    color: #3abd3a;
     font-weight: bold;
 }
-
 .course-picker-sidebar {
     width: 250px;
-    float: left;
     margin-right: 20px;
     font-family: Arial, sans-serif;
 }
-
 .course-category summary {
-    background-color: #3b5998;
-    color: white; 
+    background-color: #bd6fc1;
+    color: white;
     padding: 12px;
     margin-bottom: 6px;
     cursor: pointer;
     font-weight: bold;
     font-size: 14px;
-    list-style: none; 
+    list-style: none;
     border: 1px solid rgba(255, 255, 255, 0.2);
     transition: background 0.2s ease;
 }
-
 .course-category summary:hover 
 {
     background-color: #6ba4c4;
 }
-    .course-list {
-        display: grid;
-        grid-template-columns: repeat(2, 1fr);
-        gap: 8px;
-        padding: 10px 0;
-    }
+.course-list {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+    padding: 10px 0;
+}
+
+.table-grid {
+  display: grid;
+  width: 100vw;
+  grid-template-columns: 5fr 1fr;
+  align-items: stretch;
+  clear: both;
+}
+.driver {
+  align-self: stretch;
+}
+.follower {
+  grid-row: 1;
+  grid-column: 2;
+  position: relative;
+}
+
+#dynamic-course-sidebar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+
+  overflow-y: auto;
+  overflow-x: hidden;
+
+  padding-right: 4px;
+  border: 1px solid #373537;
+  border-radius: 6px;
+  background: #822787;
+  box-sizing: border-box;
+  color: white;
+}
+
 
     /* Draggable Items */
-    .course-card {
-        background-color: #5289a8;
+.course-card {
+        background-color: #bd6fc1;
         color: white;
         padding: 10px 6px;
         border-radius: 4px;
@@ -173,11 +214,10 @@ td{
         min-height: 85px;
         box-sizing: border-box;
         word-break: break-word;
-    }
-
-        .course-card:active {
-            cursor: grabbing;
-        }
+}
+.course-card:active {
+        cursor: grabbing;
+}
 
     /* Visual cue when dragging over a table cell slot */
 .schedule-table td.drag-over-cell {
@@ -185,102 +225,226 @@ td{
     background-color: #eaeaea !important;
     color: #333 !important;
 }
-
-
-
 table{
-   width:16.66%;
-float:left;
-}
-tr{
-  width: 100px;
-  height: 100px;
+   width:100%;
 }
 .core{
   background-color: #4285b9;
 }
+.prereq-btn {
+    position:fixed;
+    margin-left:110px;
+    padding: 4px;
+    font-size: 12px;
+    border-radius: 0px;
+    background: #5a2ea6;
+    color: white;
+    border: none;
+    cursor: pointer;
+    margin-bottom: 0px;
+    bottom:4px;
+    width: 90px;
 
-
+}
+.prereq-list {
+    margin-bottom: 30px; 
+    padding: 6px;
+    border-radius: 0px;
+}
 .major{
   background-color: #589dc5;
 }
-
 .minor{
   background-color: #68b8d5;
 }
-
 .elective{
   background-color: #8cc7dc;
 }
-
 .error{
   background-color: #dd695e;
 }
-
-
 button {
-    color: #ffffff;
+  color: #ffffff;
   font-family: 'Trebuchet MS'; 
   font-weight: bolder;
-  border-radius: 14px;
-  border:0px;
-  background-color: #6eacc4;
+  border-radius: 6px;
+  border: 0px;
+  background-color: #822787;
   font-size: 20px;
-  padding:10px;
+  padding: 10px;
   text-align: center;   
 }
-
+.button-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr); 
+    gap: 12px; 
+    width: 300px;  
+    padding: 10px;
+}
+.button-grid button {
+    width: 100%;
+}
 select,label {
-    color: #ffffff;
+  color: #ffffff;
   font-family: 'Trebuchet MS'; 
   font-weight: bolder;
-   outline:0px;
-
+  outline:0px;
   border:0px;
-  
   font-size: 20px;
   padding:12px; 
 }
 select,button{
   cursor:pointer;
-    transition: transform .2s;
+  transition: transform .2s;
 }
-
 .yearheading{
   width: 33%; 
-
   text-align: center;
   background-color: #6eacc4;
   margin: 0.165%;
-    float:left; 
 }
 
-
 label{
-  background-color: #6eacc4;
+  background-color: #822787;
   padding: 12.85px;
   margin-right: 10px;
-    width:400px;
+  width: 400px;
   display: inline-block;
 }
 
 select{
    
-  background-color: #639db5;
+  background-color: #bd6fc1;
 }
 
 select:hover,button:hover{
    transform: scale(1.025);
 
 }
+
+#ignoreModal {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+#ignoreModal.hidden { display: none; }
+.modal-content {
+  background: #822787;
+  color: white;
+  padding: 20px;
+  border-radius: 8px;
+  width: 300px;
+}
+.modal-buttons {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 10px;
+}
+
+.ignore-error-btn {
+    font-size: 12px;
+    padding: 2px 6px;
+    margin-left: 10px;
+    background-color: #373537;
+    border: 1px solid #999;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.ignore-error-btn:hover {
+    background-color: #bbb;
+}
+
+#ignored-errors-container {
+    margin-top: 10px;
+    padding: 10px;
+    background-color: #6e7475; 
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    width: 60%; 
+    float: left;
+    color: white;
+    font-family: Arial, sans-serif;
+}
+
+
+#ignored-errors-container h3 {
+    margin: 0 0 10px 0;
+    font-size: 16px;
+    font-weight: bold;
+    color: #ffffff;
+    background-color: #822787;
+    padding: 6px 10px;
+    border-radius: 4px;
+}
+
+
+.ignored-error-item {
+    padding: 10px 14px;
+    margin-bottom: 6px;
+    font-size: 13px;
+    border-radius: 4px;
+    background-color: #fefaf0; 
+    color: #8a6d1c;            
+    border-left: 5px solid #e3b022; 
+}
+
+.delete-ignored-btn {
+    font-size: 12px;
+    padding: 2px 6px;
+    margin-left: 10px;
+    background-color: #373537;
+    border: 1px solid #999;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.delete-ignored-btn:hover {
+    background-color: #6eacc4;
+}
+
 </style>
 </head>
 <body>
 
     <div class="main-layout-container">
+        <!-- Form for selecting course pathway. -->
+        <div class="top-selector-row">
+            <div>
+                <form id="pathwayForm">
+                    <div style="background-color: #dd6e46;"></div>
+                    <div>
+                        <label class=pathwayselector style="margin-right: -6px;" for="pathwaySelect">
+                            Course Pathway:
+                            <div style="height: 10px;"></div>
+                            <select id="pathwaySelect" name="pathwaySelect">
+                                <option value="doubleMajors" selected>
+                                    Double Majors
+                                </option>
+                                <option value="doubleMinors">
+                                    Single Major + Double Minors
+                                </option>
+                                <option value="electives">
+                                    Single Major + Single Minor + Electives
+                                </option>
+                            </select>
+                        </label>
+                    </div>
+                </form>
+            </div>
+
+            <div style="margin-top: 5px;"></div>
+            <form id="pathwayOptionContainer"></form>
+
+        </div>
 
 
-            <table class="schedule-table">
+        <div class="table-grid">
+
+            <table class="schedule-table driver">
                 <thead>
                     <tr class="year-headers">
                         <th colspan="2">Year 1</th>
@@ -331,77 +495,56 @@ select:hover,button:hover{
                     </tr>
                 </tbody>
             </table>
-        </div>
 
-       
-        <div id="dynamic-course-sidebar" class="course-picker-sidebar">
-            <h3>Available Courses</h3>
-        </div>
-
-
-    <div id="error-list-container" style="clear: both; width: 100%; padding-top: 20px;">
-
-    </div>
-    <div style="float:right;width:400px">
-        <button style="float:right;" id="SaveFileButton">Save Schedule as File</button>
-        <button style="float:right;" onclick="getPDF()">Save as PDF</button><br><br>
-        <div>
-            <label style="width: 250px; margin-left: 120px;" for="file_uploads">
-                Choose File to upload
-                <input type="file"
-                       id="file_upload"
-                       name="file_uploads"
-                       accept=".txt, .json"
-                       multiple />
+            <div class="follower">
+                <div id="dynamic-course-sidebar" class="course-picker-sidebar">
+                    <h3>Available Courses</h3>
+                </div>
+            </div>
         </div>
     </div>
 
-    <div style="float:right;">
-        <!-- Main interface button to view saved/pre-made plans -->
+    <div id="error-list-container">
+
+    </div>
+
+    <div class="button-grid">
+
         <button id="openTemplates">Pre-made study plans</button>
-
-        <!-- Main interface button to save current workspace changes -->
         <button id="saveTemplateBtn" type="button">Save Current Plan</button>
 
-        <dialog id="templates">
+        <button id="SaveFileButton">Save Schedule as File</button>
+        <button onclick="getPDF()">Save as PDF</button>
 
-            <form id="uploadTemplateForm">
-                <input type="file" id="localJsonFileInput" accept=".json">
-                <button type="submit" id="uploadSubmitBtn">Load Local File</button>
-                <button type="button" id="closeTemplates">Close</button>
-            </form>
-
-            <div id="templateBtnContainer" style="margin-top: 15px;"></div>
-        </dialog>
-    </div>
-
-
-    </div>
-
-
-    <!-- Form for selecting course pathway. -->
-    <form id="pathwayForm">
-        <div style="float: left;background-color: #dd6e46;"></div>
-        <label class=pathwayselector style="margin-right: -6px;" for="pathwaySelect">
-            Course Pathway:
-            <div style="height: 10px;"></div>
-            <select id="pathwaySelect" name="pathwaySelect" style="float:right">
-                <option value="doubleMajors" selected>
-                    Double Majors
-                </option>
-                <option value="doubleMinors">
-                    Single Major + Double Minors
-                </option>
-                <option value="electives">
-                    Single Major + Single Minor + Electives
-                </option>
-            </select>
-        </label>
+        <div id="ignoreModal" class="hidden">
+            <div class="modal-content">
+                <h3>Add a note for this ignored error</h3>
+                <textarea id="ignoreNoteInput" placeholder="Explain why you�re ignoring this error..."></textarea>
+                <div class="modal-buttons">
+                    <button id="saveIgnoreNoteBtn">Save</button>
+                    <button id="cancelIgnoreBtn">Cancel</button>
+                </div>
+            </div>
         </div>
-    </form>
-    <div style="margin-top: 5px;"></div>
-    <!-- Handled in app.js -->
-    <form id="pathwayOptionContainer"></form>
+
+    </div>
+
+    <div id="ignored-errors-container">
+        <h3>Ignored Errors</h3>
+        <div id="ignored-errors-list"></div>
+    </div>
+
+    <br><br>
+
+    <dialog id="templates">
+        <form id="uploadTemplateForm">
+            <input type="file" id="localJsonFileInput" accept=".json">
+            <button type="submit" id="uploadSubmitBtn">Load Local File</button>
+            <button type="button" id="closeTemplates">Close</button>
+        </form>
+
+        <div id="templateBtnContainer" style="margin-top: 15px;"></div>
+    </dialog>
 
 
 
@@ -446,11 +589,12 @@ function getPDF(){
 	};
 </script>
 
-<script type="module" defer>
+<!-- 
+ <script type="module" defer>
 import {importschedule} from "./javascript/filehandler.js";
 //this is for file input
 const inputElement = document.getElementById("file_upload");
-inputElement.addEventListener("change", handleFiles);
+inputElement.addEventListener("change", handleFiles); 
 
 
 function handleFiles() {
@@ -469,5 +613,6 @@ const reader = new FileReader();
  
 }
 </script>
+-->
 
 </html>

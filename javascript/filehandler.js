@@ -8,6 +8,8 @@ await init();
 import {placeCourse, PathwayRefresh} from "./app.js";
 import { renderCoursePlan } from "./renderCoursePlan.js";
 import { state, Pathways } from './state.js';
+import { renderIgnoredErrors } from './errorDisplay.js';
+
 export function importschedule(JsonInput) {
 		try{
 	const arraytoparse = JsonInput.schedule;
@@ -38,6 +40,10 @@ export function importschedule(JsonInput) {
 	state.selectedElectives = JsonInput.selectedElectives;
 	state.selectedMajors = JsonInput.selectedMajors;
 	state.selectedMinors = JsonInput.selectedMinors;
+
+	state.ignoredErrors = JsonInput.ignoredErrors || {};
+	renderIgnoredErrors();
+
 	const major1 = document.getElementById('major1');
 	const major2 = document.getElementById('major2');
 	const minor1 = document.getElementById('minor1');
@@ -71,7 +77,7 @@ alert(`Incompatible File!`);
 
 
 // Function for saving files
-function SaveFile(){
+export function SaveFile(){
 	let text = "{\n";
 	text += "\"selectedPathway\":\""+ state.selectedPathway+"\",\n";
 	text += "\"selectedMajors\": [\""+ state.selectedMajors[0]+"\",\""+state.selectedMajors[1]+"\"],\n";
@@ -99,7 +105,9 @@ function SaveFile(){
 			text += ",\n"
 		}
 	}
-	text += "]\n}";
+	text += "],\n}";
+    //Added section for the error message note system
+	text += "\"ignoredErrors\": " + JSON.stringify(state.ignoredErrors, null, 2) + "\n}";
 
 	console.log(text);
 

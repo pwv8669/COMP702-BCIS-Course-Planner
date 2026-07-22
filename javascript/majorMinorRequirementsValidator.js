@@ -32,7 +32,8 @@ export function validateMajorMinorRequirements(){
 
     if(!pathway) {
         let message = "No valid pathway is selected.";
-        let errorMsg = new PlanError(null, message);
+        let id = `InvalidPathway`;
+        let errorMsg = new PlanError(null, message, id);
         errors.push(errorMsg);
         return errors;
     }
@@ -41,14 +42,16 @@ export function validateMajorMinorRequirements(){
     for (let i = 0; i < pathway.numMajors; i++){
         if(!state.selectedMajors[i]){
             let message = `Major ${i+1} is missing!`;
-            let errorMsg = new PlanError(null, message);
+            let id = `MissingMajor-${i+1}`;
+            let errorMsg = new PlanError(null, message, id);
             errors.push(errorMsg);
         }
     }
     for (let i = 0; i < pathway.numMinors; i++){
         if(!state.selectedMinors[i]){
             let message = `Minor ${i+1} is missing!`;
-            let errorMsg = new PlanError(null, message);
+            let id = `MissingMinor-${i+1}`;
+            let errorMsg = new PlanError(null, message, id);
             errors.push(errorMsg);
         }
     }
@@ -121,7 +124,8 @@ function attributeRequiredCourses(majorOrMinor){
             if (!coursePlanCourses.has(course.code)){
                 let missingCourses = courses.filter(course => !coursePlanCourses.has(course.code)).map(course => course.code);
                 let message = `Missing required courses for ${majorOrMinor.Name}: ${missingCourses.join(", ")}.`;
-                let errorMsg = new PlanError(null, message);
+                let id = `MissingCourse-${missingCourses.join("-")}-${majorOrMinor.Name}`;
+                let errorMsg = new PlanError(null, message, id);
                 errors.push(errorMsg);
                 continue;
             }
@@ -156,7 +160,8 @@ function attributeChooseNCourses(majorOrMinor){
                 .map(course => course.code);
 
             let message = `Missing courses for ${majorOrMinor.Name}: choose at least ${requirement.Count} of ${missingCourses.join(", ")}.`;
-            let errorMsg = new PlanError(null, message);
+            let id = `MissingReqs-${missingCourses.join("-")}-${majorOrMinor.Name}-${requirement.Count}`;
+            let errorMsg = new PlanError(null, message, id);
             errors.push(errorMsg);
             continue;
         }
@@ -250,7 +255,8 @@ function substituteCourse(courseCode, unfulfilledMajorOrMinorCode) {
     if (!replacementCourse) {
         errors.push(new PlanError(
             courseCode,
-            `Course ${courseCode} is required for ${unfulfilledOption.Name} but is already attributed to ${possessingOption.Name}, and no suitable substitute course was found.`
+            `Course ${courseCode} is required for ${unfulfilledOption.Name} but is already attributed to ${possessingOption.Name}, and no suitable substitute course was found.`,
+            `TooManyOverLaps-${courseCode}-${unfulfilledOption.Name}-${possessingOption.Name}`
         ));
         return;
     }

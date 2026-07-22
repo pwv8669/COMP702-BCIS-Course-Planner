@@ -5,7 +5,7 @@ import { initDragAndDrop } from './dragAndDropController.js';
 
 
 document.addEventListener('DOMContentLoaded', () => {
-    // 1. UI ELEMENT SELECTION TARGETS
+    //selecting the relevant html elements
     const panel = document.getElementById('templates');
     const openTemplates = document.getElementById('openTemplates');
     const closeTemplates = document.getElementById('closeTemplates');
@@ -15,7 +15,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const uploadForm = document.getElementById('uploadTemplateForm');
     const saveBtn = document.getElementById('saveTemplateBtn'); 
 
-    // 2. UI HOOK INTEGRATIONS & EVENT LISTENERS
+    // event listeners
     if (openTemplates && panel) {
         openTemplates.addEventListener('click', () => {
             panel.showModal();
@@ -43,7 +43,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // 3. STORAGE & FETCHING FUNCTION PIPELINES
+    // storage and fetch
 
     async function saveCurrentTemplateToServer(customName) {
     if (!customName) return alert("Please provide a valid file name.");
@@ -62,7 +62,8 @@ document.addEventListener('DOMContentLoaded', () => {
         selectedMajors: state.selectedMajors,
         selectedMinors: state.selectedMinors,
         selectedElectives: state.selectedElectives,
-        schedule: cleanedSchedule 
+        schedule: cleanedSchedule,
+        ignoredErrors: state.ignoredErrors
     };
 
     try {
@@ -180,6 +181,8 @@ document.addEventListener('DOMContentLoaded', () => {
             state.selectedElectives = JsonInput.selectedElectives;
             state.selectedMajors = JsonInput.selectedMajors;
             state.selectedMinors = JsonInput.selectedMinors;
+
+            state.ignoredErrors = JsonInput.ignoredErrors || {};
             
             const major1 = document.getElementById('major1');
             const major2 = document.getElementById('major2');
