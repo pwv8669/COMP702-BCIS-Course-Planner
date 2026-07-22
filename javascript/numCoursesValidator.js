@@ -45,8 +45,8 @@ export function validateNumberOfCourses()
 	}
 	if (numCourses > 24) {
 		message = `Warning: The study plan contains ${courses} courses while only 24 are required for graduation criteria`;
-		let errorMsg = new PlanError(null, message);
 		let id = `TooManyCourses-${courses}`;
+		let errorMsg = new PlanError(null, message, id);
 		errorMsg.positions = positions;
 		errors.push(errorMsg);
 	}
@@ -64,7 +64,8 @@ export function validateNumberOfCourses()
 	}
 	if (numCourses < 24) {
 		message = `Warning: The study plan only contains ${numCourses} courses.  A total of 24 courses is required for graduation criteria`;
-		let errorMsg = new PlanError(null, message);
+		let id = `TooFewCourses-${numCourses}`;
+		let errorMsg = new PlanError(null, message, id);
 		errorMsg.positions = positions;
 		errors.push(errorMsg);
 	}
@@ -80,7 +81,8 @@ export function validateNumberOfCourses()
 			}
 		}
 		message = `Warning: The study plan contains ${semesters} semesters this means it will take more than 3 years to meet graduation criteria`;  
-		let errorMsg = new PlanError(null, message);
+		let id = `TooManySemesters-${semesters}`;
+		let errorMsg = new PlanError(null, message, id);
 		errorMsg.positions = positions;
 		errors.push(errorMsg);
 	}
@@ -95,7 +97,8 @@ export function validateNumberOfCourses()
 		numCourses = 0;
 		if (numCourses > 4){
 			message = `Warning: The study plan contains ${numCourses} courses in semester ${semester+1}. The reccomended number of courses per semester is 4`;
-			let errorMsg = new PlanError(null, message);
+			let id = `TooManyCourses-${numCourses}-InSem-${semester+1}`;
+			let errorMsg = new PlanError(null, message, id);
 			errorMsg.positions = positions;
 			errors.push(errorMsg);
 		}
