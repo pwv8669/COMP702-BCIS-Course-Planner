@@ -69,7 +69,7 @@ export async function renderCoursePlan(state) {
                 <div class="course-cell">
                     <div class="course-name">${course.code}: ${course.name}</div>
 
-                    <button class="prereq-btn">
+                    <button class="prereq-btn" data-html2canvas-ignore="true">
                         Show reqs
                     </button>
 
