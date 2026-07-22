@@ -46,6 +46,7 @@ export function validateNumberOfCourses()
 	if (numCourses > 24) {
 		message = `Warning: The study plan contains ${courses} courses while only 24 are required for graduation criteria`;
 		let errorMsg = new PlanError(null, message);
+		let id = `TooManyCourses-${courses}`;
 		errorMsg.positions = positions;
 		errors.push(errorMsg);
 	}

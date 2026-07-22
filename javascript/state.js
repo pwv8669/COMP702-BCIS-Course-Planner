@@ -22,5 +22,7 @@ export const state = {
     // The selected majors, minors, and electives for the course plan.
     selectedMajors: [null, null],
     selectedMinors: [null, null],
-    selectedElectives: [null, null, null, null]
+    selectedElectives: [null, null, null, null],
+    //Ignored errors and corresponding notes storage
+    ignoredErrors: {}
 };
