@@ -232,8 +232,8 @@ table{
   background-color: #4285b9;
 }
 .prereq-btn {
-    width: 40%;
-    float: right;
+    position:fixed;
+    margin-left:110px;
     padding: 4px;
     font-size: 12px;
     border-radius: 0px;
@@ -242,7 +242,9 @@ table{
     border: none;
     cursor: pointer;
     margin-bottom: 0px;
-    margin-right; 2px;
+    bottom:4px;
+    width: 90px;
+
 }
 .prereq-list {
     margin-bottom: 30px; 
@@ -517,7 +519,7 @@ select:hover,button:hover{
         <div id="ignoreModal" class="hidden">
             <div class="modal-content">
                 <h3>Add a note for this ignored error</h3>
-                <textarea id="ignoreNoteInput" placeholder="Explain why you’re ignoring this error..."></textarea>
+                <textarea id="ignoreNoteInput" placeholder="Explain why youï¿½re ignoring this error..."></textarea>
                 <div class="modal-buttons">
                     <button id="saveIgnoreNoteBtn">Save</button>
                     <button id="cancelIgnoreBtn">Cancel</button>
