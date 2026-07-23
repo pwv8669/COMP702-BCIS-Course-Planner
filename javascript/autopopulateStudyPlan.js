@@ -4,8 +4,8 @@
 // It then schedules the courses in a valid way.
 
 // Imports ---------- //
-import { placeCourse, PathwayRefresh, refreshStudyPlan } from './app.js';
-import { state, Pathways } from './state.js';
+import { refreshStudyPlan } from './app.js';
+import { state } from './state.js';
 import { loadPathways } from "./objects/pathway.js";
 import { loadMajorOptions, loadMinorOptions } from "./objects/majorMinorOption.js";
 import { evaluatePrerequisiteTree } from './prerequisiteValidator.js';
@@ -251,14 +251,6 @@ function getAllChooseNRequirements() {
     }
 
     return requirements;
-}
-
-// Returns all courses that are not yet selected (Used when electives are allowed).
-function getAvailableElectives(selectedCourses) {
-    const coursesArray = Object.values(coursesObject);
-    return coursesArray.filter(
-        course => !selectedCourses.has(course.code)
-    );
 }
 
 // Substitute overlapping courses.
