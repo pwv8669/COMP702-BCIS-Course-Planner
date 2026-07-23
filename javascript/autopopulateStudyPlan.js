@@ -22,6 +22,8 @@ const minorOptions = await loadMinorOptions();
 // Key: course.code, Value: Number of substitutions required.
 const coursesToSubstitute = new Map();
 
+const chooseNSubstitutions = [];
+
 // Rigging event listener to button that triggers autopopulation
 const button = document.getElementById('AutocompletePlanButton');
 button.addEventListener('click', () => {
@@ -37,6 +39,7 @@ function autocompleteStudyPlan() {
 
     // Wipes the substitution list, as it should not contain leftover data.
     coursesToSubstitute.clear();
+    chooseNSubstitutions.length = 0;
 
     // Builds a list of courses, if it could not build a valid study plan, it fails.
     const selectedCourses = buildCourseList();
@@ -140,7 +143,11 @@ function addRequiredCourses(selectedCourses) {
 }
 
 // Recursive backtracking to satisfy all ChooseN requirements.
-function tryChooseNRequirements(requirements, index, selectedCourses) {
+function tryChooseNRequirements(
+    requirements,
+    index,
+    selectedCourses
+) {
     // All ChooseN requirements have been processed.
     if (index === requirements.length) {
         return tryOverlapSubstitutions(
@@ -156,10 +163,64 @@ function tryChooseNRequirements(requirements, index, selectedCourses) {
                 !selectedCourses.has(course.code)
         );
 
-    const combinations = getCombinations(
-        availableCourses,
-        requirement.Count
-    );
+    /*
+     * If there are not enough available courses to satisfy
+     * the ChooseN requirement, record the missing courses
+     * as substitutions.
+     *
+     * Example:
+     *
+     * Choose 1 of:
+     *   COMP610
+     *   COMP613
+     *
+     * If both are already selected:
+     *
+     * availableCourses.length = 0
+     * requirement.Count = 1
+     *
+     * Therefore:
+     *   1 substitution is required.
+     */
+    const numberOfSubstitutions =
+        requirement.Count - availableCourses.length;
+
+    if (numberOfSubstitutions > 0) {
+
+        chooseNSubstitutions.push({
+            requirement,
+            count: numberOfSubstitutions
+        });
+
+        // Continue to the next ChooseN requirement.
+        const result =
+            tryChooseNRequirements(
+                requirements,
+                index + 1,
+                selectedCourses
+            );
+
+        if (result) {
+            return true;
+        }
+
+        // Backtrack the substitution entry.
+        chooseNSubstitutions.pop();
+
+        return false;
+    }
+
+    /*
+     * There are enough available courses.
+     *
+     * We still need to choose exactly requirement.Count
+     * courses from them.
+     */
+    const combinations =
+        getCombinations(
+            availableCourses,
+            requirement.Count
+        );
 
     for (const combination of combinations) {
 
@@ -184,7 +245,9 @@ function tryChooseNRequirements(requirements, index, selectedCourses) {
 
         // Backtrack.
         for (const course of combination) {
-            selectedCourses.delete(course.code);
+            selectedCourses.delete(
+                course.code
+            );
         }
     }
 
@@ -255,8 +318,15 @@ function getAllChooseNRequirements() {
 
 // Substitute overlapping courses.
 function tryOverlapSubstitutions(selectedCourses) {
-    const replacementGroups =
-        getReplacementGroups();
+    const replacementGroups = [
+        ...getReplacementGroups(),
+        ...getChooseNReplacementGroups()
+    ];
+
+    replacementGroups.sort(
+        (a, b) =>
+            a.count - b.count
+    );
 
     return tryReplacementGroups(
         replacementGroups,
@@ -281,11 +351,23 @@ function tryReplacementGroups(
     const group =
         replacementGroups[index];
 
-    const availableCourses =
-        getAvailableReplacementCourses(
-            group.duplicatedCourse,
-            selectedCourses
-        );
+    let availableCourses;
+
+    if (group.requirement) {
+        // This is a ChooseN substitution.
+        availableCourses =
+            getAvailableChooseNReplacementCourses(
+                group,
+                selectedCourses
+            );
+    } else {
+        // This is an overlapping Required course.
+        availableCourses =
+            getAvailableReplacementCourses(
+                group.duplicatedCourse,
+                selectedCourses
+            );
+    }
 
     const combinations =
         getCombinations(
@@ -357,6 +439,16 @@ function getReplacementGroups() {
     return replacementGroups;
 }
 
+function getChooseNReplacementGroups() {
+    return chooseNSubstitutions.map(
+        substitution => ({
+            duplicatedCourse: null,
+            requirement: substitution.requirement,
+            count: substitution.count
+        })
+    );
+}
+
 // Determine candidate courses that can substitute for a duplicated required course.
 // - For double majors with <=2 total substitutes needed, electives are allowed
 // - Otherwise only courses from selected majors/minors are considered
@@ -400,6 +492,77 @@ function getAvailableReplacementCourses(
             return true;
         })
         .sort((a, b) => a.level - b.level);
+}
+
+function getAvailableChooseNReplacementCourses(
+    group,
+    selectedCourses
+) {
+    const isDoubleMajor =
+        state.selectedPathway === "doubleMajors";
+
+    const totalSubstitutes =
+        getNumberOfSubstitutesNeeded();
+
+    const totalChooseNSubstitutes =
+        chooseNSubstitutions.reduce(
+            (total, substitution) =>
+                total + substitution.count,
+            0
+        );
+
+    const totalSubstitutions =
+        totalSubstitutes +
+        totalChooseNSubstitutes;
+
+    /*
+     * Double majors can use up to two unrestricted electives
+     * for substitutions.
+     */
+    if (
+        isDoubleMajor &&
+        totalSubstitutions <= 2
+    ) {
+        return getAvailableElectiveCourses(
+            selectedCourses
+        );
+    }
+
+    /*
+     * Once the two double-major elective slots are exhausted,
+     * replacements must come from courses offered by the
+     * selected majors/minors.
+     *
+     * The replacement must be at least the level of the
+     * ChooseN course(s) being replaced.
+     */
+    const minimumLevel =
+        Math.min(
+            ...group.requirement.Courses.map(
+                course => course.level
+            )
+        );
+
+    return getCoursesFromSelectedMajorsAndMinors()
+        .filter(course => {
+
+            if (
+                selectedCourses.has(
+                    course.code
+                )
+            ) {
+                return false;
+            }
+
+            return (
+                course.level >=
+                minimumLevel
+            );
+        })
+        .sort(
+            (a, b) =>
+                a.level - b.level
+        );
 }
 
 // Total count of needed substitutes (sum of values in coursesToSubstitute)
