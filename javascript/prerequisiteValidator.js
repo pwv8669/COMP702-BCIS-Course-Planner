@@ -3,7 +3,7 @@ import { NodeType } from './courseObjectConverter.js';
 import { PlanError } from './objects/planError.js';
 
 // Returns all codes for courses completed prior to a given semester.
-function getCompletedCourses(currentSemester){
+export function getCompletedCourses(currentSemester){
     // We create a set to keep track of all the previously completed courses' codes.
     const completed = new Set()
     // Iterates through the previously completed courses and adds them to the set.
@@ -17,7 +17,7 @@ function getCompletedCourses(currentSemester){
     return completed;
 }
 
-function evaluatePrerequisiteTree(node, completedCourses) {
+export function evaluatePrerequisiteTree(node, completedCourses) {
     // No Prerequisites
     if (!node) return true;
 

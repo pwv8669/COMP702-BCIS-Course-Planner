@@ -408,6 +408,7 @@ select:hover,button:hover{
 
 </style>
 </head>
+<title>BCIS Course Planner</title>
 <body>
 
     <div class="main-layout-container">
@@ -503,9 +504,15 @@ select:hover,button:hover{
             </div>
         </div>
     </div>
+    <div>
+        <div id="error-list-container">
 
-    <div id="error-list-container">
+        </div>
 
+        <div id="ignored-errors-container">
+            <h3>Ignored Errors</h3>
+            <div id="ignored-errors-list"></div>
+        </div>
     </div>
 
     <div class="button-grid">
@@ -515,6 +522,8 @@ select:hover,button:hover{
 
         <button id="SaveFileButton">Save Schedule as File</button>
         <button onclick="getPDF()">Save as PDF</button>
+
+        <button id="AutocompletePlanButton">Autopopulate Plan</button>
 
         <div id="ignoreModal" class="hidden">
             <div class="modal-content">
@@ -529,10 +538,7 @@ select:hover,button:hover{
 
     </div>
 
-    <div id="ignored-errors-container">
-        <h3>Ignored Errors</h3>
-        <div id="ignored-errors-list"></div>
-    </div>
+    
 
     <br><br>
 

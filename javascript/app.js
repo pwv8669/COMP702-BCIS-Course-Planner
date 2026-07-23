@@ -6,6 +6,7 @@ import { renderCoursePlan } from './renderCoursePlan.js';
 import { updatePathwayOptions } from './pathwayManager.js';
 import { initPathwayOptions } from './pathwayManager.js';
 import './templatesController.js';
+import './autopopulateStudyPlan.js';
 import { errorDisplay } from './errorDisplay.js';
 import { generateDynamicCourseList } from './courseListBuilder.js';
 import { initDragAndDrop, initGlobalDeleteZone } from './dragAndDropController.js';
