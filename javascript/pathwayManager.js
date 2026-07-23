@@ -108,7 +108,7 @@ function createMajorDropdowns()
         });
         // Append the major 2 select element to the pathway option container in the HTML form.
         pathwayOptionContainer.appendChild(major2Label);
-        major2Label.appendChild(major2);
+        major2Label.appendChild(major2);1
         // Populate the major 2 select element with options from the majorsArray.
         for (const option of majorsArray)
         {

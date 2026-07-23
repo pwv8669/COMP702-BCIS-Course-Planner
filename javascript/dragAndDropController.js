@@ -8,7 +8,7 @@ let draggedCourseCode = null;
 
 export function initDragAndDrop(onPlanChange) {
 
-    // 1. SIDEBAR DRAG SOURCES
+    // Sidebar course cards
     const courseCards = document.querySelectorAll('.course-card');
     courseCards.forEach(card => {
         card.addEventListener('dragstart', (e) => {
@@ -29,7 +29,7 @@ export function initDragAndDrop(onPlanChange) {
         });
     });
 
-    // 2. TABLE CELL DRAG SOURCES + DROP TARGETS
+    // populated schedule table cells are made draggable here and unpopulated ones lose their draggable attribute.  
     const tableCells = document.querySelectorAll('.schedule-table td');
 
     tableCells.forEach(cell => {
@@ -40,7 +40,7 @@ export function initDragAndDrop(onPlanChange) {
         const col = parseInt(idParts[2], 10);
 
         const currentCourse = state.coursePlan[row][col];
-
+        //if cell is populated with a course make it draggable otherwise ensure it is not draggable
         if (currentCourse) {
             cell.setAttribute('draggable', 'true');
             cell.style.cursor = 'grab';
@@ -49,6 +49,7 @@ export function initDragAndDrop(onPlanChange) {
             cell.style.cursor = 'default';
         }
 
+        //here event listeners are added to each cell
         cell.addEventListener('dragstart', (e) => {
             const courseObj = state.coursePlan[row][col];
             if (!courseObj) return;
@@ -91,12 +92,12 @@ export function initDragAndDrop(onPlanChange) {
             const draggedCourse = courses[draggedCourseCode];
             const existingDestinationCourse = state.coursePlan[targetSemesterIndex][targetSlotIndex];
 
-            // CASE 1: Dragging from another cell -- swap
+            // dragging from a populated cell to another populated cell swaps them
             if (sourceSemesterIndex !== null && sourceSlotIndex !== null) {
                 state.coursePlan[sourceSemesterIndex][sourceSlotIndex] = existingDestinationCourse || null;
             }
 
-            // CASE 2: Always place dragged course into target
+            
             state.coursePlan[targetSemesterIndex][targetSlotIndex] = draggedCourse;
 
             // Reset drag state
@@ -104,7 +105,7 @@ export function initDragAndDrop(onPlanChange) {
             sourceSlotIndex = null;
             draggedCourseCode = null;
 
-            // Re-render via callback (wired to refreshStudyPlan)
+            // Re-rendering via callback (refreshStudyPlan)
             if (typeof onPlanChange === 'function') {
                 await onPlanChange();
             }
@@ -112,6 +113,7 @@ export function initDragAndDrop(onPlanChange) {
     });
 }
 
+//Function that ensures when a course is dropped onto the background the course is deleted from the schedule table
 export function initGlobalDeleteZone(onDeleteCallback) {
     document.body.addEventListener('dragover', (e) => {
         e.preventDefault();

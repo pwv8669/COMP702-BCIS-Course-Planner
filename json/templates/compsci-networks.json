@@ -1,0 +1,55 @@
+{
+    "selectedPathway": "doubleMajors",
+    "selectedMajors": [
+        "ComputerScience",
+        "NetworksAndCybersecurity"
+    ],
+    "selectedMinors": [
+        null,
+        null
+    ],
+    "selectedElectives": [
+        null,
+        null,
+        null,
+        null
+    ],
+    "schedule": [
+        [
+            "COMP500",
+            "COMP501",
+            "COMP508",
+            "MATH503"
+        ],
+        [
+            "COMP507",
+            "DIGD507",
+            "COMP503",
+            "COMP504"
+        ],
+        [
+            "COMP610",
+            "COMP613",
+            "COMP604",
+            "COMP607"
+        ],
+        [
+            "COMP611",
+            "COMP612",
+            "COMP609",
+            "ENEL611"
+        ],
+        [
+            "COMP702",
+            "COMP711",
+            "COMP712",
+            "COMP715"
+        ],
+        [
+            "COMP703",
+            "COMP713",
+            "COMP714",
+            "COMP716"
+        ]
+    ]
+}

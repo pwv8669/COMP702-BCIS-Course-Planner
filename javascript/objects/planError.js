@@ -1,5 +1,5 @@
 export class PlanError {
-    constructor(courseCode, message) {
+    constructor(courseCode, message, id) {
         this.courseCode = courseCode;
         this.message = message;
         this.positions = [
@@ -11,5 +11,6 @@ export class PlanError {
             [false, false, false, false],
         ];
         this.occurences = null;
+        this.id = id;
     }
 }

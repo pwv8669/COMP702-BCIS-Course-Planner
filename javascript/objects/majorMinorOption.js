@@ -31,7 +31,9 @@ function resolveRequirements(requirements, courses) {
 export async function loadMajorOptions() {
     const response = await fetch("json/majors.json");
     const data = await response.json();
-
+    let optionsarray = Object.values(data)[0];
+    console.log(optionsarray);
+    
     const majors = Object.fromEntries(
         Object.entries(data).map(([code, option]) => [
             code,

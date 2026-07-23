@@ -54,7 +54,8 @@ export function validatePrerequisites(){
 
             if (!valid){
                 let message = `The prerequisites for ${currentCourse.code} are not met by semester ${semester+1}.`; 
-                let errorMsg = new PlanError(currentCourse.code, message);
+                let id = `MissingPreq-${currentCourse.code}`;
+                let errorMsg = new PlanError(currentCourse.code, message, id);
                 errorMsg.positions[semester][slot] = true;
                 errors.push(errorMsg);
             }
