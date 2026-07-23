@@ -1,3 +1,9 @@
+// Autopopulate study plan module
+// This script aims to build a set containing courses which satisfy the major/minor requirements
+// It tries all combinations of ChooseN requirement choices & duplicate Required substitutions until a valid solution is found.
+// It then schedules the courses in a valid way.
+
+// Imports ---------- //
 import { placeCourse, PathwayRefresh, refreshStudyPlan } from './app.js';
 import { state, Pathways } from './state.js';
 import { loadPathways } from "./objects/pathway.js";
@@ -5,28 +11,35 @@ import { loadMajorOptions, loadMinorOptions } from "./objects/majorMinorOption.j
 import { evaluatePrerequisiteTree } from './prerequisiteValidator.js';
 import { loadCourses } from './courseObjectConverter.js';
 
+// Global consts ---------- //
 const pathways = await loadPathways();
 const coursesObject = await loadCourses();
 const majorOptions = await loadMajorOptions();
 const minorOptions = await loadMinorOptions();
-    
-const button = document.getElementById('AutocompletePlanButton');
 
+// Map to track how many substitutes are required for each course.
+// Courses must be substituted when 2+ majors/minors require the same course.
+// Key: course.code, Value: Number of substitutions required.
 const coursesToSubstitute = new Map();
 
+// Rigging event listener to button that triggers autopopulation
+const button = document.getElementById('AutocompletePlanButton');
 button.addEventListener('click', () => {
     console.log("Autopopulate Plan button clicked");
     // Call the function to autopopulate the study plan
     autocompleteStudyPlan();
 });
 
+// Entry point for autocompletion logic
 function autocompleteStudyPlan() {
+    // Checks that pathway and options have been selected, fails otherwise
     if (!checkIfMajorsAndMinorsSelected()) return;
 
+    // Wipes the substitution list, as it should not contain leftover data.
     coursesToSubstitute.clear();
 
+    // Builds a list of courses, if it could not build a valid study plan, it fails.
     const selectedCourses = buildCourseList();
-
     if (!selectedCourses) {
         alert("Unable to generate a valid study plan.");
         return;
@@ -35,6 +48,7 @@ function autocompleteStudyPlan() {
     refreshStudyPlan();
 }
 
+// Builds a map of all the selected courses.
 function buildCourseList() {
     const selectedCourses = new Map();
 
@@ -56,7 +70,7 @@ function buildCourseList() {
 }
 
 // --- BuildCourseList() helper functions --- //
-// Adds core courses to the selectedCourses.
+// Adds core courses to the selectedCourses map.
 function addCoreCourses(selectedCourses) {
     const core = majorOptions["Core"]
     if (!core) return;
@@ -72,6 +86,7 @@ function addCoreCourses(selectedCourses) {
 }
 
 // Adds only the required courses to the selectedCourses map.
+// If there are overlaps, it adds the course to corsesToSubstitute so that we can revisit it.
 function addRequiredCourses(selectedCourses) {
     const selectedPathway = pathways[state.selectedPathway];
     // Add major required courses
@@ -124,7 +139,7 @@ function addRequiredCourses(selectedCourses) {
     }
 }
 
-// 
+// Recursive backtracking to satisfy all ChooseN requirements.
 function tryChooseNRequirements(requirements, index, selectedCourses) {
     // All ChooseN requirements have been processed.
     if (index === requirements.length) {
@@ -176,6 +191,7 @@ function tryChooseNRequirements(requirements, index, selectedCourses) {
     return false;
 }
 
+// Generate all combinations of 'count' items from 'courses' array.
 function getCombinations(courses, count) {
     const combinations = [];
 
@@ -199,6 +215,7 @@ function getCombinations(courses, count) {
     return combinations;
 }
 
+// Collectt all ChooseN requirements from selected majors and minors.
 function getAllChooseNRequirements() {
     const requirements = [];
     const selectedPathway = pathways[state.selectedPathway];
@@ -236,6 +253,7 @@ function getAllChooseNRequirements() {
     return requirements;
 }
 
+// Returns all courses that are not yet selected (Used when electives are allowed).
 function getAvailableElectives(selectedCourses) {
     const coursesArray = Object.values(coursesObject);
     return coursesArray.filter(
@@ -243,6 +261,7 @@ function getAvailableElectives(selectedCourses) {
     );
 }
 
+// Substitute overlapping courses.
 function tryOverlapSubstitutions(selectedCourses) {
     const replacementGroups =
         getReplacementGroups();
@@ -254,6 +273,7 @@ function tryOverlapSubstitutions(selectedCourses) {
     );
 }
 
+// Try each replacement group via backtracking similar to ChooseN handling.
 function tryReplacementGroups(
     replacementGroups,
     index,
@@ -313,6 +333,7 @@ function tryReplacementGroups(
     return false;
 }
 
+// Build replacement groups from coursesToSubstitute map.
 function getReplacementGroups() {
     const replacementGroups = [];
 
@@ -344,6 +365,10 @@ function getReplacementGroups() {
     return replacementGroups;
 }
 
+// Determine candidate courses that can substitute for a duplicated required course.
+// - For double majors with <=2 total substitutes needed, electives are allowed
+// - Otherwise only courses from selected majors/minors are considered
+// - Filters out courses already selected and, for safety, courses below the duplicated course's level
 function getAvailableReplacementCourses(
     duplicatedCourse,
     selectedCourses
@@ -385,6 +410,7 @@ function getAvailableReplacementCourses(
         .sort((a, b) => a.level - b.level);
 }
 
+// Total count of needed substitutes (sum of values in coursesToSubstitute)
 function getNumberOfSubstitutesNeeded() {
     let total = 0;
 
@@ -404,6 +430,7 @@ function getAvailableElectiveCourses(selectedCourses) {
     );
 }
 
+// Collect all courses that appear in the selected majors and minors
 function getCoursesFromSelectedMajorsAndMinors() {
     const courses = new Map();
 
@@ -484,6 +511,7 @@ function getCourseByCode(courseCode) {
     return coursesObject[courseCode];
 }
 
+// Sets every entry in state.courseplan to null.
 function clearCoursePlan() {
     for (let semester = 0; semester < state.coursePlan.length; semester++) {
         for (let slot = 0; slot < state.coursePlan[semester].length; slot++) {
@@ -492,6 +520,9 @@ function clearCoursePlan() {
     }
 }
 
+// Schedule selected courses into the state.coursePlan
+// - Reserves COMP702 and COMP703 at fixed positions (hard-coded placements)
+// - Sorts remaining courses by level and attempts to place them greedily
 function scheduleCourses(selectedCourses) {
     clearCoursePlan();
     state.coursePlan[4][0] = selectedCourses.get("COMP702");
@@ -508,6 +539,7 @@ function scheduleCourses(selectedCourses) {
     return placeCourses(coursesToPlace, placedCourses);
 }
 
+// Read currently placed courses from state.coursePlan into a Map for quick lookup
 function getPlacedCourses() {
     const placedCourses = new Map();
     for (let semester = 0; semester < state.coursePlan.length; semester++) {
@@ -521,6 +553,9 @@ function getPlacedCourses() {
     return placedCourses;
 }
 
+// Greedy placement loop:
+// - Iterate through coursesToPlace repeatedly and try to place any course that can be placed
+// - If no course can be placed in a full pass, scheduling fails
 function placeCourses(coursesToPlace, placedCourses) {
     while (coursesToPlace.length > 0) {
         let placedSomething = false;
@@ -556,6 +591,7 @@ function placeCourses(coursesToPlace, placedCourses) {
     return true;
 }
 
+// Check both offering and prerequisites before placing
 function canPlaceCourse(course, semester, placedCourses) {
     return (
         offeredThisSemester(course, semester) &&
@@ -563,6 +599,7 @@ function canPlaceCourse(course, semester, placedCourses) {
     );
 }
 
+// Check whether the given course is offered in the target semester
 function offeredThisSemester(course, semester) {
     const isSemester1 = semester % 2 === 0;
 
@@ -570,11 +607,14 @@ function offeredThisSemester(course, semester) {
     return course.semester2Offered;
 }
 
+// Evaluate prerequisites for 'course' using the evaluatePrerequisiteTree helper,
+// where completedCourses contains course codes completed before 'semester'.
 function prerequisitesMet(course, semester, placedCourses) {
     const completedCourses = getCompletedCoursesForSemester(placedCourses, semester);
     return evaluatePrerequisiteTree(course.prerequisites, completedCourses);
 }
 
+// Build a Set of courses completed strictly before the provided semester
 function getCompletedCoursesForSemester(placedCourses, semester) {
     const completedCourses = new Set();
 
@@ -586,6 +626,7 @@ function getCompletedCoursesForSemester(placedCourses, semester) {
     return completedCourses;
 }
 
+// Ensure pathway is selected and that the required number of majors/minors are chosen
 function checkIfMajorsAndMinorsSelected() {
     // Check that state has a selected pathway.
     if (!state.selectedPathway) {
