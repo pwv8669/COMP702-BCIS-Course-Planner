@@ -269,13 +269,20 @@ function substituteCourse(courseCode, unfulfilledMajorOrMinorCode) {
 function getCoursesOfferedBy(majorOrMinor) {
     const courseMap = new Map();
 
-    for (const requirement of majorOrMinor.Requirements) {
-        for (const course of requirement.Courses) {
-            courseMap.set(course.code, course);
+    if (majorOrMinor != null)
+    {
+        for (const requirement of majorOrMinor.Requirements) {
+            for (const course of requirement.Courses) {
+                courseMap.set(course.code, course);
+            }
         }
-    }
 
-    return [...courseMap.values()];
+        return [...courseMap.values()];
+    }
+    else 
+    {
+        return;
+    }
 }
 
 function findCourseInOption(courseCode, majorOrMinor) {
