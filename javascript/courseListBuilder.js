@@ -16,9 +16,15 @@ export function generateDynamicCourseList(coursesMap) {
 
     // Group the Course instances by their numeric level property
     const groupedByLevel = {};
+    const electiveCourses = [];
 
     Object.values(coursesMap).forEach(course => {
-        // Fallback to 5 if level is missing or unmapped
+        //Currently as a placeholder ive just added all courses that have no prerequisites as electives
+        if (!course.prerequisites) {
+            electiveCourses.push(course);
+        }
+
+        // Falls back to level 5 if level is missing or unmapped
         const level = course.level || 5; 
         
         if (!groupedByLevel[level]) {
@@ -68,6 +74,33 @@ export function generateDynamicCourseList(coursesMap) {
         details.appendChild(listWrapper);
         sidebar.appendChild(details);
     });
+
+    //elective accordion
+    if (electiveCourses.length > 0) {
+        const details = document.createElement('details');
+        details.className = 'course-category';
+
+        const summary = document.createElement('summary');
+        summary.textContent = "Electives";
+        details.appendChild(summary);
+
+        const listWrapper = document.createElement('div');
+        listWrapper.className = 'course-list';
+
+        electiveCourses.sort((a, b) => a.code.localeCompare(b.code));
+
+        electiveCourses.forEach(course => {
+            const card = document.createElement('div');
+            card.className = 'course-card';
+            card.setAttribute('draggable', 'true');
+            card.setAttribute('data-code', course.code);
+            card.textContent = `${course.code}: ${course.name} (${course.points} pts)`;
+            listWrapper.appendChild(card);
+        });
+
+        details.appendChild(listWrapper);
+        sidebar.appendChild(details);
+    }
 
     // Rebind event listeners
     initDragAndDrop(refreshStudyPlan);
