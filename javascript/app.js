@@ -62,6 +62,7 @@ export function PathwayRefresh(pathway){
 export async function refreshStudyPlan() {
     await renderCoursePlan(state);
     errorDisplay();
+    generateDynamicCourseList(courses);
     initDragAndDrop(refreshStudyPlan);
 }
 

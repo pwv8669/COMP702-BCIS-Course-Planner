@@ -1,5 +1,6 @@
 import { initDragAndDrop } from './dragAndDropController.js';
 import { refreshStudyPlan } from './app.js';
+import { state } from './state.js';
 /**
  * Generates collapsible lists from instantiated Course objects
  * @param {Object} coursesMap - Object mapping course codes to Course instances
@@ -13,6 +14,17 @@ export function generateDynamicCourseList(coursesMap) {
 
     // Clear old layout but retain container heading
     sidebar.innerHTML = '<h3>Available Courses</h3>';
+
+    // Creating a set of the courses present in the schedule soo they can be deactivated in the sidebar
+    const placedCourses = [];
+
+    state.coursePlan.forEach(row => {
+        row.forEach(cell => {
+            if(cell && cell.code) {
+                placedCourses.push(cell.code);
+            }
+        });
+    });
 
     // Group the Course instances by their numeric level property
     const groupedByLevel = {};
@@ -60,12 +72,20 @@ export function generateDynamicCourseList(coursesMap) {
         groupedByLevel[level].forEach(course => {
             const card = document.createElement('div');
             card.className = 'course-card';
-            card.setAttribute('draggable', 'true');
+
+            // If course coode is present in the schedule it will be greyed out and uninteractable in the side bar
+            if(placedCourses.includes(course.code)) {
+                card.classList.add("course-card-disabled");
+                card.setAttribute('draggable', 'false');
+                card.addEventListener("dragstart", e => e.preventDefault());
+            } else {
+            card.setAttribute('draggable', 'true');                 
+            }
             
             // Set the uppercase course code attribute used by drag handlers
             card.setAttribute('data-code', course.code);
             
-            // Display: "COMP500: PROOGRAMMING CONCEPTS AND TECHNIQUES (15 pts)"
+            // Display: "COMP500: PROGRAMMING CONCEPTS AND TECHNIQUES (15 pts)"
             card.textContent = `${course.code}: ${course.name} (${course.points} pts)`;
             
             listWrapper.appendChild(card);
@@ -92,7 +112,15 @@ export function generateDynamicCourseList(coursesMap) {
         electiveCourses.forEach(course => {
             const card = document.createElement('div');
             card.className = 'course-card';
-            card.setAttribute('draggable', 'true');
+
+            if(placedCourses.includes(course.code)) {
+                card.classList.add("course-card-disabled");
+                card.setAttribute('draggable', 'false');
+                card.addEventListener("dragstart", e => e.preventDefault());
+            } else {
+                card.setAttribute('draggable', 'true');                 
+            } 
+
             card.setAttribute('data-code', course.code);
             card.textContent = `${course.code}: ${course.name} (${course.points} pts)`;
             listWrapper.appendChild(card);
