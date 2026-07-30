@@ -24,6 +24,14 @@ const coursesToSubstitute = new Map();
 
 const chooseNSubstitutions = [];
 
+/*
+ * Course data and semester rules are static for the lifetime of the page, so
+ * the same selected course set always has the same scheduling result. This
+ * cache also avoids solving an identical set reached through different
+ * requirement-choice paths.
+ */
+const scheduleCache = new Map();
+
 // Rigging event listener to button that triggers autopopulation
 const button = document.getElementById('AutocompletePlanButton');
 button.addEventListener('click', () => {
@@ -34,8 +42,23 @@ button.addEventListener('click', () => {
 
 // Entry point for autocompletion logic
 function autocompleteStudyPlan() {
+    if (!generateStudyPlan()) {
+        return;
+    }
+
+    refreshStudyPlan();
+}
+
+/*
+ * Generate and commit a plan without rendering it. Keeping generation
+ * separate from the button/UI work makes the solver reusable and keeps its
+ * performance straightforward to test.
+ */
+export function generateStudyPlan() {
     // Checks that pathway and options have been selected, fails otherwise
-    if (!checkIfMajorsAndMinorsSelected()) return;
+    if (!checkIfMajorsAndMinorsSelected()) {
+        return false;
+    }
 
     // Wipes the substitution list, as it should not contain leftover data.
     coursesToSubstitute.clear();
@@ -45,10 +68,10 @@ function autocompleteStudyPlan() {
     const selectedCourses = buildCourseList();
     if (!selectedCourses) {
         alert("Unable to generate a valid study plan.");
-        return;
+        return false;
     }
 
-    refreshStudyPlan();
+    return true;
 }
 
 // Builds a map of all the selected courses.
@@ -162,120 +185,168 @@ function tryChooseNRequirements(
             course =>
                 !selectedCourses.has(course.code)
         );
-
-    /*
-     * If there are not enough available courses to satisfy
-     * the ChooseN requirement, record the missing courses
-     * as substitutions.
-     *
-     * Example:
-     *
-     * Choose 1 of:
-     *   COMP610
-     *   COMP613
-     *
-     * If both are already selected:
-     *
-     * availableCourses.length = 0
-     * requirement.Count = 1
-     *
-     * Therefore:
-     *   1 substitution is required.
-     */
-    const numberOfSubstitutions =
-        requirement.Count - availableCourses.length;
-
-    if (numberOfSubstitutions > 0) {
-
-        chooseNSubstitutions.push({
-            requirement,
-            count: numberOfSubstitutions
-        });
-
-        // Continue to the next ChooseN requirement.
-        const result =
-            tryChooseNRequirements(
-                requirements,
-                index + 1,
-                selectedCourses
-            );
-
-        if (result) {
-            return true;
-        }
-
-        // Backtrack the substitution entry.
-        chooseNSubstitutions.pop();
-
-        return false;
-    }
-
-    /*
-     * There are enough available courses.
-     *
-     * We still need to choose exactly requirement.Count
-     * courses from them.
-     */
-    const combinations =
-        getCombinations(
+    const orderedAvailableCourses =
+        orderRequirementCourses(
             availableCourses,
-            requirement.Count
+            selectedCourses
+        );
+    const overlappingCourseCount =
+        requirement.Courses.length -
+        availableCourses.length;
+    const minimumSubstitutionCount =
+        Math.max(
+            0,
+            requirement.Count -
+                orderedAvailableCourses.length
+        );
+    const maximumSubstitutionCount =
+        Math.min(
+            requirement.Count,
+            overlappingCourseCount
         );
 
-    for (const combination of combinations) {
+    /*
+     * Prefer unused requirement courses, but also explore using an already
+     * attributed requirement course plus a substitute. This alternative is
+     * important when the unused course cannot be scheduled because its own
+     * prerequisites are absent.
+     */
+    for (
+        let substitutionCount =
+            minimumSubstitutionCount;
+        substitutionCount <=
+            maximumSubstitutionCount;
+        substitutionCount++
+    ) {
+        const newCourseCount =
+            requirement.Count -
+            substitutionCount;
 
-        // Add this ChooseN combination.
-        for (const course of combination) {
-            selectedCourses.set(
-                course.code,
-                course
-            );
-        }
+        for (const combination of getCombinations(
+            orderedAvailableCourses,
+            newCourseCount
+        )) {
+            for (const course of combination) {
+                selectedCourses.set(
+                    course.code,
+                    course
+                );
+            }
 
-        // Try to satisfy the next ChooseN requirement.
-        if (
-            tryChooseNRequirements(
-                requirements,
-                index + 1,
-                selectedCourses
-            )
-        ) {
-            return true;
-        }
+            if (substitutionCount > 0) {
+                chooseNSubstitutions.push({
+                    requirement,
+                    count: substitutionCount
+                });
+            }
 
-        // Backtrack.
-        for (const course of combination) {
-            selectedCourses.delete(
-                course.code
-            );
+            if (
+                tryChooseNRequirements(
+                    requirements,
+                    index + 1,
+                    selectedCourses
+                )
+            ) {
+                return true;
+            }
+
+            if (substitutionCount > 0) {
+                chooseNSubstitutions.pop();
+            }
+
+            for (const course of combination) {
+                selectedCourses.delete(
+                    course.code
+                );
+            }
         }
     }
 
     return false;
 }
 
-// Generate all combinations of 'count' items from 'courses' array.
-function getCombinations(courses, count) {
-    const combinations = [];
+/*
+ * Within a Choose-N requirement, first try courses whose prerequisites are
+ * already present. The JSON order is preserved within each group so this
+ * heuristic does not otherwise alter the preferred academic ordering.
+ */
+function orderRequirementCourses(
+    courses,
+    selectedCourses
+) {
+    const selectedCourseCodes =
+        new Set(selectedCourses.keys());
 
-    function buildCombination(startIndex, currentCombination) {
-        if (currentCombination.length === count) {
-            combinations.push([...currentCombination]);
-            return;
-        }
+    return courses
+        .map(
+            (course, originalIndex) => ({
+                course,
+                originalIndex,
+                prerequisitesAvailable:
+                    prerequisiteTreeIsCovered(
+                        course.prerequisites,
+                        selectedCourseCodes
+                    )
+            })
+        )
+        .sort((a, b) => {
+            if (
+                a.prerequisitesAvailable !==
+                b.prerequisitesAvailable
+            ) {
+                return a.prerequisitesAvailable
+                    ? -1
+                    : 1;
+            }
 
-        for (let i = startIndex; i < courses.length; i++) {
-            currentCombination.push(courses[i]);
+            return (
+                a.originalIndex -
+                b.originalIndex
+            );
+        })
+        .map(entry => entry.course);
+}
 
-            buildCombination(i + 1, currentCombination);
-
-            currentCombination.pop();
-        }
+/*
+ * Yield combinations one at a time. This keeps the search lazy: as soon as a
+ * valid plan is found, no later combinations are built or stored in memory.
+ */
+function* getCombinations(
+    courses,
+    count,
+    startIndex = 0,
+    currentCombination = []
+) {
+    if (count < 0 || count > courses.length) {
+        return;
     }
 
-    buildCombination(0, []);
+    if (currentCombination.length === count) {
+        yield [...currentCombination];
+        return;
+    }
 
-    return combinations;
+    const coursesStillNeeded =
+        count - currentCombination.length;
+    const finalStartIndex =
+        courses.length - coursesStillNeeded;
+
+    for (
+        let i = startIndex;
+        i <= finalStartIndex;
+        i++
+    ) {
+        currentCombination.push(courses[i]);
+
+        yield* getCombinations(
+            courses,
+            count,
+            i + 1,
+            currentCombination
+        );
+
+        currentCombination.pop();
+    }
 }
 
 // Collectt all ChooseN requirements from selected majors and minors.
@@ -322,60 +393,126 @@ function tryOverlapSubstitutions(selectedCourses) {
         ...getReplacementGroups(),
         ...getChooseNReplacementGroups()
     ];
+    const selectedPathway =
+        pathways[state.selectedPathway];
 
-    replacementGroups.sort(
-        (a, b) =>
-            a.count - b.count
-    );
+    if (selectedPathway.numElectives > 0) {
+        replacementGroups.push({
+            isElective: true,
+            count: selectedPathway.numElectives
+        });
+    }
 
     return tryReplacementGroups(
         replacementGroups,
-        0,
         selectedCourses
     );
 }
 
-// Try each replacement group via backtracking similar to ChooseN handling.
+/*
+ * Try replacement groups using the most-constrained group first. Candidate
+ * lists change as courses are selected, so this choice is recalculated at
+ * every level of the search.
+ */
 function tryReplacementGroups(
     replacementGroups,
-    index,
     selectedCourses
 ) {
     // All overlap replacements have been selected.
-    if (index === replacementGroups.length) {
+    if (replacementGroups.length === 0) {
         return scheduleCourses(
             new Map(selectedCourses)
         );
     }
 
-    const group =
-        replacementGroups[index];
+    let selectedGroupIndex = -1;
+    let availableCourses = null;
+    let smallestBranchCount = Infinity;
+    const candidateLists = [];
+    const potentiallySelectableCourseCodes =
+        new Set(selectedCourses.keys());
 
-    let availableCourses;
-
-    if (group.requirement) {
-        // This is a ChooseN substitution.
-        availableCourses =
-            getAvailableChooseNReplacementCourses(
+    for (
+        let index = 0;
+        index < replacementGroups.length;
+        index++
+    ) {
+        const group = replacementGroups[index];
+        const candidates =
+            getReplacementCandidates(
                 group,
                 selectedCourses
             );
-    } else {
-        // This is an overlapping Required course.
-        availableCourses =
-            getAvailableReplacementCourses(
-                group.duplicatedCourse,
-                selectedCourses
+        candidateLists.push(candidates);
+
+        for (const candidate of candidates) {
+            potentiallySelectableCourseCodes.add(
+                candidate.code
             );
+        }
     }
 
-    const combinations =
-        getCombinations(
-            availableCourses,
-            group.count
+    /*
+     * A selected course may currently be waiting for a prerequisite supplied
+     * by a later replacement group. If even the union of every remaining
+     * candidate cannot provide that prerequisite, this entire branch can be
+     * rejected before generating combinations.
+     */
+    for (const course of selectedCourses.values()) {
+        if (
+            !prerequisiteTreeIsCovered(
+                course.prerequisites,
+                potentiallySelectableCourseCodes
+            )
+        ) {
+            return false;
+        }
+    }
+
+    for (
+        let index = 0;
+        index < replacementGroups.length;
+        index++
+    ) {
+        const group = replacementGroups[index];
+        const candidates =
+            candidateLists[index].filter(
+                course =>
+                    prerequisiteTreeIsCovered(
+                        course.prerequisites,
+                        potentiallySelectableCourseCodes
+                    )
+            );
+
+        if (candidates.length < group.count) {
+            return false;
+        }
+
+        const branchCount =
+            getCombinationCount(
+                candidates.length,
+                group.count
+            );
+
+        if (branchCount < smallestBranchCount) {
+            selectedGroupIndex = index;
+            availableCourses = candidates;
+            smallestBranchCount = branchCount;
+        }
+    }
+
+    const group =
+        replacementGroups[selectedGroupIndex];
+    const remainingGroups =
+        replacementGroups.filter(
+            (_, index) =>
+                index !== selectedGroupIndex
         );
 
-    for (const combination of combinations) {
+    for (const combination of getCombinations(
+        availableCourses,
+        group.count
+    )) {
 
         // Add this replacement combination.
         for (const course of combination) {
@@ -388,11 +525,17 @@ function tryReplacementGroups(
         // Try the next replacement group.
         if (
             tryReplacementGroups(
-                replacementGroups,
-                index + 1,
+                remainingGroups,
                 selectedCourses
             )
         ) {
+            if (group.isElective) {
+                state.selectedElectives =
+                    combination.map(
+                        course => course.code
+                    );
+            }
+
             return true;
         }
 
@@ -405,6 +548,211 @@ function tryReplacementGroups(
     }
 
     return false;
+}
+
+function getReplacementCandidates(
+    group,
+    selectedCourses
+) {
+    let candidates;
+
+    if (group.isElective) {
+        candidates =
+            getAvailableElectiveCourses(
+                selectedCourses
+            );
+    } else if (group.requirement) {
+        candidates =
+            getAvailableChooseNReplacementCourses(
+                group,
+                selectedCourses
+            );
+    } else {
+        candidates =
+            getAvailableReplacementCourses(
+                group.duplicatedCourse,
+                selectedCourses
+            );
+    }
+
+    return orderCandidateCourses(
+        candidates,
+        selectedCourses
+    );
+}
+
+/*
+ * Try candidates whose prerequisites are already represented by the current
+ * course set first. Flexible offerings and lower-level courses are used as
+ * tie-breakers. This changes search order only; every candidate remains
+ * available to the complete backtracking search.
+ */
+function orderCandidateCourses(
+    candidates,
+    selectedCourses
+) {
+    const selectedCourseCodes =
+        new Set(selectedCourses.keys());
+    const neededPrerequisiteCounts =
+        new Map();
+
+    for (
+        const selectedCourse
+        of selectedCourses.values()
+    ) {
+        const prerequisiteCodes =
+            new Set();
+
+        collectPrerequisiteCodes(
+            selectedCourse.prerequisites,
+            prerequisiteCodes
+        );
+
+        for (
+            const prerequisiteCode
+            of prerequisiteCodes
+        ) {
+            if (
+                selectedCourseCodes.has(
+                    prerequisiteCode
+                )
+            ) {
+                continue;
+            }
+
+            neededPrerequisiteCounts.set(
+                prerequisiteCode,
+                (
+                    neededPrerequisiteCounts.get(
+                        prerequisiteCode
+                    ) ?? 0
+                ) + 1
+            );
+        }
+    }
+
+    return [...candidates].sort((a, b) => {
+        const prerequisiteUsefulnessDifference =
+            (
+                neededPrerequisiteCounts.get(
+                    b.code
+                ) ?? 0
+            ) -
+            (
+                neededPrerequisiteCounts.get(
+                    a.code
+                ) ?? 0
+            );
+
+        if (
+            prerequisiteUsefulnessDifference !==
+            0
+        ) {
+            return prerequisiteUsefulnessDifference;
+        }
+
+        const aPrerequisitesAvailable =
+            prerequisiteTreeIsCovered(
+                a.prerequisites,
+                selectedCourseCodes
+            );
+        const bPrerequisitesAvailable =
+            prerequisiteTreeIsCovered(
+                b.prerequisites,
+                selectedCourseCodes
+            );
+
+        if (
+            aPrerequisitesAvailable !==
+            bPrerequisitesAvailable
+        ) {
+            return aPrerequisitesAvailable
+                ? -1
+                : 1;
+        }
+
+        const aOfferingCount =
+            Number(a.semester1Offered) +
+            Number(a.semester2Offered);
+        const bOfferingCount =
+            Number(b.semester1Offered) +
+            Number(b.semester2Offered);
+
+        if (aOfferingCount !== bOfferingCount) {
+            return (
+                bOfferingCount -
+                aOfferingCount
+            );
+        }
+
+        return a.level - b.level;
+    });
+}
+
+function prerequisiteTreeIsCovered(
+    node,
+    courseCodes
+) {
+    if (!node) {
+        return true;
+    }
+
+    if (node.type === "COURSE") {
+        return courseCodes.has(node.value);
+    }
+
+    if (node.type === "AND") {
+        return node.children.every(
+            child =>
+                prerequisiteTreeIsCovered(
+                    child,
+                    courseCodes
+                )
+        );
+    }
+
+    if (node.type === "OR") {
+        return node.children.some(
+            child =>
+                prerequisiteTreeIsCovered(
+                    child,
+                    courseCodes
+                )
+        );
+    }
+
+    return false;
+}
+
+function getCombinationCount(
+    numberOfCourses,
+    count
+) {
+    if (
+        count < 0 ||
+        count > numberOfCourses
+    ) {
+        return 0;
+    }
+
+    const smallerCount =
+        Math.min(
+            count,
+            numberOfCourses - count
+        );
+    let result = 1;
+
+    for (
+        let i = 1;
+        i <= smallerCount;
+        i++
+    ) {
+        result *=
+            (numberOfCourses - smallerCount + i) /
+            i;
+    }
+
+    return result;
 }
 
 // Build replacement groups from coursesToSubstitute map.
@@ -666,95 +1014,156 @@ function getCourseByCode(courseCode) {
     return coursesObject[courseCode];
 }
 
-// Sets every entry in state.courseplan to null.
-function clearCoursePlan() {
-    for (let semester = 0; semester < state.coursePlan.length; semester++) {
-        for (let slot = 0; slot < state.coursePlan[semester].length; slot++) {
-            state.coursePlan[semester][slot] = null;
-        }
-    }
-}
+const FIXED_COURSE_SEMESTERS = new Map([
+    ["COMP702", 4],
+    ["COMP703", 5]
+]);
 
-// Schedule selected courses into the state.coursePlan
-// - Reserves COMP702 and COMP703 at fixed positions (hard-coded placements)
-// - Sorts remaining courses by level and attempts to place them greedily
+/*
+ * Schedule a course set as a constraint-satisfaction problem.
+ *
+ * A course is assigned to a semester rather than a particular table slot,
+ * because slots in the same semester are interchangeable. The search uses
+ * domain propagation, chooses the course with the fewest semester choices,
+ * and backtracks immediately when a remaining course has no possible
+ * semester.
+ *
+ * All work is done against local data. state.coursePlan is updated only after
+ * a complete valid schedule has been found.
+ */
 function scheduleCourses(selectedCourses) {
-    clearCoursePlan();
-    state.coursePlan[4][0] = selectedCourses.get("COMP702");
-    state.coursePlan[5][0] = selectedCourses.get("COMP703");
+    const courses =
+        new Map(selectedCourses);
+    const semesterCount =
+        state.coursePlan.length;
+    const semesterCapacity =
+        state.coursePlan[0].length;
 
-    const coursesToPlace = Array.from(selectedCourses.values())
-        .filter(course =>
-            course.code !== "COMP702" &&
-            course.code !== "COMP703"
-        );
-    coursesToPlace.sort((a, b) => a.level - b.level);
-
-    const placedCourses = getPlacedCourses();
-    return placeCourses(coursesToPlace, placedCourses);
-}
-
-// Read currently placed courses from state.coursePlan into a Map for quick lookup
-function getPlacedCourses() {
-    const placedCourses = new Map();
-    for (let semester = 0; semester < state.coursePlan.length; semester++) {
-        for (let slot = 0; slot < state.coursePlan[semester].length; slot++) {
-            const course = state.coursePlan[semester][slot];
-            if (!course) continue
-            
-            placedCourses.set(course.code, semester);
-        }
+    if (
+        courses.size >
+        semesterCount * semesterCapacity
+    ) {
+        return false;
     }
-    return placedCourses;
-}
 
-// Greedy placement loop:
-// - Iterate through coursesToPlace repeatedly and try to place any course that can be placed
-// - If no course can be placed in a full pass, scheduling fails
-function placeCourses(coursesToPlace, placedCourses) {
-    while (coursesToPlace.length > 0) {
-        let placedSomething = false;
+    const courseSetKey =
+        Array.from(courses.keys())
+            .sort()
+            .join("|");
 
-        for (let i = 0; i < coursesToPlace.length; i++) {
-            const course = coursesToPlace[i];
-            let placed = false;
-            
-            for (let semester = 0; semester < state.coursePlan.length && !placed; semester++) {
-                if (!canPlaceCourse(course, semester, placedCourses)) continue;
+    if (scheduleCache.has(courseSetKey)) {
+        const cachedAssignments =
+            scheduleCache.get(courseSetKey);
 
-                for (let slot = 0; slot < state.coursePlan[semester].length; slot++) {
-                    if (state.coursePlan[semester][slot] !== null) continue;
-                    
-                    placedCourses.set(course.code, semester);
-                    state.coursePlan[semester][slot] = course;
-
-                    coursesToPlace.splice(i, 1);
-                    i--;
-
-                    placed = true;
-                    placedSomething = true;
-                    break;
-                }
-            }
+        if (!cachedAssignments) {
+            return false;
         }
 
-        if (!placedSomething) {
-            console.warn("Unable to place remaining courses:", coursesToPlace);
+        const cachedPlan =
+            buildCoursePlan(
+                courses,
+                new Map(cachedAssignments),
+                semesterCount,
+                semesterCapacity
+            );
+
+        if (!cachedPlan) {
+            return false;
+        }
+
+        commitCoursePlan(cachedPlan);
+        return true;
+    }
+
+    const selectedCourseCodes =
+        new Set(courses.keys());
+
+    for (const course of courses.values()) {
+        if (
+            !prerequisiteTreeIsCovered(
+                course.prerequisites,
+                selectedCourseCodes
+            )
+        ) {
+            scheduleCache.set(
+                courseSetKey,
+                null
+            );
             return false;
         }
     }
+
+    const domains =
+        buildInitialSemesterDomains(
+            courses,
+            semesterCount
+        );
+
+    if (!domains) {
+        scheduleCache.set(courseSetKey, null);
+        return false;
+    }
+
+    const assignments = new Map();
+    const semesterLoads =
+        Array(semesterCount).fill(0);
+
+    for (
+        const [courseCode, semester]
+        of FIXED_COURSE_SEMESTERS
+    ) {
+        if (!courses.has(courseCode)) {
+            continue;
+        }
+
+        assignments.set(
+            courseCode,
+            semester
+        );
+        semesterLoads[semester]++;
+    }
+
+    const dependencyCounts =
+        buildDependencyCounts(courses);
+    const failedStates = new Set();
+
+    const completedAssignments =
+        searchSemesterAssignments(
+            courses,
+            domains,
+            assignments,
+            semesterLoads,
+            semesterCapacity,
+            dependencyCounts,
+            failedStates
+        );
+
+    if (!completedAssignments) {
+        scheduleCache.set(courseSetKey, null);
+        return false;
+    }
+
+    const completedPlan =
+        buildCoursePlan(
+            courses,
+            completedAssignments,
+            semesterCount,
+            semesterCapacity
+        );
+
+    if (!completedPlan) {
+        scheduleCache.set(courseSetKey, null);
+        return false;
+    }
+
+    scheduleCache.set(
+        courseSetKey,
+        Array.from(completedAssignments)
+    );
+    commitCoursePlan(completedPlan);
     return true;
 }
 
-// Check both offering and prerequisites before placing
-function canPlaceCourse(course, semester, placedCourses) {
-    return (
-        offeredThisSemester(course, semester) &&
-        prerequisitesMet(course, semester, placedCourses)
-    );
-}
-
-// Check whether the given course is offered in the target semester
 function offeredThisSemester(course, semester) {
     const isSemester1 = semester % 2 === 0;
 
@@ -762,24 +1171,974 @@ function offeredThisSemester(course, semester) {
     return course.semester2Offered;
 }
 
-// Evaluate prerequisites for 'course' using the evaluatePrerequisiteTree helper,
-// where completedCourses contains course codes completed before 'semester'.
-function prerequisitesMet(course, semester, placedCourses) {
-    const completedCourses = getCompletedCoursesForSemester(placedCourses, semester);
-    return evaluatePrerequisiteTree(course.prerequisites, completedCourses);
+function buildInitialSemesterDomains(
+    courses,
+    semesterCount
+) {
+    const domains = new Map();
+
+    for (const course of courses.values()) {
+        const fixedSemester =
+            FIXED_COURSE_SEMESTERS.get(
+                course.code
+            );
+
+        if (fixedSemester !== undefined) {
+            if (
+                fixedSemester >= semesterCount ||
+                !offeredThisSemester(
+                    course,
+                    fixedSemester
+                )
+            ) {
+                return null;
+            }
+
+            domains.set(
+                course.code,
+                [fixedSemester]
+            );
+            continue;
+        }
+
+        const possibleSemesters = [];
+
+        for (
+            let semester = 0;
+            semester < semesterCount;
+            semester++
+        ) {
+            if (
+                offeredThisSemester(
+                    course,
+                    semester
+                )
+            ) {
+                possibleSemesters.push(
+                    semester
+                );
+            }
+        }
+
+        if (possibleSemesters.length === 0) {
+            return null;
+        }
+
+        domains.set(
+            course.code,
+            possibleSemesters
+        );
+    }
+
+    return domains;
 }
 
-// Build a Set of courses completed strictly before the provided semester
-function getCompletedCoursesForSemester(placedCourses, semester) {
+function searchSemesterAssignments(
+    courses,
+    domains,
+    assignments,
+    semesterLoads,
+    semesterCapacity,
+    dependencyCounts,
+    failedStates
+) {
+    const propagatedDomains =
+        propagateSemesterDomains(
+            courses,
+            domains,
+            assignments,
+            semesterLoads,
+            semesterCapacity
+        );
+
+    if (!propagatedDomains) {
+        return null;
+    }
+
+    if (assignments.size === courses.size) {
+        return assignmentsAreValid(
+            courses,
+            assignments
+        )
+            ? assignments
+            : null;
+    }
+
+    const stateKey =
+        getAssignmentStateKey(assignments);
+
+    if (failedStates.has(stateKey)) {
+        return null;
+    }
+
+    const courseCode =
+        selectMostConstrainedCourse(
+            courses,
+            propagatedDomains,
+            assignments,
+            dependencyCounts
+        );
+    const semesters =
+        orderSemesterChoices(
+            courseCode,
+            propagatedDomains,
+            assignments,
+            semesterLoads,
+            semesterCapacity,
+            dependencyCounts
+        );
+
+    for (const semester of semesters) {
+        if (
+            semesterLoads[semester] >=
+            semesterCapacity
+        ) {
+            continue;
+        }
+
+        const nextAssignments =
+            new Map(assignments);
+        const nextDomains =
+            cloneDomains(
+                propagatedDomains
+            );
+        const nextSemesterLoads =
+            [...semesterLoads];
+
+        nextAssignments.set(
+            courseCode,
+            semester
+        );
+        nextDomains.set(
+            courseCode,
+            [semester]
+        );
+        nextSemesterLoads[semester]++;
+
+        const result =
+            searchSemesterAssignments(
+                courses,
+                nextDomains,
+                nextAssignments,
+                nextSemesterLoads,
+                semesterCapacity,
+                dependencyCounts,
+                failedStates
+            );
+
+        if (result) {
+            return result;
+        }
+    }
+
+    failedStates.add(stateKey);
+    return null;
+}
+
+function propagateSemesterDomains(
+    courses,
+    domains,
+    assignments,
+    semesterLoads,
+    semesterCapacity
+) {
+    const propagatedDomains =
+        cloneDomains(domains);
+    let changed = true;
+
+    while (changed) {
+        changed = false;
+
+        for (
+            const [courseCode, course]
+            of courses
+        ) {
+            if (assignments.has(courseCode)) {
+                const semester =
+                    assignments.get(courseCode);
+
+                if (
+                    !prerequisiteTreeCanBeSatisfied(
+                        course.prerequisites,
+                        semester,
+                        assignments,
+                        propagatedDomains
+                    )
+                ) {
+                    return null;
+                }
+
+                continue;
+            }
+
+            const previousDomain =
+                propagatedDomains.get(
+                    courseCode
+                );
+            const nextDomain =
+                previousDomain.filter(
+                    semester =>
+                        semesterLoads[semester] <
+                            semesterCapacity &&
+                        prerequisiteTreeCanBeSatisfied(
+                            course.prerequisites,
+                            semester,
+                            assignments,
+                            propagatedDomains
+                        )
+                );
+
+            if (nextDomain.length === 0) {
+                return null;
+            }
+
+            if (
+                nextDomain.length !==
+                previousDomain.length
+            ) {
+                propagatedDomains.set(
+                    courseCode,
+                    nextDomain
+                );
+                changed = true;
+            }
+        }
+
+        for (const course of courses.values()) {
+            const dependentDomain =
+                propagatedDomains.get(
+                    course.code
+                );
+            const result =
+                restrictPrerequisiteDomains(
+                    course.prerequisites,
+                    dependentDomain,
+                    assignments,
+                    propagatedDomains
+                );
+
+            if (!result.valid) {
+                return null;
+            }
+
+            if (result.changed) {
+                changed = true;
+            }
+        }
+
+        const capacityResult =
+            propagateCapacityConstraints(
+                propagatedDomains,
+                assignments,
+                semesterLoads,
+                semesterCapacity
+            );
+
+        if (!capacityResult.valid) {
+            return null;
+        }
+
+        if (capacityResult.changed) {
+            changed = true;
+        }
+    }
+
+    return propagatedDomains;
+}
+
+/*
+ * Prerequisite checking normally narrows a dependent course from left to
+ * right. This complementary pass also narrows prerequisite courses from
+ * right to left. For example, because COMP702 is fixed in semester five, all
+ * six of its mandatory prerequisites are immediately restricted to the
+ * first four semesters.
+ */
+function restrictPrerequisiteDomains(
+    node,
+    dependentDomain,
+    assignments,
+    domains
+) {
+    if (!node) {
+        return {
+            valid: true,
+            changed: false
+        };
+    }
+
+    if (node.type === "COURSE") {
+        if (assignments.has(node.value)) {
+            const prerequisiteSemester =
+                assignments.get(node.value);
+
+            return {
+                valid:
+                    dependentDomain.some(
+                        dependentSemester =>
+                            prerequisiteSemester <
+                            dependentSemester
+                    ),
+                changed: false
+            };
+        }
+
+        const previousDomain =
+            domains.get(node.value);
+
+        if (!previousDomain) {
+            return {
+                valid: false,
+                changed: false
+            };
+        }
+
+        const nextDomain =
+            previousDomain.filter(
+                prerequisiteSemester =>
+                    dependentDomain.some(
+                        dependentSemester =>
+                            prerequisiteSemester <
+                            dependentSemester
+                    )
+            );
+
+        if (nextDomain.length === 0) {
+            return {
+                valid: false,
+                changed: false
+            };
+        }
+
+        const changed =
+            nextDomain.length !==
+            previousDomain.length;
+
+        if (changed) {
+            domains.set(
+                node.value,
+                nextDomain
+            );
+        }
+
+        return {
+            valid: true,
+            changed
+        };
+    }
+
+    if (node.type === "AND") {
+        let changed = false;
+
+        for (const child of node.children) {
+            const result =
+                restrictPrerequisiteDomains(
+                    child,
+                    dependentDomain,
+                    assignments,
+                    domains
+                );
+
+            if (!result.valid) {
+                return result;
+            }
+
+            if (result.changed) {
+                changed = true;
+            }
+        }
+
+        return {
+            valid: true,
+            changed
+        };
+    }
+
+    if (node.type === "OR") {
+        const viableChildren =
+            node.children.filter(
+                child =>
+                    dependentDomain.some(
+                        semester =>
+                            prerequisiteTreeCanBeSatisfied(
+                                child,
+                                semester,
+                                assignments,
+                                domains
+                            )
+                    )
+            );
+
+        if (viableChildren.length === 0) {
+            return {
+                valid: false,
+                changed: false
+            };
+        }
+
+        /*
+         * With multiple viable OR branches, restricting either individual
+         * branch would discard valid solutions. Once only one branch remains,
+         * it becomes mandatory and can safely be propagated.
+         */
+        if (viableChildren.length === 1) {
+            return restrictPrerequisiteDomains(
+                viableChildren[0],
+                dependentDomain,
+                assignments,
+                domains
+            );
+        }
+
+        return {
+            valid: true,
+            changed: false
+        };
+    }
+
+    return {
+        valid: false,
+        changed: false
+    };
+}
+
+/*
+ * Check all 63 non-empty subsets of the six semesters. If more courses are
+ * confined to a subset than the subset has free slots, the branch is
+ * impossible. If the counts are equal, those slots are reserved and can be
+ * removed from every other course's domain.
+ */
+function propagateCapacityConstraints(
+    domains,
+    assignments,
+    semesterLoads,
+    semesterCapacity
+) {
+    const semesterCount =
+        semesterLoads.length;
+    const finalMask =
+        1 << semesterCount;
+    let changed = false;
+
+    for (
+        let semesterMask = 1;
+        semesterMask < finalMask;
+        semesterMask++
+    ) {
+        let availableCapacity = 0;
+
+        for (
+            let semester = 0;
+            semester < semesterCount;
+            semester++
+        ) {
+            if (
+                semesterMask &
+                (1 << semester)
+            ) {
+                availableCapacity +=
+                    semesterCapacity -
+                    semesterLoads[semester];
+            }
+        }
+
+        const confinedCourseCodes = [];
+
+        for (
+            const [courseCode, domain]
+            of domains
+        ) {
+            if (assignments.has(courseCode)) {
+                continue;
+            }
+
+            const isConfined =
+                domain.every(
+                    semester =>
+                        semesterMask &
+                        (1 << semester)
+                );
+
+            if (isConfined) {
+                confinedCourseCodes.push(
+                    courseCode
+                );
+            }
+        }
+
+        if (
+            confinedCourseCodes.length >
+            availableCapacity
+        ) {
+            return {
+                valid: false,
+                changed: false
+            };
+        }
+
+        if (
+            confinedCourseCodes.length !==
+            availableCapacity
+        ) {
+            continue;
+        }
+
+        const confinedCourseCodeSet =
+            new Set(confinedCourseCodes);
+
+        for (
+            const [courseCode, domain]
+            of domains
+        ) {
+            if (
+                assignments.has(courseCode) ||
+                confinedCourseCodeSet.has(
+                    courseCode
+                )
+            ) {
+                continue;
+            }
+
+            const nextDomain =
+                domain.filter(
+                    semester =>
+                        !(
+                            semesterMask &
+                            (1 << semester)
+                        )
+                );
+
+            if (nextDomain.length === 0) {
+                return {
+                    valid: false,
+                    changed: false
+                };
+            }
+
+            if (
+                nextDomain.length !==
+                domain.length
+            ) {
+                domains.set(
+                    courseCode,
+                    nextDomain
+                );
+                changed = true;
+            }
+        }
+    }
+
+    return {
+        valid: true,
+        changed
+    };
+}
+
+/*
+ * Return whether a prerequisite expression can still be completed before the
+ * proposed semester. For an unassigned prerequisite, at least one value in
+ * its current domain must be earlier than the proposed semester.
+ */
+function prerequisiteTreeCanBeSatisfied(
+    node,
+    semester,
+    assignments,
+    domains
+) {
+    if (!node) {
+        return true;
+    }
+
+    if (node.type === "COURSE") {
+        if (assignments.has(node.value)) {
+            return (
+                assignments.get(node.value) <
+                semester
+            );
+        }
+
+        const prerequisiteDomain =
+            domains.get(node.value);
+
+        return Boolean(
+            prerequisiteDomain &&
+            prerequisiteDomain.some(
+                prerequisiteSemester =>
+                    prerequisiteSemester <
+                    semester
+            )
+        );
+    }
+
+    if (node.type === "AND") {
+        return node.children.every(
+            child =>
+                prerequisiteTreeCanBeSatisfied(
+                    child,
+                    semester,
+                    assignments,
+                    domains
+                )
+        );
+    }
+
+    if (node.type === "OR") {
+        return node.children.some(
+            child =>
+                prerequisiteTreeCanBeSatisfied(
+                    child,
+                    semester,
+                    assignments,
+                    domains
+                )
+        );
+    }
+
+    return false;
+}
+
+function selectMostConstrainedCourse(
+    courses,
+    domains,
+    assignments,
+    dependencyCounts
+) {
+    const unassignedCourses =
+        Array.from(courses.values())
+            .filter(
+                course =>
+                    !assignments.has(
+                        course.code
+                    )
+            );
+
+    unassignedCourses.sort((a, b) => {
+        const domainDifference =
+            domains.get(a.code).length -
+            domains.get(b.code).length;
+
+        if (domainDifference !== 0) {
+            return domainDifference;
+        }
+
+        const dependencyDifference =
+            dependencyCounts.get(b.code) -
+            dependencyCounts.get(a.code);
+
+        if (dependencyDifference !== 0) {
+            return dependencyDifference;
+        }
+
+        return a.level - b.level;
+    });
+
+    return unassignedCourses[0].code;
+}
+
+function orderSemesterChoices(
+    courseCode,
+    domains,
+    assignments,
+    semesterLoads,
+    semesterCapacity,
+    dependencyCounts
+) {
+    const semesters =
+        [...domains.get(courseCode)];
+    const hasDependents =
+        dependencyCounts.get(courseCode) > 0;
+
+    semesters.sort((a, b) => {
+        const pressureDifference =
+            getSemesterPressure(
+                a,
+                courseCode,
+                domains,
+                assignments,
+                semesterLoads,
+                semesterCapacity
+            ) -
+            getSemesterPressure(
+                b,
+                courseCode,
+                domains,
+                assignments,
+                semesterLoads,
+                semesterCapacity
+            );
+
+        if (pressureDifference !== 0) {
+            return pressureDifference;
+        }
+
+        /*
+         * Prerequisites are generally most useful early. Courses which are
+         * not prerequisites for anything else are tried later first, keeping
+         * early capacity available for prerequisite chains.
+         */
+        return hasDependents
+            ? a - b
+            : b - a;
+    });
+
+    return semesters;
+}
+
+function getSemesterPressure(
+    semester,
+    selectedCourseCode,
+    domains,
+    assignments,
+    semesterLoads,
+    semesterCapacity
+) {
+    let competingCourses = 0;
+
+    for (
+        const [courseCode, domain]
+        of domains
+    ) {
+        if (
+            courseCode === selectedCourseCode ||
+            assignments.has(courseCode)
+        ) {
+            continue;
+        }
+
+        if (domain.includes(semester)) {
+            competingCourses +=
+                1 / domain.length;
+        }
+    }
+
+    const remainingCapacity =
+        semesterCapacity -
+        semesterLoads[semester];
+
+    return (
+        competingCourses /
+        remainingCapacity
+    );
+}
+
+function buildDependencyCounts(courses) {
+    const dependencyCounts =
+        new Map(
+            Array.from(courses.keys())
+                .map(
+                    courseCode =>
+                        [courseCode, 0]
+                )
+        );
+
+    for (const course of courses.values()) {
+        const prerequisiteCodes =
+            new Set();
+
+        collectPrerequisiteCodes(
+            course.prerequisites,
+            prerequisiteCodes
+        );
+
+        for (
+            const prerequisiteCode
+            of prerequisiteCodes
+        ) {
+            if (
+                dependencyCounts.has(
+                    prerequisiteCode
+                )
+            ) {
+                dependencyCounts.set(
+                    prerequisiteCode,
+                    dependencyCounts.get(
+                        prerequisiteCode
+                    ) + 1
+                );
+            }
+        }
+    }
+
+    return dependencyCounts;
+}
+
+function collectPrerequisiteCodes(
+    node,
+    prerequisiteCodes
+) {
+    if (!node) {
+        return;
+    }
+
+    if (node.type === "COURSE") {
+        prerequisiteCodes.add(node.value);
+        return;
+    }
+
+    for (const child of node.children) {
+        collectPrerequisiteCodes(
+            child,
+            prerequisiteCodes
+        );
+    }
+}
+
+function assignmentsAreValid(
+    courses,
+    assignments
+) {
+    for (
+        const [courseCode, semester]
+        of assignments
+    ) {
+        const course =
+            courses.get(courseCode);
+        const completedCourses =
+            getCompletedCoursesForSemester(
+                assignments,
+                semester
+            );
+
+        if (
+            !offeredThisSemester(
+                course,
+                semester
+            ) ||
+            !evaluatePrerequisiteTree(
+                course.prerequisites,
+                completedCourses
+            )
+        ) {
+            return false;
+        }
+    }
+
+    return true;
+}
+
+function getCompletedCoursesForSemester(
+    assignments,
+    semester
+) {
     const completedCourses = new Set();
 
-    for (const [courseCode, completedSemester] of placedCourses) {
+    for (
+        const [courseCode, completedSemester]
+        of assignments
+    ) {
         if (completedSemester < semester) {
             completedCourses.add(courseCode);
         }
     }
+
     return completedCourses;
 }
+
+function getAssignmentStateKey(assignments) {
+    return Array.from(assignments)
+        .sort(
+            ([courseCodeA], [courseCodeB]) =>
+                courseCodeA.localeCompare(
+                    courseCodeB
+                )
+        )
+        .map(
+            ([courseCode, semester]) =>
+                `${courseCode}:${semester}`
+        )
+        .join("|");
+}
+
+function cloneDomains(domains) {
+    return new Map(
+        Array.from(domains)
+            .map(
+                ([courseCode, semesters]) =>
+                    [
+                        courseCode,
+                        [...semesters]
+                    ]
+            )
+    );
+}
+
+function buildCoursePlan(
+    courses,
+    assignments,
+    semesterCount,
+    semesterCapacity
+) {
+    const coursePlan =
+        Array.from(
+            { length: semesterCount },
+            () =>
+                Array(
+                    semesterCapacity
+                ).fill(null)
+        );
+
+    /*
+     * Insert fixed courses first so they retain their original first-slot
+     * presentation.
+     */
+    for (
+        const [courseCode, semester]
+        of FIXED_COURSE_SEMESTERS
+    ) {
+        if (!assignments.has(courseCode)) {
+            continue;
+        }
+
+        coursePlan[semester][0] =
+            courses.get(courseCode);
+    }
+
+    for (
+        const [courseCode, semester]
+        of assignments
+    ) {
+        if (
+            FIXED_COURSE_SEMESTERS.has(
+                courseCode
+            )
+        ) {
+            continue;
+        }
+
+        const availableSlot =
+            coursePlan[semester]
+                .findIndex(
+                    course =>
+                        course === null
+                );
+
+        if (availableSlot === -1) {
+            return null;
+        }
+
+        coursePlan[semester][availableSlot] =
+            courses.get(courseCode);
+    }
+
+    return coursePlan;
+}
+
+function commitCoursePlan(coursePlan) {
+    for (
+        let semester = 0;
+        semester < coursePlan.length;
+        semester++
+    ) {
+        for (
+            let slot = 0;
+            slot < coursePlan[semester].length;
+            slot++
+        ) {
+            state.coursePlan[semester][slot] =
+                coursePlan[semester][slot];
+        }
+    }
+}
+
 
 // Ensure pathway is selected and that the required number of majors/minors are chosen
 function checkIfMajorsAndMinorsSelected() {
