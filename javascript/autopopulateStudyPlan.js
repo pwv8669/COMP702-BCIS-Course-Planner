@@ -1014,19 +1014,25 @@ function getCourseByCode(courseCode) {
     return coursesObject[courseCode];
 }
 
-const FIXED_COURSE_SEMESTERS = new Map([
-    ["COMP702", 4],
-    ["COMP703", 5]
+const FIXED_COURSE_PLACEMENTS = new Map([
+    ["COMP500", { semester: 0, slot: 0 }],
+    ["COMP501", { semester: 0, slot: 1 }],
+    ["COMP508", { semester: 0, slot: 2 }],
+    ["MATH503", { semester: 0, slot: 3 }],
+    ["COMP507", { semester: 1, slot: 0 }],
+    ["DIGD507", { semester: 1, slot: 1 }],
+    ["COMP702", { semester: 4, slot: 0 }],
+    ["COMP703", { semester: 5, slot: 0 }]
 ]);
 
 /*
  * Schedule a course set as a constraint-satisfaction problem.
  *
- * A course is assigned to a semester rather than a particular table slot,
- * because slots in the same semester are interchangeable. The search uses
- * domain propagation, chooses the course with the fewest semester choices,
- * and backtracks immediately when a remaining course has no possible
- * semester.
+ * Apart from the explicitly fixed core courses, a course is assigned to a
+ * semester rather than a particular table slot because the remaining slots
+ * in the same semester are interchangeable. The search uses domain
+ * propagation, chooses the course with the fewest semester choices, and
+ * backtracks immediately when a remaining course has no possible semester.
  *
  * All work is done against local data. state.coursePlan is updated only after
  * a complete valid schedule has been found.
@@ -1109,8 +1115,8 @@ function scheduleCourses(selectedCourses) {
         Array(semesterCount).fill(0);
 
     for (
-        const [courseCode, semester]
-        of FIXED_COURSE_SEMESTERS
+        const [courseCode, placement]
+        of FIXED_COURSE_PLACEMENTS
     ) {
         if (!courses.has(courseCode)) {
             continue;
@@ -1118,9 +1124,11 @@ function scheduleCourses(selectedCourses) {
 
         assignments.set(
             courseCode,
-            semester
+            placement.semester
         );
-        semesterLoads[semester]++;
+        semesterLoads[
+            placement.semester
+        ]++;
     }
 
     const dependencyCounts =
@@ -1178,12 +1186,15 @@ function buildInitialSemesterDomains(
     const domains = new Map();
 
     for (const course of courses.values()) {
-        const fixedSemester =
-            FIXED_COURSE_SEMESTERS.get(
+        const fixedPlacement =
+            FIXED_COURSE_PLACEMENTS.get(
                 course.code
             );
 
-        if (fixedSemester !== undefined) {
+        if (fixedPlacement) {
+            const fixedSemester =
+                fixedPlacement.semester;
+
             if (
                 fixedSemester >= semesterCount ||
                 !offeredThisSemester(
@@ -2076,19 +2087,28 @@ function buildCoursePlan(
                 ).fill(null)
         );
 
-    /*
-     * Insert fixed courses first so they retain their original first-slot
-     * presentation.
-     */
+    // Insert fixed courses into their exact semester and slot positions.
     for (
-        const [courseCode, semester]
-        of FIXED_COURSE_SEMESTERS
+        const [courseCode, placement]
+        of FIXED_COURSE_PLACEMENTS
     ) {
         if (!assignments.has(courseCode)) {
             continue;
         }
 
-        coursePlan[semester][0] =
+        if (
+            placement.semester >= semesterCount ||
+            placement.slot >= semesterCapacity ||
+            coursePlan[
+                placement.semester
+            ][placement.slot] !== null
+        ) {
+            return null;
+        }
+
+        coursePlan[
+            placement.semester
+        ][placement.slot] =
             courses.get(courseCode);
     }
 
@@ -2097,7 +2117,7 @@ function buildCoursePlan(
         of assignments
     ) {
         if (
-            FIXED_COURSE_SEMESTERS.has(
+            FIXED_COURSE_PLACEMENTS.has(
                 courseCode
             )
         ) {
