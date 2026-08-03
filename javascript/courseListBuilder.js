@@ -1,21 +1,29 @@
 import { initDragAndDrop } from './dragAndDropController.js';
 import { refreshStudyPlan } from './app.js';
 import { state } from './state.js';
+import { loadMajorOptions, loadMinorOptions } from "./objects/majorMinorOption.js";
+
 /**
  * Generates collapsible lists from instantiated Course objects
  * @param {Object} coursesMap - Object mapping course codes to Course instances
  */
-export function generateDynamicCourseList(coursesMap) {
+export async function generateDynamicCourseList(coursesMap) {
     const sidebar = document.getElementById('dynamic-course-sidebar');
     if (!sidebar) {
         console.warn("Element 'dynamic-course-sidebar' not found in HTML.");
         return;
     }
 
+    // Saving which accordions are open in the sidebar so when its re-rendered youo doont lose your place
+    const previouslyOpen = new Set(
+    Array.from(sidebar.querySelectorAll("details[open]"))
+        .map(d => d.querySelector("summary")?.textContent)
+);
+
     // Clear old layout but retain container heading
     sidebar.innerHTML = '<h3>Available Courses</h3>';
 
-    // Creating a set of the courses present in the schedule soo they can be deactivated in the sidebar
+    // Creating a set of the courses present in the schedule so they can be deactivated in the sidebar
     const placedCourses = [];
 
     state.coursePlan.forEach(row => {
@@ -26,14 +34,44 @@ export function generateDynamicCourseList(coursesMap) {
         });
     });
 
+    //Major minor storage as the only courses to be shown in the level based accordions should be in the selected major/minor
+    const majorCourses = await loadMajorOptions();
+    const minorCourses = await loadMinorOptions();
+    const coreCourses = ["COMP500","COMP501","COMP508","MATH503","COMP507","DIGD507","COMP702","COMP703"]; //temporarily hard coded 
+    const allowedCourses = [];
+   
+    state.selectedMajors.forEach(majorName => {
+        const major = majorCourses[majorName];
+        if (major && major.Requirements) {
+            major.Requirements.forEach(req => {
+                req.Courses.forEach(courseObj => {
+                    allowedCourses.push(courseObj.code);
+                });
+            });
+        }
+    });
+
+    state.selectedMinors.forEach(minorName => {
+        const minor = minorCourses[minorName];
+        if (minor && minor.Requirements) {
+            minor.Requirements.forEach(req => {
+                req.Courses.forEach(courseObj => {
+                    allowedCourses.push(courseObj.code);
+                });
+            });
+        }
+    });
+    coreCourses.forEach(code => allowedCourses.push(code));
+
     // Group the Course instances by their numeric level property
     const groupedByLevel = {};
     const electiveCourses = [];
 
     Object.values(coursesMap).forEach(course => {
-        //Currently as a placeholder ive just added all courses that have no prerequisites as electives
-        if (!course.prerequisites) {
+        //Currently as a placeholder ive just added all courses that are not present in the major/minor to the elective accordion
+        if (!allowedCourses.includes(course.code)) {
             electiveCourses.push(course);
+            return;
         }
 
         // Falls back to level 5 if level is missing or unmapped
@@ -53,14 +91,14 @@ export function generateDynamicCourseList(coursesMap) {
         const details = document.createElement('details');
         details.className = 'course-category';
         
-        // expand the first level accordion panel
-        if (index === 0) {
-            details.open = true;
-        }
 
         const summary = document.createElement('summary');
         summary.textContent = `Level ${level} Courses`;
         details.appendChild(summary);
+
+        if (previouslyOpen.has(summary.textContent)) {
+            details.open = true;
+        }
 
         const listWrapper = document.createElement('div');
         listWrapper.className = 'course-list';
@@ -129,7 +167,7 @@ export function generateDynamicCourseList(coursesMap) {
         details.appendChild(listWrapper);
         sidebar.appendChild(details);
     }
-
-    // Rebind event listeners
+    //rebind listeners
     initDragAndDrop(refreshStudyPlan);
+
 }
