@@ -21,7 +21,6 @@ async function init() {
 	courses = await loadCourses();
 	console.log(courses);
 
-	generateDynamicCourseList(courses);
 	// Example usage of the placeCourse function.
 	placeCourse(0, 0, 'COMP500');
 	placeCourse(0, 1, 'COMP501');

@@ -7,12 +7,17 @@ import { loadMajorOptions, loadMinorOptions } from "./objects/majorMinorOption.j
  * Generates collapsible lists from instantiated Course objects
  * @param {Object} coursesMap - Object mapping course codes to Course instances
  */
-export async function generateDynamicCourseList(coursesMap) {
+export async function generateDynamicCourseList(courses) {
+
     const sidebar = document.getElementById('dynamic-course-sidebar');
     if (!sidebar) {
         console.warn("Element 'dynamic-course-sidebar' not found in HTML.");
         return;
     }
+
+    sidebar.addEventListener('scroll' , () => {
+        localStorage.setItem('scrollPos', sidebar.scrollTop)
+    });
 
     // Saving which accordions are open in the sidebar so when its re-rendered youo doont lose your place
     const previouslyOpen = new Set(
@@ -67,7 +72,7 @@ export async function generateDynamicCourseList(coursesMap) {
     const groupedByLevel = {};
     const electiveCourses = [];
 
-    Object.values(coursesMap).forEach(course => {
+    Object.values(courses).forEach(course => {
         //Currently as a placeholder ive just added all courses that are not present in the major/minor to the elective accordion
         if (!allowedCourses.includes(course.code)) {
             electiveCourses.push(course);
@@ -167,7 +172,19 @@ export async function generateDynamicCourseList(coursesMap) {
         details.appendChild(listWrapper);
         sidebar.appendChild(details);
     }
+
+    restoreScrollPos()
+
     //rebind listeners
     initDragAndDrop(refreshStudyPlan);
 
+}
+
+function restoreScrollPos() {
+    const savedPos = localStorage.getItem('scrollPos');
+    const sidebar = document.getElementById('dynamic-course-sidebar');
+
+    if (savedPos && sidebar) {
+        sidebar.scrollTop = parseInt(savedPos, 10);
+    }
 }

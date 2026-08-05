@@ -244,9 +244,11 @@ async function applyOptionChange(slot, target)
 }
 
 import { errorDisplay } from './errorDisplay.js';
+import { refreshStudyPlan } from './app.js';
 
 document.getElementById('pathwayOptionContainer')?.addEventListener('change', () => {
     setTimeout(() => {
+        refreshStudyPlan();
         errorDisplay();
     }, 50); 
 });
