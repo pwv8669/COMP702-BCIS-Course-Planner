@@ -21,7 +21,6 @@ async function init() {
 	courses = await loadCourses();
 	console.log(courses);
 
-	generateDynamicCourseList(courses);
 	// Example usage of the placeCourse function.
 	placeCourse(0, 0, 'COMP500');
 	placeCourse(0, 1, 'COMP501');
@@ -62,6 +61,7 @@ export function PathwayRefresh(pathway){
 export async function refreshStudyPlan() {
     await renderCoursePlan(state);
     errorDisplay();
+    generateDynamicCourseList(courses);
     initDragAndDrop(refreshStudyPlan);
 }
 
