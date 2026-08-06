@@ -107,12 +107,17 @@ export function validateMajorMinorRequirements(){
         }
     }
 
-    // Check for overlaps of "Required" courses, substitute with any still unassigned courses in either major/minor.
-    for (const [courseCode, unfufilledMajorOrMinor] of requiredCourseOverlaps) {
-        substituteCourse(courseCode, unfufilledMajorOrMinor);
-    }
+    // Allocate all substitutes together so one requirement cannot greedily
+    // consume the only course that can satisfy another requirement.
+    if (!attributeSubstitutions()) {
+        for (const [courseCode, unfulfilledOptionCode] of
+            requiredCourseOverlaps) {
+            addRequiredSubstitutionError(
+                courseCode,
+                unfulfilledOptionCode
+            );
+        }
 
-    if (!attributeChooseNSubstitutions()) {
         for (const substitution of chooseNSubstitutions) {
             addChooseNError(
                 substitution.majorOrMinor,
@@ -235,9 +240,25 @@ function addChooseNError(majorOrMinor, requirement) {
     errors.push(new PlanError(null, message, id));
 }
 
-function attributeChooseNSubstitutions(
-    substitutions = chooseNSubstitutions
-) {
+function attributeSubstitutions(substitutions = null) {
+    if (substitutions === null) {
+        substitutions = [
+            ...Array.from(
+                requiredCourseOverlaps,
+                ([courseCode, unfulfilledOptionCode]) => ({
+                    type: "Required",
+                    courseCode,
+                    unfulfilledOptionCode,
+                    count: 1
+                })
+            ),
+            ...chooseNSubstitutions.map(substitution => ({
+                ...substitution,
+                type: "ChooseN"
+            }))
+        ];
+    }
+
     if (substitutions.length === 0) {
         return true;
     }
@@ -255,7 +276,7 @@ function attributeChooseNSubstitutions(
 
     for (let index = 0; index < substitutions.length; index++) {
         const substitution = substitutions[index];
-        const candidates = getChooseNSubstitutionCandidates(
+        const candidates = getSubstitutionCandidates(
             substitution,
             totalSubstitutions
         );
@@ -285,14 +306,18 @@ function attributeChooseNSubstitutions(
         selectedCandidates,
         substitution.count
     )) {
+        const optionCode = substitution.type === "Required"
+            ? substitution.unfulfilledOptionCode
+            : substitution.majorOrMinor.Code;
+
         for (const course of combination) {
             attributedCourses.set(
                 course.code,
-                substitution.majorOrMinor.Code
+                optionCode
             );
         }
 
-        if (attributeChooseNSubstitutions(remainingSubstitutions)) {
+        if (attributeSubstitutions(remainingSubstitutions)) {
             return true;
         }
 
@@ -302,6 +327,57 @@ function attributeChooseNSubstitutions(
     }
 
     return false;
+}
+
+function getSubstitutionCandidates(substitution, totalSubstitutions) {
+    if (substitution.type === "Required") {
+        return getRequiredSubstitutionCandidates(substitution);
+    }
+
+    return getChooseNSubstitutionCandidates(
+        substitution,
+        totalSubstitutions
+    );
+}
+
+function getRequiredSubstitutionCandidates(substitution) {
+    const possessingOptionCode = attributedCourses.get(
+        substitution.courseCode
+    );
+    const possessingOption = selectedOptions.find(option =>
+        option.Code === possessingOptionCode
+    );
+    const unfulfilledOption = selectedOptions.find(option =>
+        option.Code === substitution.unfulfilledOptionCode
+    );
+    const requiredCourse = findCourseInOption(
+        substitution.courseCode,
+        unfulfilledOption
+    );
+    const canUseUnrestrictedSubstitute =
+        state.selectedPathway === "doubleMajors" &&
+        requiredCourseOverlaps.size <= 2;
+    const possibleCourses = canUseUnrestrictedSubstitute
+        ? getCourseObjectsFromPlan()
+        : [
+            ...getCoursesOfferedBy(possessingOption),
+            ...getCoursesOfferedBy(unfulfilledOption)
+        ];
+
+    return possibleCourses
+        .filter(course =>
+            course.code !== substitution.courseCode &&
+            coursePlanCourses.has(course.code) &&
+            !attributedCourses.has(course.code) &&
+            (
+                canUseUnrestrictedSubstitute ||
+                course.level >= requiredCourse.level
+            )
+        )
+        .sort((a, b) =>
+            getCourseUsefulness(a.code, unfulfilledOption) -
+            getCourseUsefulness(b.code, unfulfilledOption)
+        );
 }
 
 function getChooseNSubstitutionCandidates(
@@ -430,81 +506,23 @@ function getCourseUsefulness(courseCode, currentMajorOrMinor) {
     return usefulness;
 }
 
-function findReplacementCourse(majorOrMinor, blockedCourseCode) {
-    for (let requirement of majorOrMinor.Requirements) {
-        if (requirement.Type !== "ChooseN") {
-            continue;
-        }
-
-        for (let course of requirement.Courses) {
-            if (
-                course.code !== blockedCourseCode &&
-                coursePlanCourses.has(course.code) &&
-                !attributedCourses.has(course.code)
-            ) {
-                return course;
-            }
-        }
-    }
-
-    return null;
-}
-
-function substituteCourse(courseCode, unfulfilledMajorOrMinorCode) {
+function addRequiredSubstitutionError(
+    courseCode,
+    unfulfilledMajorOrMinorCode
+) {
     const possessingOptionCode = attributedCourses.get(courseCode);
-
     const possessingOption = selectedOptions.find(option =>
         option.Code === possessingOptionCode
     );
-
     const unfulfilledOption = selectedOptions.find(option =>
         option.Code === unfulfilledMajorOrMinorCode
     );
 
-    console.log(`${unfulfilledOption.Name} needs a substitute for ${courseCode}.`);
-
-    const requiredCourse = findCourseInOption(courseCode, unfulfilledOption);
-
-    const canUseUnrestrictedSubstitute =
-        state.selectedPathway === "doubleMajors" &&
-        requiredCourseOverlaps.size <= 2;
-
-    const possibleCourses = canUseUnrestrictedSubstitute
-        ? getCourseObjectsFromPlan()
-        : [
-            ...getCoursesOfferedBy(possessingOption),
-            ...getCoursesOfferedBy(unfulfilledOption)
-        ];
-
-    const replacementCourses = possibleCourses.filter(course =>
-        course.code !== courseCode &&
-        coursePlanCourses.has(course.code) &&
-        !attributedCourses.has(course.code) &&
-        (
-            canUseUnrestrictedSubstitute ||
-            course.level >= requiredCourse.level
-        )
-    );
-
-    replacementCourses.sort((a, b) =>
-        getCourseUsefulness(a.code, unfulfilledOption) -
-        getCourseUsefulness(b.code, unfulfilledOption)
-    );
-
-    const replacementCourse = replacementCourses[0];
-
-    if (!replacementCourse) {
-        errors.push(new PlanError(
-            courseCode,
-            `Course ${courseCode} is required for ${unfulfilledOption.Name} but is already attributed to ${possessingOption.Name}, and no suitable substitute course was found.`,
-            `TooManyOverLaps-${courseCode}-${unfulfilledOption.Name}-${possessingOption.Name}`
-        ));
-        return;
-    }
-
-    attributedCourses.set(replacementCourse.code, unfulfilledOption.Code);
-
-    console.log(`${replacementCourse.code} substituted for ${courseCode} in ${unfulfilledOption.Name}.`);
+    errors.push(new PlanError(
+        courseCode,
+        `Course ${courseCode} is required for ${unfulfilledOption.Name} but is already attributed to ${possessingOption.Name}, and no suitable substitute course was found.`,
+        `TooManyOverLaps-${courseCode}-${unfulfilledOption.Name}-${possessingOption.Name}`
+    ));
 }
 
 function getCoursesOfferedBy(majorOrMinor) {
