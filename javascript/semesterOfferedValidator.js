@@ -14,7 +14,7 @@ export function validateSemestersOffered() {
             if (!valid){
                 const semesterOrdinal = semester % 2 === 0 ? "1st" : "2nd";
                 let message = `The course ${currentCourse.code} is not offered in the ${semesterOrdinal} semester of a year.`;
-                let id = `MissingPreq-${currentCourse.code}`;
+                let id = `SemesterNotOffered-${currentCourse.code}-${semester}`;
                 let errorMsg = new PlanError(currentCourse.code, message, id);
                 errorMsg.positions[semester][slot] = true;
                 errors.push(errorMsg);
