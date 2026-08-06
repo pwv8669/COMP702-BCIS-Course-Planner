@@ -63,3 +63,30 @@ export function validatePrerequisites(){
     }
     return errors;
 }
+
+export function validateCorequisites(){
+    const errors = [];
+    for (let semester = 0; semester < state.coursePlan.length; semester++){
+        const completedCourses = getCompletedCourses(semester + 1);
+
+        for (let slot = 0; slot < state.coursePlan[semester].length; slot++){
+            const currentCourse = state.coursePlan[semester][slot];
+            // If the position in the course plan is empty, continue.
+            if (!currentCourse) continue;
+
+            const valid = evaluatePrerequisiteTree(
+                currentCourse.corequisites,
+                completedCourses
+            )
+
+            if (!valid){
+                let message = `The corequisites for ${currentCourse.code} are not met by semester ${semester+1}.`;
+                let id = `MissingCoreq-${currentCourse.code}`;
+                let errorMsg = new PlanError(currentCourse.code, message, id);
+                errorMsg.positions[semester][slot] = true;
+                errors.push(errorMsg);
+            }
+        }
+    }
+    return errors;
+}
