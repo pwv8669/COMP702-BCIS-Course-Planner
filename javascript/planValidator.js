@@ -3,6 +3,7 @@ import { validateNumberOfCourses } from "./numCoursesValidator.js";
 import { validateCourseAppearances } from "./duplicateCoursesValidator.js";
 import { validatePrerequisites } from "./prerequisiteValidator.js";
 import { validateMajorMinorRequirements } from "./majorMinorRequirementsValidator.js";
+import { validateSemestersOffered } from "./semesterOfferedValidator.js";
 
 //Import state for error notes
 import { state } from "./state.js";
@@ -35,6 +36,13 @@ export function validateStudyPlan(){
     const majorErrors = validateMajorMinorRequirements();
     for (let i = 0; i < majorErrors.length; i++) {
         const error = majorErrors[i];
+        if (state.ignoredErrors[error.id]) continue;
+        errors.push(error);
+    }
+
+    const semestersOfferedErrors = validateSemestersOffered();
+    for (let i = 0; i < semestersOfferedErrors.length; i++) {
+        const error = semestersOfferedErrors[i];
         if (state.ignoredErrors[error.id]) continue;
         errors.push(error);
     }

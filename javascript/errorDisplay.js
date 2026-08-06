@@ -48,7 +48,8 @@ function renderErrors(errorList) {
         const isPrereqOrDuplicate =
             error.message.toLowerCase().includes('prerequisites') ||
             error.message.toLowerCase().includes('appears') ||
-            error.message.toLowerCase().includes('major');
+            error.message.toLowerCase().includes('major') ||
+            error.message.toLowerCase().includes('not offered');
 
         const div = document.createElement("div");
 
