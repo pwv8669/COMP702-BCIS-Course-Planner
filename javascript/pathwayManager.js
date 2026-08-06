@@ -73,15 +73,29 @@ function createMajorDropdowns()
     // Create the major 1 select element.
     const major1Label = document.createElement('label');
     major1Label.textContent = 'Major 1: ';
+    const breaker = document.createElement('div');
+    breaker.style = "height:10px"
+
     const major1 = document.createElement('select');
    	major1.id = 'major1';
+
+    //create the info bubble
+    const major1info = document.createElement('div');
+   	major1info.id = 'major1info';
+    major1info.className  = "infohover";
+    major1info.textContent = "i";
+    major1Label.className = "droplabel"
+
 	major1Label.id = 'major1label';
     // Add an event listener to the major 1 select element to handle changes and validate the selected option.
     major1.addEventListener('change', (e) => {
         checkValidOptionChange(major1, 'major1', e.target.value);
     });
     pathwayOptionContainer.appendChild(major1Label);
+    major1Label.appendChild(major1info);
+    major1Label.appendChild(breaker);
     major1Label.appendChild(major1);
+
     // Populate the major 1 select element with options from the majorsArray.
     for (const option of majorsArray)
     {
@@ -97,18 +111,31 @@ function createMajorDropdowns()
     // If the selected pathway is double majors, we create the major 2 select element as well.
     if (state.selectedPathway == Pathways.doubleMajors){
         // Create the major 2 select element.
-        const major2Label = document.createElement('label');
-        major2Label.textContent = 'Major 2: ';
-        const major2 = document.createElement('select');
-        	major2.id = 'major2'; 
-		major2Label.id = 'major2label';
-        // Add an event listener to the major 2 select element to handle changes and validate the selected option.
-        major2.addEventListener('change', (e) => {
-            checkValidOptionChange(major2, 'major2', e.target.value);
-        });
-        // Append the major 2 select element to the pathway option container in the HTML form.
-        pathwayOptionContainer.appendChild(major2Label);
-        major2Label.appendChild(major2);1
+           const major2Label = document.createElement('label');
+    major2Label.textContent = 'Major 2: ';
+   major2Label.className = "droplabel"
+    const breaker = document.createElement('div');
+    breaker.style = "height:10px"
+
+    const major2 = document.createElement('select');
+   	major2.id = 'major2';
+
+    //create the info bubble
+    const major2info = document.createElement('div');
+   	major2info.id = 'major2info';
+    major2info.className  = "infohover";
+    major2info.textContent = "i";
+    
+
+	major2Label.id = 'major2label';
+    // Add an event listener to the major 1 select element to handle changes and validate the selected option.
+    major2.addEventListener('change', (e) => {
+        checkValidOptionChange(major2, 'major2', e.target.value);
+    });
+    pathwayOptionContainer.appendChild(major2Label);
+    major2Label.appendChild(major2info);
+    major2Label.appendChild(breaker);
+    major2Label.appendChild(major2);
         // Populate the major 2 select element with options from the majorsArray.
         for (const option of majorsArray)
         {
@@ -131,17 +158,28 @@ function createMinorDropdowns()
     {
         // Create the minor 1 select element.
         const minor1Label = document.createElement('label');
-        minor1Label.textContent = 'Minor 1: ';
-        const minor1 = document.createElement('select');
-        minor1.id  = 'minor1'; 
-		minor1Label.id = 'minor1label';
-        // Add an event listener to the minor 1 select element to handle changes and validate the selected option.
-        minor1.addEventListener('change', (e) => {
-            checkValidOptionChange(minor1, 'minor1', e.target.value);
-        });
-        // Append the minor 1 select element to the pathway option container in the HTML form.
-        pathwayOptionContainer.appendChild(minor1Label);
-        minor1Label.appendChild(minor1);
+    minor1Label.textContent = 'Minor 1: ';
+    const breaker = document.createElement('div');
+    breaker.style = "height:10px"
+
+    const minor1 = document.createElement('select');
+   	minor1.id = 'minor1';
+
+    //create the info bubble
+    const minor1info = document.createElement('div');
+   	minor1info.id = 'minor1info';
+    minor1info.className  = "infohover";
+    minor1info.textContent = "i";
+   minor1Label.className = "droplabel"
+	minor1Label.id = 'minor1label';
+    // Add an event listener to the minor 1 select element to handle changes and validate the selected option.
+    minor1.addEventListener('change', (e) => {
+        checkValidOptionChange(minor1, 'minor1', e.target.value);
+    });
+    pathwayOptionContainer.appendChild(minor1Label);
+    minor1Label.appendChild(minor1info);
+    minor1Label.appendChild(breaker);
+    minor1Label.appendChild(minor1);
         // Populate the minor 1 select element with options from the minorsArray.
         for (const option of minorsArray)
         {
@@ -159,17 +197,28 @@ function createMinorDropdowns()
     {
         // Create the minor 2 select element.
         const minor2Label = document.createElement('label');
-        minor2Label.textContent = 'Minor 2: ';
-        const minor2 = document.createElement('select');
-       minor2.id = 'minor2';
-		 minor2Label.id = 'minor2label';
-        // Add an event listener to the minor 2 select element to handle changes and validate the selected option.
-        minor2.addEventListener('change', (e) => {
-            checkValidOptionChange(minor2, 'minor2', e.target.value);
-        });
-        // Append the minor 2 select element to the pathway option container in the HTML form.
-        pathwayOptionContainer.appendChild(minor2Label);
-        minor2Label.appendChild(minor2);
+    minor2Label.textContent = 'Minor 2: ';
+    const breaker = document.createElement('div');
+    breaker.style = "height:10px"
+
+    const minor2 = document.createElement('select');
+   	minor2.id = 'minor2';
+
+    //create the info bubble
+    const minor2info = document.createElement('div');
+   	minor2info.id = 'minor2info';
+    minor2info.className  = "infohover";
+    minor2info.textContent = "i";
+ minor2Label.className = "droplabel"
+	minor2Label.id = 'minor2label';
+    // Add an event listener to the minor 1 select element to handle changes and validate the selected option.
+    minor2.addEventListener('change', (e) => {
+        checkValidOptionChange(minor2, 'minor2', e.target.value);
+    });
+    pathwayOptionContainer.appendChild(minor2Label);
+    minor2Label.appendChild(minor2info);
+    minor2Label.appendChild(breaker);
+    minor2Label.appendChild(minor2);
         // Populate the minor 2 select element with options from the minorsArray.
         for (const option of minorsArray)
         {

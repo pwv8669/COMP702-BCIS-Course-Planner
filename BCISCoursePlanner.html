@@ -231,9 +231,20 @@ table{
 .core{
   background-color: #4285b9;
 }
+
+.infohover{
+  background-color: #bd6fc1;
+  color: white;
+  float: right;
+  width:20px;
+  height:20px;
+  text-align: center;
+  border-radius: 100%;
+  padding: 2px;
+}
 .prereq-btn {
     position:fixed;
-    margin-left:110px;
+    margin-left:0px;
     padding: 4px;
     font-size: 12px;
     border-radius: 0px;
@@ -310,6 +321,10 @@ label{
   margin-right: 10px;
   width: 400px;
   display: inline-block;
+}
+
+.droplabel{
+    width: 330px;
 }
 
 select{
@@ -417,7 +432,7 @@ select:hover,button:hover{
                 <form id="pathwayForm">
                     <div style="background-color: #dd6e46;"></div>
                     <div>
-                        <label class=pathwayselector style="margin-right: -6px;" for="pathwaySelect">
+                        <label class=pathwayselector style="margin-right: -30px;" for="pathwaySelect">
                             Course Pathway:
                             <div style="height: 10px;"></div>
                             <select id="pathwaySelect" name="pathwaySelect">
