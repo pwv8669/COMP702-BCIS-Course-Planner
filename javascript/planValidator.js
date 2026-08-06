@@ -1,7 +1,7 @@
 // Import sub-validators
 import { validateNumberOfCourses } from "./numCoursesValidator.js";
 import { validateCourseAppearances } from "./duplicateCoursesValidator.js";
-import { validatePrerequisites } from "./prerequisiteValidator.js";
+import { validatePrerequisites, validateCorequisites } from "./prerequisiteValidator.js";
 import { validateMajorMinorRequirements } from "./majorMinorRequirementsValidator.js";
 
 //Import state for error notes
@@ -15,6 +15,13 @@ export function validateStudyPlan(){
     for (let i = 0; i < prereqErrors.length; i++) {
         const error = prereqErrors[i];
         if (state.ignoredErrors[error.id]) continue; //Skips error message if it is contained in state.ignoredErrors
+        errors.push(error);
+    }
+
+    const coreqErrors = validateCorequisites();
+    for (let i = 0; i < coreqErrors.length; i++) {
+        const error = coreqErrors[i];
+        if (state.ignoredErrors[error.id]) continue;
         errors.push(error);
     }
 
