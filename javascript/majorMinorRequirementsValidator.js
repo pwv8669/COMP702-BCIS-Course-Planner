@@ -19,6 +19,7 @@ export function validateMajorMinorRequirements(){
     errors = [];
     attributedCourses.clear();
     coursePlanCourses.clear();
+    requiredCourseOverlaps.clear();
     // Fill the course plan courses set with all courses in the course plan for easy lookup.
     for (let semester = 0; semester < state.coursePlan.length; semester++){
 		for (let slot = 0; slot < state.coursePlan[semester].length; slot++){
