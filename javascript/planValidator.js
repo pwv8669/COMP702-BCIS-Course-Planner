@@ -1,8 +1,9 @@
 // Import sub-validators
 import { validateNumberOfCourses } from "./numCoursesValidator.js";
 import { validateCourseAppearances } from "./duplicateCoursesValidator.js";
-import { validatePrerequisites } from "./prerequisiteValidator.js";
+import { validatePrerequisites, validateCorequisites } from "./prerequisiteValidator.js";
 import { validateMajorMinorRequirements } from "./majorMinorRequirementsValidator.js";
+import { validateSemestersOffered } from "./semesterOfferedValidator.js";
 
 //Import state for error notes
 import { state } from "./state.js";
@@ -15,6 +16,13 @@ export function validateStudyPlan(){
     for (let i = 0; i < prereqErrors.length; i++) {
         const error = prereqErrors[i];
         if (state.ignoredErrors[error.id]) continue; //Skips error message if it is contained in state.ignoredErrors
+        errors.push(error);
+    }
+
+    const coreqErrors = validateCorequisites();
+    for (let i = 0; i < coreqErrors.length; i++) {
+        const error = coreqErrors[i];
+        if (state.ignoredErrors[error.id]) continue;
         errors.push(error);
     }
 
@@ -35,6 +43,13 @@ export function validateStudyPlan(){
     const majorErrors = validateMajorMinorRequirements();
     for (let i = 0; i < majorErrors.length; i++) {
         const error = majorErrors[i];
+        if (state.ignoredErrors[error.id]) continue;
+        errors.push(error);
+    }
+
+    const semestersOfferedErrors = validateSemestersOffered();
+    for (let i = 0; i < semestersOfferedErrors.length; i++) {
+        const error = semestersOfferedErrors[i];
         if (state.ignoredErrors[error.id]) continue;
         errors.push(error);
     }

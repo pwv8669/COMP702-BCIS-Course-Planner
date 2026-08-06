@@ -47,8 +47,10 @@ function renderErrors(errorList) {
         //Classifying error message type using string comparison. may change the error object struct to contain colour types instead. that way they could be more easily changed
         const isPrereqOrDuplicate =
             error.message.toLowerCase().includes('prerequisites') ||
+            error.message.toLowerCase().includes('corequisites') ||
             error.message.toLowerCase().includes('appears') ||
-            error.message.toLowerCase().includes('major');
+            error.message.toLowerCase().includes('major') ||
+            error.message.toLowerCase().includes('not offered');
 
         const div = document.createElement("div");
 
