@@ -13,6 +13,7 @@ const attributedCourses = new Map();
 const coursePlanCourses = new Set();
 const requiredCourseOverlaps = new Map();
 const chooseNSubstitutions = [];
+const chooseNRequirements = [];
 let selectedOptions = [];
 
 export function validateMajorMinorRequirements(){
@@ -22,6 +23,7 @@ export function validateMajorMinorRequirements(){
     coursePlanCourses.clear();
     requiredCourseOverlaps.clear();
     chooseNSubstitutions.length = 0;
+    chooseNRequirements.length = 0;
     // Fill the course plan courses set with all courses in the course plan for easy lookup.
     for (let semester = 0; semester < state.coursePlan.length; semester++){
 		for (let slot = 0; slot < state.coursePlan[semester].length; slot++){
@@ -107,9 +109,8 @@ export function validateMajorMinorRequirements(){
         }
     }
 
-    // Allocate all substitutes together so one requirement cannot greedily
-    // consume the only course that can satisfy another requirement.
-    if (!attributeSubstitutions()) {
+    // Allocate every ChooseN selection and all substitutions in one search.
+    if (!attributeChooseNRequirements()) {
         for (const [courseCode, unfulfilledOptionCode] of
             requiredCourseOverlaps) {
             addRequiredSubstitutionError(
@@ -118,10 +119,10 @@ export function validateMajorMinorRequirements(){
             );
         }
 
-        for (const substitution of chooseNSubstitutions) {
+        for (const choice of getUnfulfilledChooseNRequirements()) {
             addChooseNError(
-                substitution.majorOrMinor,
-                substitution.requirement
+                choice.majorOrMinor,
+                choice.requirement
             );
         }
     }
@@ -178,48 +179,79 @@ function attributeChooseNCourses(majorOrMinor){
         if (requirement.Type !== "ChooseN"){
             continue;
         }
+        chooseNRequirements.push({ majorOrMinor, requirement });
+    }
+}
 
-        let courses = requirement.Courses;
-        let availableCourses = courses.filter(course => coursePlanCourses.has(course.code) && !attributedCourses.has(course.code));
-        const overlappingCourses = courses.filter(
-            course =>
-                coursePlanCourses.has(course.code) &&
-                attributedCourses.has(course.code)
+function attributeChooseNRequirements(index = 0) {
+    if (index === chooseNRequirements.length) {
+        return attributeSubstitutions();
+    }
+
+    const choice = chooseNRequirements[index];
+    const { majorOrMinor, requirement } = choice;
+    const availableCourses = requirement.Courses
+        .filter(course =>
+            coursePlanCourses.has(course.code) &&
+            !attributedCourses.has(course.code)
+        )
+        .sort((a, b) =>
+            getCourseUsefulness(a.code, majorOrMinor) -
+            getCourseUsefulness(b.code, majorOrMinor)
         );
+    const overlappingCourseCount = requirement.Courses.filter(
+        course =>
+            coursePlanCourses.has(course.code) &&
+            attributedCourses.has(course.code)
+    ).length;
+    const minimumSubstitutionCount = Math.max(
+        0,
+        requirement.Count - availableCourses.length
+    );
+    const maximumSubstitutionCount = Math.min(
+        requirement.Count,
+        overlappingCourseCount
+    );
 
-        availableCourses.sort((a, b) => {
-            return getCourseUsefulness(a.code, majorOrMinor)
-                - getCourseUsefulness(b.code, majorOrMinor);
-        });
+    for (
+        let substitutionCount = minimumSubstitutionCount;
+        substitutionCount <= maximumSubstitutionCount;
+        substitutionCount++
+    ) {
+        const directCourseCount =
+            requirement.Count - substitutionCount;
 
-        if (
-            availableCourses.length + overlappingCourses.length <
-            requirement.Count
-        ) {
-            addChooseNError(majorOrMinor, requirement);
-            continue;
-        }
+        for (const combination of getCombinations(
+            availableCourses,
+            directCourseCount
+        )) {
+            for (const course of combination) {
+                attributedCourses.set(course.code, majorOrMinor.Code);
+            }
 
-        const numberOfDirectCourses = Math.min(
-            requirement.Count,
-            availableCourses.length
-        );
+            if (substitutionCount > 0) {
+                chooseNSubstitutions.push({
+                    majorOrMinor,
+                    requirement,
+                    count: substitutionCount
+                });
+            }
 
-        for (let i = 0; i < numberOfDirectCourses; i++){
-            attributedCourses.set(availableCourses[i].code, majorOrMinor.Code);
-        }
+            if (attributeChooseNRequirements(index + 1)) {
+                return true;
+            }
 
-        const numberOfSubstitutions =
-            requirement.Count - numberOfDirectCourses;
+            if (substitutionCount > 0) {
+                chooseNSubstitutions.pop();
+            }
 
-        if (numberOfSubstitutions > 0) {
-            chooseNSubstitutions.push({
-                majorOrMinor,
-                requirement,
-                count: numberOfSubstitutions
-            });
+            for (const course of combination) {
+                attributedCourses.delete(course.code);
+            }
         }
     }
+
+    return false;
 }
 
 function addChooseNError(majorOrMinor, requirement) {
@@ -238,6 +270,41 @@ function addChooseNError(majorOrMinor, requirement) {
         `${majorOrMinor.Name}-${requirement.Count}`;
 
     errors.push(new PlanError(null, message, id));
+}
+
+function getUnfulfilledChooseNRequirements() {
+    const intrinsicallyShortRequirements = chooseNRequirements.filter(
+        choice => {
+            const plannedCourseCount = choice.requirement.Courses.filter(
+                course => coursePlanCourses.has(course.code)
+            ).length;
+
+            return plannedCourseCount < choice.requirement.Count;
+        }
+    );
+
+    if (intrinsicallyShortRequirements.length > 0) {
+        return intrinsicallyShortRequirements;
+    }
+
+    // If required overlaps also failed, their specific errors explain the
+    // allocation failure without blaming otherwise complete ChooseN groups.
+    if (requiredCourseOverlaps.size > 0) {
+        return [];
+    }
+
+    // A pure ChooseN conflict has no intrinsically missing group. Report the
+    // tightest group so the user still receives an actionable course list.
+    const orderedRequirements = [...chooseNRequirements].sort((a, b) => {
+        const getSlack = choice =>
+            choice.requirement.Courses.filter(
+                course => coursePlanCourses.has(course.code)
+            ).length - choice.requirement.Count;
+
+        return getSlack(a) - getSlack(b);
+    });
+
+    return orderedRequirements.slice(0, 1);
 }
 
 function attributeSubstitutions(substitutions = null) {
