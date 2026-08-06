@@ -465,16 +465,25 @@ function substituteCourse(courseCode, unfulfilledMajorOrMinorCode) {
 
     const requiredCourse = findCourseInOption(courseCode, unfulfilledOption);
 
-    const possibleCourses = [
-        ...getCoursesOfferedBy(possessingOption),
-        ...getCoursesOfferedBy(unfulfilledOption)
-    ];
+    const canUseUnrestrictedSubstitute =
+        state.selectedPathway === "doubleMajors" &&
+        requiredCourseOverlaps.size <= 2;
+
+    const possibleCourses = canUseUnrestrictedSubstitute
+        ? getCourseObjectsFromPlan()
+        : [
+            ...getCoursesOfferedBy(possessingOption),
+            ...getCoursesOfferedBy(unfulfilledOption)
+        ];
 
     const replacementCourses = possibleCourses.filter(course =>
         course.code !== courseCode &&
         coursePlanCourses.has(course.code) &&
         !attributedCourses.has(course.code) &&
-        course.level >= requiredCourse.level
+        (
+            canUseUnrestrictedSubstitute ||
+            course.level >= requiredCourse.level
+        )
     );
 
     replacementCourses.sort((a, b) =>
