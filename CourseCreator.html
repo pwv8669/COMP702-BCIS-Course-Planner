@@ -5,22 +5,23 @@
   /* Styling here */
 body{
     /* set default font */
-      font-size: 20px;
+  font-size: 20px;
   color: #ffffff;
   font-family: 'Trebuchet MS'; 
   font-weight: bolder;
-  background-color: #f4eee5;
+  background-color: #373537;
+  margin: 0;
+  padding: 0;
+
 }
-div{
-  background-color: #6eacc4;
-}
+
 input {
   color: #fcfbfa;
   font-family: 'Trebuchet MS'; 
   font-weight: bolder;
   border-radius: 1px;
   border:0px;
-  background-color: #5c93ab;
+  background-color: #743b76;
   font-size: 20px;
   padding:10px;
   width:80%;
@@ -29,7 +30,9 @@ input {
 
 
 
-
+div {
+    background-color: #652d7c;
+}
 
 
 /* input styling */
@@ -51,21 +54,17 @@ label:hover {
 
 
 
-label:before {
-  content: "";
-  display: inline-block;
-
-
-  width: 16px;
-  height: 16px;
-
-
-  margin-right: 10px;
-  position: absolute;
-  left: 0;
-  bottom: 1px;
-  background-color: #396b8a;
-}
+    label:before {
+        content: "";
+        display: inline-block;
+        width: 16px;
+        height: 16px;
+        margin-right: 10px;
+        position: absolute;
+        left: 0;
+        bottom: 1px;
+        background-color: #743b76;
+    }
 
 
 input[type="checkbox"] {
@@ -84,7 +83,7 @@ input[type=checkbox]:checked + label:before {
 }
 
 ::placeholder {
-  color: #475d7a;
+  color: #BD6FC1;
 }
 
 
@@ -109,7 +108,7 @@ input[type=checkbox]:checked + label:before {
   align-content: center;
   border:0px; 
   width:20%;
-  background-color: #73c0e1;
+  background-color: #BD6FC1;
   font-size: 20px;
   padding:12px;
  transform: scale(1);
@@ -125,12 +124,20 @@ select {
   align-content: center;
   border:0px;
   width:40%;
-  background-color: #639db5;
+  background-color: #743b76;
   font-size: 20px;
   padding:12px;
   cursor:pointer; 
 }
-
+.center-container {
+    display: flex;
+    flex-direction: column;
+    align-items: left;     /* horizontal centering */
+    justify-content: flex-start; /* keep items at top */
+    text-align: left;      /* center text inside elements */
+    padding-left: 100px;
+    padding-top: 35px;
+}
 
 </style>
 
@@ -141,31 +148,36 @@ select {
 </head>
 <title>BCIS Course Creator</title>
 <body>
-  <div style="width: 45%; padding-bottom: 2px;padding-top: 0.5px;padding-left: 1%;">
-  <h1>BCIS Course Creator</h1>
+    <div style="width: 70%; height: 100vh; padding-bottom: 2px; padding-left: 1%; margin-left: auto;  margin-right: auto;">
+        <div class="center-container" style="width: 70%; height: 80vh; margin-left: auto; margin-right: auto;">
+            
+            <h1 style="margin-top: 0; width: 100%;">BCIS Course Creator</h1>
 
-  <form method="POST" action="./php/createCourse.php">
-    <input name="Code" type="text" placeholder="Course Code" required><br>
-    <input name="Name" type="text" placeholder="Course Name" required><br>
-    Course Points: <input name="Points" type="number" placeholder="Course Points" value="15" required><br>
-    Semesters Offered:<br>1 <input id="sem1"name="Semester1Offered" type="checkbox" placeholder="Semester 1"><label for="sem1"></label>
-    <br>2<input id="sem2"name="Semester2Offered" type="checkbox" placeholder="Semester 2"> <label for="sem2"></label><br>
-    Prerequisites: <input name="Prerequisites" type="text" placeholder="e.g. MATH503 AND (COMP603 OR COMP610)"><br>
-    Corequisites: <input name="Corequisites" type="text" placeholder="e.g. COMP500"><br>
-   <br>
-    <input class="submit" type="submit" value="Add Course">
-  </form>
+            <form method="POST" action="./php/createCourse.php">
+                <input name="Code" type="text" placeholder="Course Code" required><br>
+                <input name="Name" type="text" placeholder="Course Name" style="margin-bottom: 10px" required><br>
+                Course Points:<br> <input name="Points" type="number" placeholder="Course Points" value="15" style="margin-bottom: 10px" required><br>
+                Semesters Offered:<br>1 <input id="sem1" name="Semester1Offered" type="checkbox" placeholder="Semester 1"><label for="sem1"></label>
+                <br>2<input id="sem2" name="Semester2Offered" type="checkbox" placeholder="Semester 2" style="margin-bottom: 10px"> <label for="sem2"></label><br>
+                Prerequisites:<br> <input name="Prerequisites" type="text" placeholder="e.g. MATH503 AND (COMP603 OR COMP610)" style="margin-bottom: 10px"><br>
+                Corequisites:<br> <input name="Corequisites" type="text" placeholder="e.g. COMP500"><br>
+                <br>
+                <input class="submit" type="submit" value="Add Course" style="width: 130px">
+            </form>
 
 
 
 
-  <!-- Selection Dropdown -->
-   <br>
-  <div for="coursetoedit">Choose a course to edit:
-    <!-- This part will be directly modified by selection menu with a list containing all the names
-   of the courses, as well as their indexin courseobjectsstore array (see below) -->
-  <p id="coursetoedit" style="margin-top: 0%; "></p></div>
-  </div>
+            <!-- Selection Dropdown -->
+            <br>
+            <div for="coursetoedit">
+                Choose a course to edit:
+                <!-- This part will be directly modified by selection menu with a list containing all the names
+            of the courses, as well as their indexin courseobjectsstore array (see below) -->
+                <p id="coursetoedit" style="margin-top: 0%; "></p>
+            </div>
+        </div>
+    </div>
 </body>
 <script>
 //array that stores all course objects in json
