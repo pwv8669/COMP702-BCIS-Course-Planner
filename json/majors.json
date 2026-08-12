@@ -233,7 +233,12 @@
                 "Courses": ["COMP719"]
             }
         ],
-        "AlternativePathwayRequirements": [
+        "IsCore": false
+    },
+    "SoftwareDevelopment-GameDev": {
+        "Code": "SoftwareDevelopment-GameDev",
+        "Name": "Software Development: Game Dev",
+        "Requirements": [
             {
                 "Type": "Required",
                 "Courses": ["COMP503"]
