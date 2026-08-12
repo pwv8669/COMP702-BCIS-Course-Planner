@@ -179,7 +179,7 @@ function createMinorDropdowns()
 	minor1Label.id = 'minor1label';
 
     //add onclick that lets infobutton show label's information
-    minor1info.addEventListener("click",function(){onclickinfo(id)});
+    minor1info.addEventListener("click",function(){onclickinfo(minor1info.id)});
     // Add an event listener to the minor 1 select element to handle changes and validate the selected option.
     minor1.addEventListener('change', (e) => {
         checkValidOptionChange(minor1, 'minor1', e.target.value);
@@ -328,23 +328,52 @@ function onclickinfo(id){
     switch(id){
         case "major1info":
             if(state.selectedMajors[0] != null){
-                alert("has thing");
+                grabinfo("major", state.selectedMajors[0]);
             }
             break;
         case "major2info":
             if(state.selectedMajors[1] != null){
-                alert("has thing");
+                grabinfo("major", state.selectedMajors[1]);
             }
             break;
          case "minor1info":
             if(state.selectedMinors[0] != null){
-                alert("has thing");
+                 grabinfo("minor", state.selectedMinors[0]);
             }
             break;
         case "minor2info":
              if(state.selectedMinors[1] != null){
-                alert("has thing");
+                grabinfo("minor", state.selectedMinors[1]);
             }
+            break;
+    }
+}
+
+async function grabinfo(majorminor, code){
+    switch(majorminor){
+        case "major":
+            let majoroptres = await fetch('./json/majors.json');
+            let majoropt = await majoroptres.json()
+            let majortext = "";
+            for (const course of majoropt[code].Requirements){
+                for(const subcourses of course.Courses){
+                    majortext += subcourses;
+                    majortext += "    "
+                }
+            }
+            alert(majortext);
+            break;
+        case "minor":
+            let minoroptres = await fetch('./json/minors.json');
+            let minoropt = await minoroptres.json()
+            let minortext = "";
+            for (const course of minoropt[code].Requirements){
+                for(const subcourses of course.Courses){
+                    minortext += subcourses;
+                    minortext += "    "
+                }
+            }
+            alert(minortext);
             break;
     }
 }
