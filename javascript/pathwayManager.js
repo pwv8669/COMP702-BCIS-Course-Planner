@@ -95,7 +95,9 @@ function createMajorDropdowns()
     major1Label.appendChild(major1info);
     major1Label.appendChild(breaker);
     major1Label.appendChild(major1);
-
+    
+    //add onclick that lets infobutton show label's information
+    major1info.addEventListener("click",function(){onclickinfo(major1info.id)});
     // Populate the major 1 select element with options from the majorsArray.
     for (const option of majorsArray)
     {
@@ -136,6 +138,9 @@ function createMajorDropdowns()
     major2Label.appendChild(major2info);
     major2Label.appendChild(breaker);
     major2Label.appendChild(major2);
+    
+    //add onclick that lets infobutton show label's information
+    major2info.addEventListener("click",function(){onclickinfo(major2info.id)});
         // Populate the major 2 select element with options from the majorsArray.
         for (const option of majorsArray)
         {
@@ -172,6 +177,9 @@ function createMinorDropdowns()
     minor1info.textContent = "i";
    minor1Label.className = "droplabel"
 	minor1Label.id = 'minor1label';
+
+    //add onclick that lets infobutton show label's information
+    minor1info.addEventListener("click",function(){onclickinfo(id)});
     // Add an event listener to the minor 1 select element to handle changes and validate the selected option.
     minor1.addEventListener('change', (e) => {
         checkValidOptionChange(minor1, 'minor1', e.target.value);
@@ -209,8 +217,11 @@ function createMinorDropdowns()
    	minor2info.id = 'minor2info';
     minor2info.className  = "infohover";
     minor2info.textContent = "i";
- minor2Label.className = "droplabel"
+    minor2Label.className = "droplabel"
 	minor2Label.id = 'minor2label';
+
+        //add onclick that lets infobutton show label's information
+    minor2info.addEventListener("click",function(){onclickinfo(minor2info.id)});
     // Add an event listener to the minor 1 select element to handle changes and validate the selected option.
     minor2.addEventListener('change', (e) => {
         checkValidOptionChange(minor2, 'minor2', e.target.value);
@@ -311,4 +322,29 @@ function addPlaceholderOption(selectElement) {
     placeholder.value = "";
     placeholder.textContent = "---";
     selectElement.appendChild(placeholder);
+}
+
+function onclickinfo(id){
+    switch(id){
+        case "major1info":
+            if(state.selectedMajors[0] != null){
+                alert("has thing");
+            }
+            break;
+        case "major2info":
+            if(state.selectedMajors[1] != null){
+                alert("has thing");
+            }
+            break;
+         case "minor1info":
+            if(state.selectedMinors[0] != null){
+                alert("has thing");
+            }
+            break;
+        case "minor2info":
+             if(state.selectedMinors[1] != null){
+                alert("has thing");
+            }
+            break;
+    }
 }
