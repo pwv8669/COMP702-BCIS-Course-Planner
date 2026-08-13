@@ -21,7 +21,9 @@
                 "Type": "Required",
                 "Courses": ["COMP717"]
             }
-        ]
+        ],
+        "IncompatibleMajors": ["DataScience"],
+        "IncompatibleMinors": ["DataScience"]
     },
     "ComputerScience": {
         "Code": "ComputerScience",
@@ -41,7 +43,9 @@
                 "Count": 1,
                 "Courses": ["COMP711", "COMP712", "COMP713", "COMP719"]
             }
-        ]
+        ],
+        "IncompatibleMajors": [],
+        "IncompatibleMinors": []
     },
     "DataScience": {
         "Code": "DataScience",
@@ -61,7 +65,9 @@
                 "Count": 1,
                 "Courses": ["COMP700", "COMP701", "COMP717", "COMP723"]
             }
-        ]
+        ],
+        "IncompatibleMajors": [],
+        "IncompatibleMinors": ["ArtificialIntelligence"]
     },
     "DigitalServices": {
         "Code": "DigitalServices",
@@ -81,7 +87,9 @@
                 "Count": 1,
                 "Courses": ["COMP718", "COMP726", "COMP728", "INFS704"]
             }
-        ]
+        ],
+        "IncompatibleMajors": [],
+        "IncompatibleMinors": []
     },
     "NetworksAndCybersecurity": {
         "Code": "NetworksAndCybersecurity",
@@ -101,7 +109,9 @@
                 "Count": 1,
                 "Courses": ["COMP714", "COMP729", "COMP715", "COMP716", "COMP718"]
             }
-        ]
+        ],
+        "IncompatibleMajors": [],
+        "IncompatibleMinors": []
     },
     "SoftwareDevelopment": {
         "Code": "SoftwareDevelopment",
@@ -121,6 +131,8 @@
                 "Count": 1,
                 "Courses": ["COMP705", "ENSE707", "COMP713", "COMP721", "COMP719"]
             }
-        ]
+        ],
+        "IncompatibleMajors": [],
+        "IncompatibleMinors": []
     }
 }
