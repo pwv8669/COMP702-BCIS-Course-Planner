@@ -1,32 +1,35 @@
 import { validateStudyPlan } from './planValidator.js';
-import { state, Pathways } from './state.js';
+import { loadPathways } from './objects/pathway.js';
+import { state } from './state.js';
+
+const pathways = await loadPathways();
 
 // Arrays to hold the majors and minors options fetched from the json files. These will be used to populate the dropdowns in the HTML form for selecting majors and minors.
 let majorsArray = [];
 let minorsArray = [];
 
-export async function updatePathwayOptions(pathway)
+export function updatePathwayOptions(pathway)
 {
     if (pathway){
         // If the user changed the selected pathway in the dropdown, change it in state.
         console.log(pathway);
-        state.selectedPathway = Pathways[pathway];
+        state.selectedPathway = pathways[pathway];
     } else {
         // If they didn't, no argument is passed, so the 'pathway' argument is undefined.
         console.log("Set selected pathway to Double Majors by default.");
-        state.selectedPathway = Pathways.doubleMajors;
+        state.selectedPathway = pathways.doubleMajors;
     }
     
     // Update the selected pathway enum.
-	console.log(`Selected pathway: ${state.selectedPathway}`);
+	console.log(`Selected pathway: ${state.selectedPathway.Name}`);
 	// Clear the unused selected majors, minors, and electives based on the selected pathway.
-	if(state.selectedPathway == Pathways.doubleMajors){
+	if(state.selectedPathway == pathways.doubleMajors){
 		state.selectedMinors = [null, null];
 		state.selectedElectives = [null, null, null, null];
-	} else if (state.selectedPathway == Pathways.doubleMinors){
+	} else if (state.selectedPathway == pathways.doubleMinors){
 		state.selectedMajors[1] = null;
 		state.selectedElectives = [null, null, null, null];
-	} else if (state.selectedPathway == Pathways.electives){
+	} else if (state.selectedPathway == pathways.electives){
 		state.selectedMajors[1] = null;
 		state.selectedMinors[1] = null;
 	}
@@ -40,7 +43,7 @@ export async function updatePathwayOptions(pathway)
     createMinorDropdowns();
 
     // If the selected pathway does not match any of the defined pathways, log an error message to the console.
-    if (state.selectedPathway != Pathways.doubleMajors && state.selectedPathway != Pathways.doubleMinors && state.selectedPathway != Pathways.electives)
+    if (state.selectedPathway != pathways.doubleMajors && state.selectedPathway != pathways.doubleMinors && state.selectedPathway != pathways.electives)
     {
         console.log(`Could not update pathway options because of invalid pathway selection: ${state.selectedPathway}`);
     }
@@ -95,7 +98,7 @@ function createMajorDropdowns()
     major1.value = state.selectedMajors[0] ?? "";
 
     // If the selected pathway is double majors, we create the major 2 select element as well.
-    if (state.selectedPathway == Pathways.doubleMajors){
+    if (state.selectedPathway == pathways.doubleMajors){
         // Create the major 2 select element.
         const major2Label = document.createElement('label');
         major2Label.textContent = 'Major 2: ';
@@ -127,7 +130,7 @@ function createMajorDropdowns()
 function createMinorDropdowns()
 {
     // If the selected pathway is double minors or electives, we create the minor 1 select element.
-    if (state.selectedPathway == Pathways.doubleMinors || state.selectedPathway == Pathways.electives)
+    if (state.selectedPathway == pathways.doubleMinors || state.selectedPathway == pathways.electives)
     {
         // Create the minor 1 select element.
         const minor1Label = document.createElement('label');
@@ -155,7 +158,7 @@ function createMinorDropdowns()
         minor1.value = state.selectedMinors[0] ?? "";
     }
     // If the selected pathway is double minors, we create the minor 2 select element as well.
-    if (state.selectedPathway == Pathways.doubleMinors)
+    if (state.selectedPathway == pathways.doubleMinors)
     {
         // Create the minor 2 select element.
         const minor2Label = document.createElement('label');
