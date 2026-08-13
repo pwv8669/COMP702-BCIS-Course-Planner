@@ -36,6 +36,8 @@
                 "Courses": ["COMP703"]
             }
         ],
+        "IncompatibleMajors": [],
+        "IncompatibleMinors": [],
         "IsCore": true
     },
     "ComputerScience": {
@@ -76,6 +78,8 @@
                 "Courses": ["COMP713", "COMP719"]
             }
         ],
+        "IncompatibleMajors": [],
+        "IncompatibleMinors": [],
         "IsCore": false
     },
     "DataScience": {
@@ -117,6 +121,8 @@
                 "Courses": ["COMP723"]
             }
         ],
+        "IncompatibleMajors": [],
+        "IncompatibleMinors": ["ArtificialIntelligence"],
         "IsCore": false
     },
     "DigitalServices": {
@@ -150,6 +156,8 @@
                 "Courses": ["COMP718", "COMP726", "COMP728", "INFS704"]
             }
         ],
+        "IncompatibleMajors": [],
+        "IncompatibleMinors": [],
         "IsCore": false
     },
     "NetworksAndCybersecurity": {
@@ -191,6 +199,8 @@
                 "Courses": ["COMP716", "COMP718"]
             }
         ],
+        "IncompatibleMajors": [],
+        "IncompatibleMinors": [],
         "IsCore": false
     },
     "SoftwareDevelopment": {
@@ -233,6 +243,8 @@
                 "Courses": ["COMP719"]
             }
         ],
+        "IncompatibleMajors": ["SoftwareDevelopment-GameDev"],
+        "IncompatibleMinors": [],
         "IsCore": false
     },
     "SoftwareDevelopment-GameDev": {
@@ -274,6 +286,8 @@
                 "Courses": ["COMP719"]
             }
         ],
+        "IncompatibleMajors": ["SoftwareDevelopment"],
+        "IncompatibleMinors": ["SoftwareDevelopment"],
         "IsCore": false
     }
 }
