@@ -1,86 +1,119 @@
 {
-    "Core": {
-        "Code": "Core",
-        "Name": "Core",
-        "Requirements": [
-            {
-                "Type": "Required",
-                "Courses": ["COMP500"]
-            },
-            {
-                "Type": "Required",
-                "Courses": ["COMP501"]
-            },
-            {
-                "Type": "Required",
-                "Courses": ["COMP507"]
-            },
-            {
-                "Type": "Required",
-                "Courses": ["COMP508"]
-            },
-            {
-                "Type": "Required",
-                "Courses": ["DIGD507"]
-            },
-            {
-                "Type": "Required",
-                "Courses": ["MATH503"]
-            },
-            {
-                "Type": "Required",
-                "Courses": ["COMP702"]
-            },
-            {
-                "Type": "Required",
-                "Courses": ["COMP703"]
-            }
-        ],
-        "IncompatibleMajors": [],
-        "IncompatibleMinors": [],
-        "IsCore": true
-    },
     "ComputerScience": {
         "Code": "ComputerScience",
         "Name": "Computer Science",
         "Requirements": [
             {
                 "Type": "Required",
-                "Courses": ["COMP503"]
+                "Courses": [
+                    "COMP503"
+                ]
             },
             {
                 "Type": "Required",
-                "Courses": ["COMP610"]
+                "Courses": [
+                    "COMP610"
+                ]
             },
             {
                 "Type": "Required",
-                "Courses": ["COMP611"]
+                "Courses": [
+                    "COMP611"
+                ]
             },
             {
                 "Type": "Required",
-                "Courses": ["COMP612"]
+                "Courses": [
+                    "COMP612"
+                ]
             },
             {
                 "Type": "Required",
-                "Courses": ["COMP613"]
+                "Courses": [
+                    "COMP613"
+                ]
             },
             {
                 "Type": "Required",
-                "Courses": ["COMP711"]
+                "Courses": [
+                    "COMP711"
+                ]
             },
             {
                 "Type": "Required",
-                "Courses": ["COMP712"]
+                "Courses": [
+                    "COMP712"
+                ]
             },
             {
                 "Type": "ChooseN",
                 "Count": 1,
-                "Courses": ["COMP713", "COMP719"]
+                "Courses": [
+                    "COMP713",
+                    "COMP719"
+                ]
             }
         ],
         "IncompatibleMajors": [],
         "IncompatibleMinors": [],
         "IsCore": false
+    },
+    "Core": {
+        "Code": "Core",
+        "Name": "Core",
+        "Requirements": [
+            {
+                "Type": "Required",
+                "Courses": [
+                    "COMP500"
+                ]
+            },
+            {
+                "Type": "Required",
+                "Courses": [
+                    "COMP501"
+                ]
+            },
+            {
+                "Type": "Required",
+                "Courses": [
+                    "COMP507"
+                ]
+            },
+            {
+                "Type": "Required",
+                "Courses": [
+                    "COMP508"
+                ]
+            },
+            {
+                "Type": "Required",
+                "Courses": [
+                    "DIGD507"
+                ]
+            },
+            {
+                "Type": "Required",
+                "Courses": [
+                    "MATH503"
+                ]
+            },
+            {
+                "Type": "Required",
+                "Courses": [
+                    "COMP702"
+                ]
+            },
+            {
+                "Type": "Required",
+                "Courses": [
+                    "COMP703"
+                ]
+            }
+        ],
+        "IncompatibleMajors": [],
+        "IncompatibleMinors": [],
+        "IsCore": true
     },
     "DataScience": {
         "Code": "DataScience",
@@ -88,41 +121,61 @@
         "Requirements": [
             {
                 "Type": "Required",
-                "Courses": ["COMP517"]
+                "Courses": [
+                    "COMP517"
+                ]
             },
             {
                 "Type": "ChooseN",
                 "Count": 1,
-                "Courses": ["COMP610", "COMP613"]
+                "Courses": [
+                    "COMP610",
+                    "COMP613"
+                ]
             },
             {
                 "Type": "Required",
-                "Courses": ["COMP615"]
+                "Courses": [
+                    "COMP615"
+                ]
             },
             {
                 "Type": "Required",
-                "Courses": ["COMP616"]
+                "Courses": [
+                    "COMP616"
+                ]
             },
             {
                 "Type": "Required",
-                "Courses": ["STAT603"]
+                "Courses": [
+                    "STAT603"
+                ]
             },
             {
                 "Type": "ChooseN",
                 "Count": 1,
-                "Courses": ["COMP700", "COMP701"]
+                "Courses": [
+                    "COMP700",
+                    "COMP701"
+                ]
             },
             {
                 "Type": "Required",
-                "Courses": ["COMP717"]
+                "Courses": [
+                    "COMP717"
+                ]
             },
             {
                 "Type": "Required",
-                "Courses": ["COMP723"]
+                "Courses": [
+                    "COMP723"
+                ]
             }
         ],
         "IncompatibleMajors": [],
-        "IncompatibleMinors": ["ArtificialIntelligence"],
+        "IncompatibleMinors": [
+            "ArtificialIntelligence"
+        ],
         "IsCore": false
     },
     "DigitalServices": {
@@ -131,29 +184,45 @@
         "Requirements": [
             {
                 "Type": "Required",
-                "Courses": ["INFS502"]
+                "Courses": [
+                    "INFS502"
+                ]
             },
             {
                 "Type": "ChooseN",
                 "Count": 1,
-                "Courses": ["COMP603", "COMP607"]
+                "Courses": [
+                    "COMP603",
+                    "COMP607"
+                ]
             },
             {
                 "Type": "Required",
-                "Courses": ["INFS603"]
+                "Courses": [
+                    "INFS603"
+                ]
             },
             {
                 "Type": "Required",
-                "Courses": ["INFS604"]
+                "Courses": [
+                    "INFS604"
+                ]
             },
             {
                 "Type": "Required",
-                "Courses": ["INFS605"]
+                "Courses": [
+                    "INFS605"
+                ]
             },
             {
                 "Type": "ChooseN",
                 "Count": 3,
-                "Courses": ["COMP718", "COMP726", "COMP728", "INFS704"]
+                "Courses": [
+                    "COMP718",
+                    "COMP726",
+                    "COMP728",
+                    "INFS704"
+                ]
             }
         ],
         "IncompatibleMajors": [],
@@ -166,37 +235,55 @@
         "Requirements": [
             {
                 "Type": "Required",
-                "Courses": ["COMP504"]
+                "Courses": [
+                    "COMP504"
+                ]
             },
             {
                 "Type": "Required",
-                "Courses": ["COMP604"]
+                "Courses": [
+                    "COMP604"
+                ]
             },
             {
                 "Type": "Required",
-                "Courses": ["COMP607"]
+                "Courses": [
+                    "COMP607"
+                ]
             },
             {
                 "Type": "Required",
-                "Courses": ["COMP609"]
+                "Courses": [
+                    "COMP609"
+                ]
             },
             {
                 "Type": "Required",
-                "Courses": ["ENEL611"]
+                "Courses": [
+                    "ENEL611"
+                ]
             },
             {
                 "Type": "ChooseN",
                 "Count": 1,
-                "Courses": ["COMP714", "COMP729"]
+                "Courses": [
+                    "COMP714",
+                    "COMP729"
+                ]
             },
             {
                 "Type": "Required",
-                "Courses": ["COMP715"]
+                "Courses": [
+                    "COMP715"
+                ]
             },
-             {
+            {
                 "Type": "ChooseN",
                 "Count": 1,
-                "Courses": ["COMP716", "COMP718"]
+                "Courses": [
+                    "COMP716",
+                    "COMP718"
+                ]
             }
         ],
         "IncompatibleMajors": [],
@@ -209,41 +296,62 @@
         "Requirements": [
             {
                 "Type": "Required",
-                "Courses": ["COMP503"]
+                "Courses": [
+                    "COMP503"
+                ]
             },
             {
                 "Type": "Required",
-                "Courses": ["COMP602"]
+                "Courses": [
+                    "COMP602"
+                ]
             },
             {
                 "Type": "Required",
-                "Courses": ["COMP603"]
+                "Courses": [
+                    "COMP603"
+                ]
             },
             {
                 "Type": "ChooseN",
                 "Count": 1,
-                "Courses": ["COMP604", "COMP611"]
+                "Courses": [
+                    "COMP604",
+                    "COMP611"
+                ]
             },
             {
                 "Type": "Required",
-                "Courses": ["COMP610"]
+                "Courses": [
+                    "COMP610"
+                ]
             },
             {
                 "Type": "ChooseN",
                 "Count": 1,
-                "Courses": ["COMP705", "ENSE707"]
+                "Courses": [
+                    "COMP705",
+                    "ENSE707"
+                ]
             },
             {
                 "Type": "ChooseN",
                 "Count": 1,
-                "Courses": ["COMP713", "COMP721"]
+                "Courses": [
+                    "COMP713",
+                    "COMP721"
+                ]
             },
             {
                 "Type": "Required",
-                "Courses": ["COMP719"]
+                "Courses": [
+                    "COMP719"
+                ]
             }
         ],
-        "IncompatibleMajors": ["SoftwareDevelopment-GameDev"],
+        "IncompatibleMajors": [
+            "SoftwareDevelopment-GameDev"
+        ],
         "IncompatibleMinors": [],
         "IsCore": false
     },
@@ -253,41 +361,63 @@
         "Requirements": [
             {
                 "Type": "Required",
-                "Courses": ["COMP503"]
+                "Courses": [
+                    "COMP503"
+                ]
             },
             {
                 "Type": "Required",
-                "Courses": ["COMP612"]
+                "Courses": [
+                    "COMP612"
+                ]
             },
             {
                 "Type": "Required",
-                "Courses": ["COMP603"]
+                "Courses": [
+                    "COMP603"
+                ]
             },
             {
                 "Type": "ChooseN",
                 "Count": 1,
-                "Courses": ["COMP604", "COMP611"]
+                "Courses": [
+                    "COMP604",
+                    "COMP611"
+                ]
             },
             {
                 "Type": "Required",
-                "Courses": ["COMP610"]
+                "Courses": [
+                    "COMP610"
+                ]
             },
             {
                 "Type": "ChooseN",
                 "Count": 1,
-                "Courses": ["COMP705", "ENSE707"]
+                "Courses": [
+                    "COMP705",
+                    "ENSE707"
+                ]
             },
             {
                 "Type": "Required",
-                "Courses": ["COMP710"]
+                "Courses": [
+                    "COMP710"
+                ]
             },
             {
                 "Type": "Required",
-                "Courses": ["COMP719"]
+                "Courses": [
+                    "COMP719"
+                ]
             }
         ],
-        "IncompatibleMajors": ["SoftwareDevelopment"],
-        "IncompatibleMinors": ["SoftwareDevelopment"],
+        "IncompatibleMajors": [
+            "SoftwareDevelopment"
+        ],
+        "IncompatibleMinors": [
+            "SoftwareDevelopment"
+        ],
         "IsCore": false
     }
 }
