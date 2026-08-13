@@ -6,6 +6,29 @@ import { importschedule } from './filehandler.js';
 buttons based on the stored files in the json templates folder of the web app.
 This means study plans can be saved to the web app itself so that other programme leads can easily 
 share their unique solutions to common circumstances for students*/
+function getCode(value) {
+    if (value === null || value === undefined) return null;
+
+    if (typeof value === 'object') {
+        return value.Code ?? value.code ?? null;
+    }
+
+    if (value === '' || value === 'null' || value === 'undefined') {
+        return null;
+    }
+
+    return String(value);
+}
+
+function getSelectedPathwayCode() {
+    const selectedValue = document.getElementById('pathwaySelect')?.value;
+    if (selectedValue) return selectedValue;
+
+    return typeof state.selectedPathway === 'string'
+        ? state.selectedPathway
+        : null;
+}
+
 function initTemplatesController() {
     //selecting the relevant html elements
     const panel = document.getElementById('templates');
@@ -37,10 +60,10 @@ function initTemplatesController() {
     }
 
     if (saveBtn) {
-        saveBtn.addEventListener('click', () => {
+        saveBtn.addEventListener('click', async () => {
             const fileNameInput = prompt("Enter a unique filename for your study plan layout:");
             if (fileNameInput) {
-                saveCurrentTemplateToServer(fileNameInput);
+                await saveCurrentTemplateToServer(fileNameInput);
             }
         });
     }
@@ -48,43 +71,48 @@ function initTemplatesController() {
     // storage and fetch
 
     async function saveCurrentTemplateToServer(customName) {
-    if (!customName) return alert("Please provide a valid file name.");
+        if (!customName) {
+            alert("Please provide a valid file name.");
+            return;
+        }
 
-    const cleanedSchedule = (state.coursePlan || []).map(semesterArray => {
-        return semesterArray.map(course => {
-            if (!course) return null;
-            
-            return typeof course === 'object' ? (course.code) : course;
-        });
-    });
+        const selectedPathway = getSelectedPathwayCode();
+        if (!selectedPathway) {
+            alert("Please select a pathway before saving a template.");
+            return;
+        }
 
-    const payload = {
-        filename: customName,
-        selectedPathway: state.selectedPathway,
-        selectedMajors: state.selectedMajors,
-        selectedMinors: state.selectedMinors,
-        selectedElectives: state.selectedElectives,
-        schedule: cleanedSchedule,
-        ignoredErrors: state.ignoredErrors
-    };
+        const payload = {
+            filename: customName,
+            selectedPathway,
+            selectedMajors: state.selectedMajors.map(getCode),
+            selectedMinors: state.selectedMinors.map(getCode),
+            selectedElectives: state.selectedElectives.map(getCode),
+            schedule: state.coursePlan.map(semester =>
+                semester.map(course => getCode(course))
+            ),
+            ignoredErrors: state.ignoredErrors ?? {}
+        };
 
-    try {
-        const response = await fetch('./php/save_template.php', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(payload)
-        });
+        try {
+            const response = await fetch('./php/save_template.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
 
-        const result = await response.json();
-        if (!response.ok) throw new Error(result.error || "Server storage failed.");
+            const result = await response.json();
+            if (!response.ok) {
+                throw new Error(result.error || "Server storage failed.");
+            }
 
-        alert(result.message);
-        if (panel && panel.open) fetchServerTemplates(); 
-    } catch (error) {
-        console.error("Save Operation Error:", error);
-        alert(`Failed to save: ${error.message}`);
+            alert(result.message);
+            if (panel?.open) await fetchServerTemplates();
+        } catch (error) {
+            console.error("Save Operation Error:", error);
+            alert(`Failed to save: ${error.message}`);
+        }
     }
-}
 
 
     async function fetchServerTemplates() {
@@ -96,6 +124,9 @@ function initTemplatesController() {
             if (!response.ok) throw new Error("Failed to scan templates directory.");
             
             const files = await response.json();
+            if (!Array.isArray(files)) {
+                throw new Error("Template scanner returned invalid data.");
+            }
             btnContainer.innerHTML = ''; 
 
             if (files.length === 0) {
@@ -116,11 +147,11 @@ function initTemplatesController() {
                         
                         const templateData = await fileResponse.json();
                         importschedule(templateData);
-                        refreshStudyPlan();
-                        panel.close(); 
+                        await refreshStudyPlan();
+                        if (panel.open) panel.close();
                     } catch (err) {
                         console.error(`Failed to process template file: ${file.filepath}`, err);
-                        alert("Incompatible File Structure!");
+                        alert(`Incompatible template: ${err.message}`);
                     }
                 });
                 btnContainer.appendChild(btn);
@@ -141,21 +172,22 @@ function initTemplatesController() {
         const file = templateInput.files[0];
         const reader = new FileReader();
 
-        reader.onload = function (event) {
+        reader.onload = async function (event) {
             try {
                 const templateData = JSON.parse(event.target.result);
                 importschedule(templateData);
-                if (panel) panel.close();
+                await refreshStudyPlan();
+                if (panel?.open) panel.close();
             } catch (error) {
                 console.error("Malformed JSON file layout:", error);
-                alert("Error: The uploaded file is not a valid JSON template.");
+                alert(`Invalid template: ${error.message}`);
             }
         };
         reader.readAsText(file);
     }
 
     
-};
+}
 
 if (document.readyState === 'loading') {
     document.addEventListener(

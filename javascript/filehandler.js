@@ -1,125 +1,186 @@
-function init(){
-    	const Button = document.getElementById("SaveFileButton");
-	Button.addEventListener("click", SaveFile, false);
+import { placeCourse, PathwayRefresh } from "./app.js";
+import { renderCoursePlan } from "./renderCoursePlan.js";
+import { state } from "./state.js";
+import { renderIgnoredErrors } from "./errorDisplay.js";
+import {
+    loadMajorOptions,
+    loadMinorOptions
+} from "./objects/majorMinorOption.js";
+
+const majorOptions = await loadMajorOptions();
+const minorOptions = await loadMinorOptions();
+
+function init() {
+    const button = document.getElementById("SaveFileButton");
+    button?.addEventListener("click", SaveFile, false);
 }
 
-await init();
-// Importing json files
-import {placeCourse, PathwayRefresh} from "./app.js";
-import { renderCoursePlan } from "./renderCoursePlan.js";
-import { state } from './state.js';
-import { renderIgnoredErrors } from './errorDisplay.js';
+if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", init, { once: true });
+} else {
+    init();
+}
 
+function getCode(value) {
+    const code = typeof value === "object" && value !== null
+        ? value.Code ?? value.code
+        : value;
 
-
-export function importschedule(JsonInput) {
-		try{
-	const arraytoparse = JsonInput.schedule;
- 	for(let semester = 0; semester < arraytoparse.length; semester++){
-        for(let course = 0; course < arraytoparse[semester].length; course++){
-          placeCourse(semester, course, arraytoparse[semester][course]);
-        }
+    if (
+        code === null ||
+        code === undefined ||
+        code === "" ||
+        code === "null" ||
+        code === "undefined"
+    ) {
+        return null;
     }
 
-	const pathwaySelect = document.getElementById('pathwaySelect');
-	pathwaySelect.value = JsonInput.selectedPathway;
-	// Update the selected pathway enum.
-	state.selectedPathway = JsonInput.selectedPathway;
-	// Update the selected pathway enum.
-	console.log(`Selected pathway: ${state.selectedPathway.name}`);
-	// Clear selections that are not used by the selected pathway.
-	state.selectedMajors = state.selectedMajors.map((major, index) =>
-		index < state.selectedPathway.numMajors ? major : null
-	);
-	state.selectedMinors = state.selectedMinors.map((minor, index) =>
-		index < state.selectedPathway.numMinors ? minor : null
-	);
-	state.selectedElectives = state.selectedElectives.map((elective, index) =>
-		index < state.selectedPathway.numElectives ? elective : null
-	);
-	PathwayRefresh(pathwaySelect.value);
-	//console.log(JsonInput);
-	state.selectedElectives = JsonInput.selectedElectives;
-	state.selectedMajors = JsonInput.selectedMajors;
-	state.selectedMinors = JsonInput.selectedMinors;
-
-	state.ignoredErrors = JsonInput.ignoredErrors || {};
-	renderIgnoredErrors();
-
-	const major1 = document.getElementById('major1');
-	const major2 = document.getElementById('major2');
-	const minor1 = document.getElementById('minor1');
-	const minor2 = document.getElementById('minor2');
-	
-
-	console.log(major1);
-	major1.value = state.selectedMajors[0];
-
-
-	
-	if (JsonInput.selectedPathway === 'doubleMajors'){
-		major2.value = state.selectedMajors[1];
-	}
-	else{
-		minor1.value = state.selectedMinors[0];
-		if (JsonInput.selectedPathway === 'doubleMinors'){
-			minor2.value = state.selectedMinors[1];
-		}
-	}
-	PathwayRefresh(pathwaySelect.value);
-	renderCoursePlan(state);
-}
-catch{
-alert(`Incompatible File!`);
-}
-	console.log(state);
+    return String(code);
 }
 
+function resolveSelections(values, options, size, allowedCount, type) {
+    const input = Array.isArray(values) ? values : [];
 
+    return Array.from({ length: size }, (_, index) => {
+        if (index >= allowedCount) return null;
 
+        const code = getCode(input[index]);
+        if (!code) return null;
 
-// Function for saving files
-export function SaveFile(){
-	let text = "{\n";
-	text += "\"selectedPathway\":\""+ state.selectedPathway+"\",\n";
-	text += "\"selectedMajors\": [\""+ state.selectedMajors[0]+"\",\""+state.selectedMajors[1]+"\"],\n";
-	text += "\"selectedMinors\": [\""+ state.selectedMinors[0]+"\",\""+state.selectedMinors[1]+"\"],\n";
-	text += "\"selectedElectives\": [\""+ state.selectedElectives[0]+"\",\""+state.selectedElectives[1]+"\",\""+state.selectedElectives[2]+"\",\""+state.selectedElectives[3]+"\"],\n";
-	text += "\"schedule\": [";
-	for (let row = 0; row < state.coursePlan.length; row++) {
-		text += "[";
-		for (let col = 0; col < state.coursePlan[row].length; col++) {
-			if(state.coursePlan[row][col] != undefined){
-				console.log( state.coursePlan[row][col].code);
-				const course = state.coursePlan[row][col].code;
-				text += "\""+ course+"\"";
+        const option = options[code];
+        if (!option) {
+            throw new Error(`Unknown ${type} code: ${code}`);
+        }
 
-			}
-			else{
-				text += "\"undefined\"";
-			}
-			if(col < 3){
-				text += ","
-			}
-		}
-		text += "]"
-		if(row < 5){
-			text += ",\n"
-		}
-	}
-    //Added section for the error message note system
-	text += "\"ignoredErrors\": " + JSON.stringify(state.ignoredErrors, null, 2) + "\n}";
-	text += "],\n}";
-    
-
-	console.log(text);
-
-    let blobdtMIME = new Blob([text], { type: "application/json" });
-    let url = URL.createObjectURL(blobdtMIME);
-    let anele = document.createElement("a");
-    anele.setAttribute("download", "Schedule");
-    anele.href = url;
-    anele.click();
-    console.log(blobdtMIME)
+        return option;
+    });
 }
 
+function loadSchedule(schedule) {
+    if (!Array.isArray(schedule)) {
+        throw new Error("The file does not contain a valid schedule.");
+    }
+
+    for (let semester = 0; semester < state.coursePlan.length; semester++) {
+        const importedSemester = Array.isArray(schedule[semester])
+            ? schedule[semester]
+            : [];
+
+        for (let slot = 0; slot < state.coursePlan[semester].length; slot++) {
+            const courseCode = getCode(importedSemester[slot]);
+            state.coursePlan[semester][slot] = null;
+
+            if (!courseCode) continue;
+
+            placeCourse(semester, slot, courseCode);
+
+            if (!state.coursePlan[semester][slot]) {
+                console.warn(`Unknown course code in imported file: ${courseCode}`);
+            }
+        }
+    }
+}
+
+export function importschedule(jsonInput) {
+    if (!jsonInput || typeof jsonInput !== "object") {
+        throw new Error("The imported file must contain a JSON object.");
+    }
+
+    const pathwayCode = getCode(jsonInput.selectedPathway);
+    const pathwaySelect = document.getElementById("pathwaySelect");
+
+    if (
+        !pathwayCode ||
+        !pathwaySelect ||
+        !Array.from(pathwaySelect.options).some(
+            option => option.value === pathwayCode
+        )
+    ) {
+        throw new Error(`Unknown pathway code: ${pathwayCode ?? "missing"}`);
+    }
+
+    pathwaySelect.value = pathwayCode;
+    PathwayRefresh(pathwayCode);
+
+    const pathway = state.selectedPathway;
+    if (!pathway || typeof pathway.numMajors !== "number") {
+        throw new Error(`Could not load pathway: ${pathwayCode}`);
+    }
+
+    state.selectedMajors = resolveSelections(
+        jsonInput.selectedMajors,
+        majorOptions,
+        2,
+        pathway.numMajors,
+        "major"
+    );
+    state.selectedMinors = resolveSelections(
+        jsonInput.selectedMinors,
+        minorOptions,
+        2,
+        pathway.numMinors,
+        "minor"
+    );
+
+    const importedElectives = Array.isArray(jsonInput.selectedElectives)
+        ? jsonInput.selectedElectives
+        : [];
+    state.selectedElectives = Array.from({ length: 4 }, (_, index) =>
+        index < pathway.numElectives
+            ? getCode(importedElectives[index])
+            : null
+    );
+
+    loadSchedule(jsonInput.schedule);
+
+    state.ignoredErrors = (
+        jsonInput.ignoredErrors &&
+        typeof jsonInput.ignoredErrors === "object"
+    )
+        ? jsonInput.ignoredErrors
+        : {};
+
+    // Rebuild the controls after resolving file codes into state objects.
+    PathwayRefresh(pathwayCode);
+    renderIgnoredErrors();
+    renderCoursePlan(state);
+
+    return true;
+}
+
+function getSelectedPathwayCode() {
+    const selectedValue = document.getElementById("pathwaySelect")?.value;
+    if (selectedValue) return selectedValue;
+
+    if (typeof state.selectedPathway === "string") {
+        return state.selectedPathway;
+    }
+
+    return null;
+}
+
+// Save state objects as their stable JSON codes rather than "[object Object]".
+export function SaveFile() {
+    const payload = {
+        selectedPathway: getSelectedPathwayCode(),
+        selectedMajors: state.selectedMajors.map(getCode),
+        selectedMinors: state.selectedMinors.map(getCode),
+        selectedElectives: state.selectedElectives.map(getCode),
+        schedule: state.coursePlan.map(semester =>
+            semester.map(course => getCode(course))
+        ),
+        ignoredErrors: state.ignoredErrors ?? {}
+    };
+
+    const text = JSON.stringify(payload, null, 2);
+    const blob = new Blob([text], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+
+    link.download = "Schedule.json";
+    link.href = url;
+    link.click();
+
+    setTimeout(() => URL.revokeObjectURL(url), 0);
+}
