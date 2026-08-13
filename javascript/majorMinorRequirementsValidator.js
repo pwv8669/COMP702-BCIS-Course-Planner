@@ -1,10 +1,8 @@
-import { loadMajorOptions, loadMinorOptions } from "./objects/majorMinorOption.js";
-
 import { state } from "./state.js";
+import { loadMajorOptions } from "./objects/majorMinorOption.js";
 import { PlanError } from './objects/planError.js';
 
 const majorOptions = await loadMajorOptions();
-const minorOptions = await loadMinorOptions();
 
 var errors = [];
 const attributedCourses = new Map();
@@ -61,12 +59,12 @@ export function validateMajorMinorRequirements(){
     selectedOptions = [];
     for (let i = 0; i < pathway.numMajors; i++) {
         if (state.selectedMajors[i]) {
-            selectedOptions.push(majorOptions[state.selectedMajors[i]]);
+            selectedOptions.push(state.selectedMajors[i]);
         }
     }
     for (let i = 0; i < pathway.numMinors; i++) {
         if (state.selectedMinors[i]) {
-            selectedOptions.push(minorOptions[state.selectedMinors[i]]);
+            selectedOptions.push(state.selectedMinors[i]);
         }
     }
 
@@ -77,14 +75,14 @@ export function validateMajorMinorRequirements(){
     for (let i = 0; i < pathway.numMajors; i++) {
         if (state.selectedMajors[i]) {
             attributeRequiredCourses(
-                majorOptions[state.selectedMajors[i]]
+                state.selectedMajors[i]
             );
         }
     }
     for (let i = 0; i < pathway.numMinors; i++) {
         if (state.selectedMinors[i]) {
             attributeRequiredCourses(
-                minorOptions[state.selectedMinors[i]]
+                state.selectedMinors[i]
             );
         }
     }
@@ -93,14 +91,14 @@ export function validateMajorMinorRequirements(){
     for (let i = 0; i < pathway.numMajors; i++) {
         if (state.selectedMajors[i]) {
             attributeChooseNCourses(
-                majorOptions[state.selectedMajors[i]]
+                state.selectedMajors[i]
             );
         }
     }
     for (let i = 0; i < pathway.numMinors; i++) {
         if (state.selectedMinors[i]) {
             attributeChooseNCourses(
-                minorOptions[state.selectedMinors[i]]
+                state.selectedMinors[i]
             );
         }
     }
