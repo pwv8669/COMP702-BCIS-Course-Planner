@@ -12,7 +12,12 @@ body{
   background-color: #373537;
   margin: 0;
   padding: 0;
+  height: 100%;
 
+}
+
+html{
+    height: 100%;
 }
 
 input {
@@ -45,16 +50,14 @@ label {
   margin-top: 25px;
   vertical-align: center;
   font-size: 11px;
-     transition: transform .2s;
+  transition: transform .2s;
 }
 
 label:hover {
      transform: scale(1.2);
 }
 
-
-
-    label:before {
+label:before {
         content: "";
         display: inline-block;
         width: 16px;
@@ -65,7 +68,6 @@ label:hover {
         bottom: 1px;
         background-color: #743b76;
     }
-
 
 input[type="checkbox"] {
     display: none;
@@ -86,17 +88,12 @@ input[type=checkbox]:checked + label:before {
   color: #BD6FC1;
 }
 
-
-
-
 .submit:hover {
 
 
      background-color: #fff8f5;
    transform: scale(1.1);
 }
-
-
 
 .submit {
   cursor:pointer;
@@ -115,12 +112,11 @@ input[type=checkbox]:checked + label:before {
    transition: background-color .2s, transform .2s;
 }
 
-
 select {
     color: #ffffff;
   font-family: 'Trebuchet MS'; 
   font-weight: bolder;
-   outline:0px;
+  outline:0px;
   align-content: center;
   border:0px;
   width:40%;
@@ -132,11 +128,15 @@ select {
 .center-container {
     display: flex;
     flex-direction: column;
-    align-items: left;     /* horizontal centering */
-    justify-content: flex-start; /* keep items at top */
-    text-align: left;      /* center text inside elements */
-    padding-left: 100px;
+    align-items: left;     
+    justify-content: flex-start; 
+    text-align: left;      
+    padding-left: 20px;
+    padding-right: 5px;
     padding-top: 35px;
+    height: 100%;
+    overflow-y: auto;
+    flex: 1;
 }
 
 </style>
@@ -148,8 +148,8 @@ select {
 </head>
 <title>BCIS Course Creator</title>
 <body>
-    <div style="width: 70%; height: 100vh; padding-bottom: 2px; padding-left: 1%; margin-left: auto;  margin-right: auto;">
-        <div class="center-container" style="width: 70%; height: 80vh; margin-left: auto; margin-right: auto;">
+    <div style="display: flex; flex-direction: column; position: relative; height: 100vh; width: 70%; margin-left: auto;  margin-right: auto; background-color: #b063c3">
+        <div class="center-container"style=" width: 70%; margin-left: auto; margin-right: auto;">
             
             <h1 style="margin-top: 0; width: 100%;">BCIS Course Creator</h1>
 
@@ -166,8 +166,6 @@ select {
             </form>
 
 
-
-
             <!-- Selection Dropdown -->
             <br>
             <div for="coursetoedit">
@@ -179,6 +177,7 @@ select {
         </div>
     </div>
 </body>
+
 <script>
 //array that stores all course objects in json
 const courseobjectsstore = [];//this is the array that will hold the objects for the auto-fill

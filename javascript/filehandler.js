@@ -105,9 +105,10 @@ export function SaveFile(){
 			text += ",\n"
 		}
 	}
-	text += "],\n}";
     //Added section for the error message note system
 	text += "\"ignoredErrors\": " + JSON.stringify(state.ignoredErrors, null, 2) + "\n}";
+	text += "],\n}";
+    
 
 	console.log(text);
 

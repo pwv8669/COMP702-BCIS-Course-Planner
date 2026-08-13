@@ -10,15 +10,26 @@ export function errorDisplay()
     //removes all old errors from the list before populating with new ones. This way duplicate errors are not shown
     clearPreviousErrors();
 
-    const errorTextContainer = document.getElementById('error-list-container');
-    if (errorTextContainer) {
-        errorTextContainer.innerHTML = '';
+    const redErrorTextContainer = document.getElementById('red-error-list-container');
+    if (redErrorTextContainer) {
+        redErrorTextContainer.innerHTML = '';
     }
 
+    const yellowErrorTextContainer = document.getElementById('yellow-error-list-container');
+    if (yellowErrorTextContainer) {
+        yellowErrorTextContainer.innerHTML = '';
+    }
     //if there are no errors at all display a success message to the user
     if (!errors || errors.length === 0) {
-        if (errorTextContainer) {
-            errorTextContainer.innerHTML = '<p class="success-msg"> All requirements met!</p>';
+        if (redErrorTextContainer) {
+            redErrorTextContainer.innerHTML = '<p class="success-msg"> All requirements met!</p>';
+        }
+        return errors;
+    }
+
+    if (!errors || errors.length === 0) {
+        if (yellowErrorTextContainer) {
+            yellowErrorTextContainer.innerHTML = '<p class="success-msg"> All requirements met!</p>';
         }
         return errors;
     }
