@@ -6,9 +6,8 @@ export class MajorOption {
         this.Code = data.Code;
         this.Name = data.Name;
         this.Requirements = resolveRequirements(data.Requirements, courses);
-        this.AlternativePathwayRequirements = data.AlternativePathwayRequirements
-            ? resolveRequirements(data.AlternativePathwayRequirements, courses)
-            : null;
+        this.IncompatibleMajors = data.IncompatibleMajors ?? [];
+        this.IncompatibleMinors = data.IncompatibleMinors ?? [];
         this.IsCore = data.IsCore ?? false;
     }
 }
@@ -31,7 +30,7 @@ function resolveRequirements(requirements, courses) {
 export async function loadMajorOptions() {
     const response = await fetch("json/majors.json");
     const data = await response.json();
-    let optionsarray = Object.values(data)[0];
+    let optionsarray = Object.values(data);
     console.log(optionsarray);
     
     const majors = Object.fromEntries(
