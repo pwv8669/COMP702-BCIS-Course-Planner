@@ -1,10 +1,8 @@
-import { loadPathways } from "./objects/pathway.js";
 import { loadMajorOptions, loadMinorOptions } from "./objects/majorMinorOption.js";
 
 import { state } from "./state.js";
 import { PlanError } from './objects/planError.js';
 
-const pathways = await loadPathways();
 const majorOptions = await loadMajorOptions();
 const minorOptions = await loadMinorOptions();
 
@@ -31,7 +29,7 @@ export function validateMajorMinorRequirements(){
 	}
 
     // Derive the json data for the selected pathway in order to determine the number of majors and minors required.
-    const pathway = pathways[state.selectedPathway];
+    const pathway = state.selectedPathway;
 
     if(!pathway) {
         let message = "No valid pathway is selected.";

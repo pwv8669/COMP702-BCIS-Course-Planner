@@ -6,13 +6,11 @@
 // Imports ---------- //
 import { refreshStudyPlan } from './app.js';
 import { state } from './state.js';
-import { loadPathways } from "./objects/pathway.js";
 import { loadMajorOptions, loadMinorOptions } from "./objects/majorMinorOption.js";
 import { evaluatePrerequisiteTree } from './prerequisiteValidator.js';
 import { loadCourses } from './courseObjectConverter.js';
 
 // Global consts ---------- //
-const pathways = await loadPathways();
 const coursesObject = await loadCourses();
 const majorOptions = await loadMajorOptions();
 const minorOptions = await loadMinorOptions();
@@ -114,7 +112,7 @@ function addCoreCourses(selectedCourses) {
 // Adds only the required courses to the selectedCourses map.
 // If there are overlaps, it adds the course to corsesToSubstitute so that we can revisit it.
 function addRequiredCourses(selectedCourses) {
-    const selectedPathway = pathways[state.selectedPathway];
+    const selectedPathway = state.selectedPathway;
     // Add major required courses
     for (let i = 0; i < selectedPathway.numMajors; i++) {
         const majorCode = state.selectedMajors[i];
@@ -352,7 +350,7 @@ function* getCombinations(
 // Collectt all ChooseN requirements from selected majors and minors.
 function getAllChooseNRequirements() {
     const requirements = [];
-    const selectedPathway = pathways[state.selectedPathway];
+    const selectedPathway = state.selectedPathway;
 
     // Majors
     for (let i = 0; i < selectedPathway.numMajors; i++) {
@@ -394,7 +392,7 @@ function tryOverlapSubstitutions(selectedCourses) {
         ...getChooseNReplacementGroups()
     ];
     const selectedPathway =
-        pathways[state.selectedPathway];
+        state.selectedPathway;
 
     if (selectedPathway.numElectives > 0) {
         replacementGroups.push({
@@ -938,7 +936,7 @@ function getCoursesFromSelectedMajorsAndMinors() {
     const courses = new Map();
 
     const selectedPathway =
-        pathways[state.selectedPathway];
+        state.selectedPathway;
 
 
     // Selected majors
@@ -2167,7 +2165,7 @@ function checkIfMajorsAndMinorsSelected() {
         alert("Please select a pathway before autopopulating the study plan.");
         return false;
     }
-    const selectedPathway = pathways[state.selectedPathway];
+    const selectedPathway = state.selectedPathway;
     // Check that the enough majors are selected for the chosen pathway.
     const requiredMajorsCount = selectedPathway.numMajors;
     const selectedMajors = state.selectedMajors;
