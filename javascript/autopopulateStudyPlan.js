@@ -6,14 +6,22 @@
 // Imports ---------- //
 import { refreshStudyPlan } from './app.js';
 import { state } from './state.js';
-import { loadMajorOptions, loadMinorOptions } from "./objects/majorMinorOption.js";
+import { loadMajorOptions } from "./objects/majorMinorOption.js";
 import { evaluatePrerequisiteTree } from './prerequisiteValidator.js';
 import { loadCourses } from './courseObjectConverter.js';
 
 // Global consts ---------- //
 const coursesObject = await loadCourses();
 const majorOptions = await loadMajorOptions();
-const minorOptions = await loadMinorOptions();
+
+function isDoubleMajorPathway() {
+    const pathway = state.selectedPathway;
+
+    return pathway === "doubleMajors" || (
+        pathway?.numMajors === 2 &&
+        pathway?.numMinors === 0
+    );
+}
 
 // Map to track how many substitutes are required for each course.
 // Courses must be substituted when 2+ majors/minors require the same course.
@@ -115,10 +123,7 @@ function addRequiredCourses(selectedCourses) {
     const selectedPathway = state.selectedPathway;
     // Add major required courses
     for (let i = 0; i < selectedPathway.numMajors; i++) {
-        const majorCode = state.selectedMajors[i];
-        if (!majorCode) continue;
-        
-        const major = majorOptions[majorCode];
+        const major = state.selectedMajors[i];
         if (!major) continue; 
         
         for (const requirement of major.Requirements) {
@@ -139,10 +144,7 @@ function addRequiredCourses(selectedCourses) {
     }
     // Add minor required courses
     for (let i = 0; i < selectedPathway.numMinors; i++) {
-        const minorCode = state.selectedMinors[i];
-        if (!minorCode) continue;
-
-        const minor = minorOptions[minorCode];
+        const minor = state.selectedMinors[i];
         if (!minor) continue; 
 
         for (const requirement of minor.Requirements) {
@@ -354,10 +356,7 @@ function getAllChooseNRequirements() {
 
     // Majors
     for (let i = 0; i < selectedPathway.numMajors; i++) {
-        const majorCode = state.selectedMajors[i];
-        if (!majorCode) continue;
-
-        const major = majorOptions[majorCode];
+        const major = state.selectedMajors[i];
         if (!major) continue;
 
         requirements.push(
@@ -369,10 +368,7 @@ function getAllChooseNRequirements() {
 
     // Minors
     for (let i = 0; i < selectedPathway.numMinors; i++) {
-        const minorCode = state.selectedMinors[i];
-        if (!minorCode) continue;
-
-        const minor = minorOptions[minorCode];
+        const minor = state.selectedMinors[i];
         if (!minor) continue;
 
         requirements.push(
@@ -804,7 +800,7 @@ function getAvailableReplacementCourses(
     selectedCourses
 ) {
     const isDoubleMajor =
-        state.selectedPathway === "doubleMajors";
+        isDoubleMajorPathway();
 
     const totalSubstitutes =
         getNumberOfSubstitutesNeeded();
@@ -845,7 +841,7 @@ function getAvailableChooseNReplacementCourses(
     selectedCourses
 ) {
     const isDoubleMajor =
-        state.selectedPathway === "doubleMajors";
+        isDoubleMajorPathway();
 
     const totalSubstitutes =
         getNumberOfSubstitutesNeeded();
@@ -945,13 +941,8 @@ function getCoursesFromSelectedMajorsAndMinors() {
         i < selectedPathway.numMajors;
         i++
     ) {
-        const majorCode =
-            state.selectedMajors[i];
-
-        if (!majorCode) continue;
-
         const major =
-            majorOptions[majorCode];
+            state.selectedMajors[i];
 
         if (!major) continue;
 
@@ -968,13 +959,8 @@ function getCoursesFromSelectedMajorsAndMinors() {
         i < selectedPathway.numMinors;
         i++
     ) {
-        const minorCode =
-            state.selectedMinors[i];
-
-        if (!minorCode) continue;
-
         const minor =
-            minorOptions[minorCode];
+            state.selectedMinors[i];
 
         if (!minor) continue;
 
