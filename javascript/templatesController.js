@@ -1,7 +1,5 @@
-import { placeCourse, PathwayRefresh, refreshStudyPlan } from './app.js';
-import { renderCoursePlan } from './renderCoursePlan.js';
-import { state, Pathways } from './state.js';
-import { initDragAndDrop } from './dragAndDropController.js';
+import { refreshStudyPlan } from './app.js';
+import { state } from './state.js';
 import { importschedule } from './filehandler.js';
 
 /*This code handles all the premade studyplan template buttons it dynamically generates
