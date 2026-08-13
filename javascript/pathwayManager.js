@@ -68,10 +68,14 @@ export async function initPathwayOptions()
     updatePathwayOptions();
 }
 
-// This function creates the major dropdowns in the HTML form based on the selected pathway. If the selected pathway is double majors, it creates two major dropdowns. If the selected pathway is double minors or electives, it creates one major dropdown. It also adds event listeners to the dropdowns to handle changes and validate the selected options.
+// This function creates the number of major dropdowns required by the selected pathway. It also adds event listeners to the dropdowns to handle changes and validate the selected options.
 function createMajorDropdowns()
 {
-    // Major 1 is always present regardless of the pathway, so we create it first.
+    if (state.selectedPathway.numMajors < 1)
+    {
+        return;
+    }
+
     // Create the major 1 select element.
     const major1Label = document.createElement('label');
     major1Label.textContent = 'Major 1: ';
@@ -96,8 +100,8 @@ function createMajorDropdowns()
     addPlaceholderOption(major1);
     major1.value = state.selectedMajors[0] ?? "";
 
-    // If the selected pathway is double majors, we create the major 2 select element as well.
-    if (state.selectedPathway == pathways.doubleMajors){
+    // Create the second major dropdown when the selected pathway requires it.
+    if (state.selectedPathway.numMajors >= 2){
         // Create the major 2 select element.
         const major2Label = document.createElement('label');
         major2Label.textContent = 'Major 2: ';
@@ -125,11 +129,11 @@ function createMajorDropdowns()
     }
 }
 
-// This function creates the minor dropdowns in the HTML form based on the selected pathway. If the selected pathway is double minors, it creates two minor dropdowns. If the selected pathway is electives, it creates one minor dropdown. It also adds event listeners to the dropdowns to handle changes and validate the selected options.
+// This function creates the number of minor dropdowns required by the selected pathway. It also adds event listeners to the dropdowns to handle changes and validate the selected options.
 function createMinorDropdowns()
 {
-    // If the selected pathway is double minors or electives, we create the minor 1 select element.
-    if (state.selectedPathway == pathways.doubleMinors || state.selectedPathway == pathways.electives)
+    // Create the first minor dropdown when the selected pathway requires it.
+    if (state.selectedPathway.numMinors >= 1)
     {
         // Create the minor 1 select element.
         const minor1Label = document.createElement('label');
@@ -156,8 +160,8 @@ function createMinorDropdowns()
         addPlaceholderOption(minor1);
         minor1.value = state.selectedMinors[0] ?? "";
     }
-    // If the selected pathway is double minors, we create the minor 2 select element as well.
-    if (state.selectedPathway == pathways.doubleMinors)
+    // Create the second minor dropdown when the selected pathway requires it.
+    if (state.selectedPathway.numMinors >= 2)
     {
         // Create the minor 2 select element.
         const minor2Label = document.createElement('label');
