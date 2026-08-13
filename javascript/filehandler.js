@@ -7,8 +7,10 @@ await init();
 // Importing json files
 import {placeCourse, PathwayRefresh} from "./app.js";
 import { renderCoursePlan } from "./renderCoursePlan.js";
-import { state, Pathways } from './state.js';
+import { state } from './state.js';
 import { renderIgnoredErrors } from './errorDisplay.js';
+
+
 
 export function importschedule(JsonInput) {
 		try{
@@ -23,18 +25,18 @@ export function importschedule(JsonInput) {
 	pathwaySelect.value = JsonInput.selectedPathway;
 	// Update the selected pathway enum.
 	state.selectedPathway = JsonInput.selectedPathway;
-	console.log(`Selected pathway: ${state.selectedPathway}`);
-	// Clear the unused selected majors, minors, and electives based on the selected pathway.
-	if(state.selectedPathway == Pathways.doubleMajors){
-		state.selectedMinors = [null, null];
-		state.selectedElectives = [null, null, null, null];
-	} else if (state.selectedPathway == Pathways.doubleMinors){
-		state.selectedMajors[1] = null;
-		state.selectedElectives = [null, null, null, null];
-	} else if (state.selectedPathway == Pathways.electives){
-		state.selectedMajors[1] = null;
-		state.selectedMinors[1] = null;
-	}
+	// Update the selected pathway enum.
+	console.log(`Selected pathway: ${state.selectedPathway.name}`);
+	// Clear selections that are not used by the selected pathway.
+	state.selectedMajors = state.selectedMajors.map((major, index) =>
+		index < state.selectedPathway.numMajors ? major : null
+	);
+	state.selectedMinors = state.selectedMinors.map((minor, index) =>
+		index < state.selectedPathway.numMinors ? minor : null
+	);
+	state.selectedElectives = state.selectedElectives.map((elective, index) =>
+		index < state.selectedPathway.numElectives ? elective : null
+	);
 	PathwayRefresh(pathwaySelect.value);
 	//console.log(JsonInput);
 	state.selectedElectives = JsonInput.selectedElectives;
@@ -55,12 +57,12 @@ export function importschedule(JsonInput) {
 
 
 	
-	if(state.selectedPathway == Pathways.doubleMajors){
+	if (JsonInput.selectedPathway === 'doubleMajors'){
 		major2.value = state.selectedMajors[1];
 	}
 	else{
 		minor1.value = state.selectedMinors[0];
-		if(state.selectedPathway == Pathways.doubleMinors){
+		if (JsonInput.selectedPathway === 'doubleMinors'){
 			minor2.value = state.selectedMinors[1];
 		}
 	}

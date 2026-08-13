@@ -6,7 +6,7 @@ import { importschedule } from './filehandler.js';
 buttons based on the stored files in the json templates folder of the web app.
 This means study plans can be saved to the web app itself so that other programme leads can easily 
 share their unique solutions to common circumstances for students*/
-document.addEventListener('DOMContentLoaded', () => {
+function initTemplatesController() {
     //selecting the relevant html elements
     const panel = document.getElementById('templates');
     const openTemplates = document.getElementById('openTemplates');
@@ -155,4 +155,14 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     
-});
+};
+
+if (document.readyState === 'loading') {
+    document.addEventListener(
+        'DOMContentLoaded',
+        initTemplatesController,
+        { once: true }
+    );
+} else {
+    initTemplatesController();
+}
