@@ -11,6 +11,15 @@ const requiredCourseOverlaps = new Map();
 const chooseNSubstitutions = [];
 let selectedOptions = [];
 
+function isDoubleMajorPathway() {
+    const pathway = state.selectedPathway;
+
+    return pathway === "doubleMajors" || (
+        pathway?.numMajors === 2 &&
+        pathway?.numMinors === 0
+    );
+}
+
 export function validateMajorMinorRequirements(){
     // Clear the errors course sets before validating.
     errors = [];
@@ -351,7 +360,7 @@ function getRequiredSubstitutionCandidates(substitution) {
         unfulfilledOption
     );
     const canUseUnrestrictedSubstitute =
-        state.selectedPathway === "doubleMajors" &&
+        isDoubleMajorPathway() &&
         requiredCourseOverlaps.size <= 2;
     const possibleCourses = canUseUnrestrictedSubstitute
         ? getCourseObjectsFromPlan()
@@ -381,7 +390,7 @@ function getChooseNSubstitutionCandidates(
     totalSubstitutions
 ) {
     const isUnrestrictedDoubleMajorSubstitution =
-        state.selectedPathway === "doubleMajors" &&
+        isDoubleMajorPathway() &&
         totalSubstitutions <= 2;
     const minimumLevel = Math.min(
         ...substitution.requirement.Courses.map(
