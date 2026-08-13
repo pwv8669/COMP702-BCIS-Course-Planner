@@ -203,8 +203,19 @@ async function checkValidOptionChange(self, slot, target)
         return;
     }
 
+    // Compare the option code because selected majors/minors may be stored as objects.
+    // The string fallback keeps selections imported from older templates compatible.
+    const selectedCodes = [
+        ...state.selectedMajors,
+        ...state.selectedMinors
+    ]
+        .filter(Boolean)
+        .map(option =>
+            typeof option === 'string' ? option : option.Code
+        );
+
     // Check if the selected option is already selected in another slot. If it is, alert the user and reset the select element to '---'.
-    if (state.selectedMajors.includes(target) || state.selectedMinors.includes(target))
+    if (selectedCodes.includes(target))
     {
         alert(`You cannot take the same major/minor twice.`);
         self.value = "";
@@ -230,8 +241,14 @@ function findIncompatibility(slot, target)
     const selectedOption = (selectingMajor ? majorsArray : minorsArray)
         .find(option => option.Code === target);
     const existingOptions = [
-        ...state.selectedMajors.map(code => ({ code, isMajor: true })),
-        ...state.selectedMinors.map(code => ({ code, isMajor: false }))
+    ...state.selectedMajors.map(option => ({
+        code: typeof option === 'string' ? option : option?.Code,
+        isMajor: true
+    })),
+    ...state.selectedMinors.map(option => ({
+        code: typeof option === 'string' ? option : option?.Code,
+        isMajor: false
+    }))
     ].filter(option => option.code);
 
     for (const existing of existingOptions)
