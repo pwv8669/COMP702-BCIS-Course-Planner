@@ -202,14 +202,10 @@ async function checkValidOptionChange(self, slot, target)
         return;
     }
 
-    // Check if the selected option is Data Science or Artificial Intelligence, and if the other one is already selected in another slot. If it is, alert the user that they cannot be taken together and reset the select element to '---'.
-    if 
-	(
-		(state.selectedMajors.includes('DataScience') || state.selectedMinors.includes('DataScience')) && target == 'ArtificialIntelligence'
-		|| (state.selectedMinors.includes('ArtificialIntelligence') && target == 'DataScience')
-	)
+    const incompatibility = findIncompatibility(slot, target);
+    if (incompatibility)
     {
-        alert(`Data Science and Artificial Intelligence cannot be taken together.`);
+        alert(`${incompatibility.selectedName} and ${incompatibility.existingName} cannot be taken together.`);
         self.value = "";
         return;
     }
@@ -217,6 +213,49 @@ async function checkValidOptionChange(self, slot, target)
     if(target != ""){
         let errors = validateStudyPlan();
     }
+}
+
+function findIncompatibility(slot, target)
+{
+    const selectingMajor = slot.startsWith('major');
+    const selectedOption = (selectingMajor ? majorsArray : minorsArray)
+        .find(option => option.Code === target);
+    const existingOptions = [
+        ...state.selectedMajors.map(code => ({ code, isMajor: true })),
+        ...state.selectedMinors.map(code => ({ code, isMajor: false }))
+    ].filter(option => option.code);
+
+    for (const existing of existingOptions)
+    {
+        const existingOption = (existing.isMajor ? majorsArray : minorsArray)
+            .find(option => option.Code === existing.code);
+        const selectedIncompatibilities = selectingMajor
+            ? getIncompatibleMajors(existingOption)
+            : getIncompatibleMinors(existingOption);
+        const existingIncompatibilities = existing.isMajor
+            ? getIncompatibleMajors(selectedOption)
+            : getIncompatibleMinors(selectedOption);
+
+        if (selectedIncompatibilities.includes(target) || existingIncompatibilities.includes(existing.code))
+        {
+            return {
+                selectedName: selectedOption?.Name ?? target,
+                existingName: existingOption?.Name ?? existing.code
+            };
+        }
+    }
+
+    return null;
+}
+
+function getIncompatibleMajors(option)
+{
+    return option?.incompatibleMajors ?? option?.IncompatibleMajors ?? [];
+}
+
+function getIncompatibleMinors(option)
+{
+    return option?.incompatibleMinors ?? option?.IncompatibleMinors ?? [];
 }
 
 async function applyOptionChange(slot, target)

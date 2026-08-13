@@ -38,6 +38,10 @@ input,textarea {
 input[type="checkbox"] {
     display: none;
 }
+#IsCoreRow input[type="checkbox"] {
+    display: inline-block;
+    width: auto;
+}
 .checkbox label:before {
   border-radius: 3px;
 }
@@ -111,6 +115,17 @@ select {
 }
 
 
+.center-container {
+  display: flex;
+  flex-direction: column;
+  align-items: left;
+  justify-content: flex-start;
+  text-align: left;
+  padding: 35px 5px 0 20px;
+  height: 100%;
+  overflow-y: auto;
+  flex: 1;
+}
 </style>
 
 
@@ -136,7 +151,9 @@ select {
                 <p>Courses: </p>
                 <textarea style="field-sizing: content;resize: vertical;" name="Courses" type="text" placeholder="e.g. MATH503 AND (COMP603 OR COMP610)">
 </textarea><br>
-
+                <input name="IncompatibleMajors" type="text" placeholder="Incompatible major codes (comma-separated)"><br>
+                <input name="IncompatibleMinors" type="text" placeholder="Incompatible minor codes (comma-separated)"><br>
+                <label id="IsCoreRow"><input name="IsCore" type="checkbox" value="1"> Core option</label><br>
                 <br>
                 <input class="submit" type="submit" value="Edit Option" style="width: 130px">
             </form>
@@ -166,9 +183,15 @@ select {
       //console.log("setposttominor");
     }
     SetupMajorMinorSelections();
-     document.getElementsByName("Code")[0].value = "";//reset
+      document.getElementsByName("Code")[0].value = "";//reset
+      document.getElementsByName("OriginalCode")[0].value = "";
       document.getElementsByName("Name")[0].value = "";
       document.getElementsByName("Courses")[0].value = "";
+      document.getElementsByName("IncompatibleMajors")[0].value = "";
+      document.getElementsByName("IncompatibleMinors")[0].value = "";
+      document.getElementsByName("IsCore")[0].checked = false;
+      document.getElementById("IsCoreRow").style.display =
+        document.getElementById("MajorMinorSelection").value == "Major" ? "block" : "none";
     
   }
   console.log(document.getElementById("MajorMinorSelection").onchange = testfunc);
@@ -184,7 +207,11 @@ let optionobjectsstore = [];//this is the array that will hold the objects for t
         //replace with their respective information
         console.log(optionobjectsstore[x]);
         document.getElementsByName("Code")[0].value = optionobjectsstore[x].Code;
+        document.getElementsByName("OriginalCode")[0].value = optionobjectsstore[x].Code;
         document.getElementsByName("Name")[0].value = optionobjectsstore[x].Name;
+        document.getElementsByName("IncompatibleMajors")[0].value = (optionobjectsstore[x].IncompatibleMajors ?? []).join(", ");
+        document.getElementsByName("IncompatibleMinors")[0].value = (optionobjectsstore[x].IncompatibleMinors ?? []).join(", ");
+        document.getElementsByName("IsCore")[0].checked = optionobjectsstore[x].IsCore === true;
        
 
         //creating the text for the courses
@@ -219,8 +246,12 @@ let optionobjectsstore = [];//this is the array that will hold the objects for t
       }
       else{//if its the null selection
          document.getElementsByName("Code")[0].value = "";//reset
+      document.getElementsByName("OriginalCode")[0].value = "";
       document.getElementsByName("Name")[0].value = "";
       document.getElementsByName("Courses")[0].value = "";
+      document.getElementsByName("IncompatibleMajors")[0].value = "";
+      document.getElementsByName("IncompatibleMinors")[0].value = "";
+      document.getElementsByName("IsCore")[0].checked = false;
       }
      
     }
