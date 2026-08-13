@@ -118,6 +118,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         
                         const templateData = await fileResponse.json();
                         importschedule(templateData);
+                        refreshStudyPlan();
                         panel.close(); 
                     } catch (err) {
                         console.error(`Failed to process template file: ${file.filepath}`, err);

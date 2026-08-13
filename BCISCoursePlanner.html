@@ -118,7 +118,8 @@ td{
     color: #8a6d1c;
     border-left: 5px solid #e3b022;
 }
-#error-list-container {
+#red-error-list-container {
+    min-height: 120px;
     max-height: 120px;
     overflow-y: auto;
     overflow-x: hidden;
@@ -126,9 +127,23 @@ td{
     background-color: #6e7475;
     border: 1px solid #ccc;
     border-radius: 6px;
-    margin-top: 20px;
+    margin-top: 10px;
     float: left;
-    width: 60%;
+    width: 25%;
+}
+#yellow-error-list-container {
+    min-height: 120px;
+    max-height: 120px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding: 10px;
+    background-color: #6e7475;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    margin-top: 10px;
+    margin-left: 10px;
+    float: left;
+    width: 40%;
 }
 .success-msg {
     color: #3abd3a;
@@ -282,9 +297,9 @@ button {
 }
 .button-grid {
     display: grid;
-    grid-template-columns: repeat(2, 1fr); 
-    gap: 12px; 
-    width: 300px;  
+    grid-template-columns: repeat(3, 1fr); 
+    gap: 10px; 
+    width: 28%;  
     padding: 10px;
 }
 .button-grid button {
@@ -512,7 +527,11 @@ select:hover,button:hover{
         </div>
     </div>
     <div>
-        <div id="error-list-container">
+        <div id="red-error-list-container">
+
+        </div>
+
+        <div id="yellow-error-list-container">
 
         </div>
 
@@ -521,6 +540,7 @@ select:hover,button:hover{
             <div id="ignored-errors-list"></div>
         </div>
     </div>
+
 
     <div class="button-grid">
 
@@ -556,7 +576,7 @@ select:hover,button:hover{
             <button type="button" id="closeTemplates">Close</button>
         </form>
 
-        <div id="templateBtnContainer" style="margin-top: 15px;"></div>
+        <div id="templateBtnContainer" style="margin-top: 15px; display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; "></div>
     </dialog>
 
 

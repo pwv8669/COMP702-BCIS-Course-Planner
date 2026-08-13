@@ -62,8 +62,6 @@ input[type=checkbox]:checked + label:before {
 
 
 .submit:hover {
-
-
      background-color: #fff8f5;
    transform: scale(1.1);
 }
@@ -102,6 +100,20 @@ select {
   cursor:pointer; 
 }
 
+.center-container {
+    display: flex;
+    flex-direction: column;
+    align-items: left;     
+    justify-content: flex-start; 
+    text-align: left;      
+    padding-left: 20px;
+    padding-right: 5px;
+    padding-top: 35px;
+    height: 100%;
+    overflow-y: auto;
+    flex: 1;
+}
+
 
 .center-container {
   display: flex;
@@ -134,7 +146,6 @@ select {
             </select>
             <br></br>
             <form id="MajorMinorPostForm" method="POST" action="./php/editMajor.php">
-                <input name="OriginalCode" type="hidden">
                 <input name="Code" type="text" placeholder="Code" required><br>
                 <input name="Name" type="text" placeholder="Name" required><br><br>
                 <p>Courses: </p>
@@ -150,14 +161,16 @@ select {
 
 
 
-  <!-- Selection Dropdown -->
-   <br>
-  <div for="majortoedit">Choose an option to edit:
-    <!-- This part will be directly modified by selection menu with a list containing all the names
-   of the courses, as well as their indexin optionobjectsstore array (see below) -->
-  <p id="majortoedit" style="margin-top: 0%; "></p></div>
-  </div>
-  </div>
+            <!-- Selection Dropdown -->
+            <br>
+            <div for="majortoedit">
+                Choose an option to edit:
+                <!-- This part will be directly modified by selection menu with a list containing all the names
+            of the courses, as well as their indexin optionobjectsstore array (see below) -->
+                <p id="majortoedit" style="margin-top: 0%; "></p>
+            </div>
+        </div>
+    </div>
 </body>
 <script type="module">
   import {SetupMajorMinorSelections} from "./javascript/SelectionMenu.js";

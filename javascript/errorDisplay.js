@@ -2,7 +2,7 @@ import { validateStudyPlan } from './planValidator.js';
 import { state } from './state.js';
 import { SaveFile } from './filehandler.js';
 
-//Gets the Gets the error list container from the html and the error list from validateStudyPlan() populates it with error messages by calling renderErrors()
+//Gets the error list container from the html and the error list from validateStudyPlan() populates it with error messages by calling renderErrors()
 export function errorDisplay()
 {
     const errors = validateStudyPlan();
@@ -10,15 +10,26 @@ export function errorDisplay()
     //removes all old errors from the list before populating with new ones. This way duplicate errors are not shown
     clearPreviousErrors();
 
-    const errorTextContainer = document.getElementById('error-list-container');
-    if (errorTextContainer) {
-        errorTextContainer.innerHTML = '';
+    const redErrorTextContainer = document.getElementById('red-error-list-container');
+    if (redErrorTextContainer) {
+        redErrorTextContainer.innerHTML = '';
     }
 
+    const yellowErrorTextContainer = document.getElementById('yellow-error-list-container');
+    if (yellowErrorTextContainer) {
+        yellowErrorTextContainer.innerHTML = '';
+    }
     //if there are no errors at all display a success message to the user
     if (!errors || errors.length === 0) {
-        if (errorTextContainer) {
-            errorTextContainer.innerHTML = '<p class="success-msg"> All requirements met!</p>';
+        if (redErrorTextContainer) {
+            redErrorTextContainer.innerHTML = '<p class="success-msg"> All requirements met!</p>';
+        }
+        return errors;
+    }
+
+    if (!errors || errors.length === 0) {
+        if (yellowErrorTextContainer) {
+            yellowErrorTextContainer.innerHTML = '<p class="success-msg"> All requirements met!</p>';
         }
         return errors;
     }
@@ -39,8 +50,10 @@ opens a note creation panel.
 
 */
 function renderErrors(errorList) {
-    const container = document.getElementById("error-list-container");
-    container.innerHTML = "";
+    const redContainer = document.getElementById("red-error-list-container");
+    const yellowContainer = document.getElementById("yellow-error-list-container");
+    redContainer.innerHTML = "";
+    yellowContainer.innerHTML = "";
 
     for (const error of errorList) {
 
@@ -65,7 +78,16 @@ function renderErrors(errorList) {
         `   <span>${error.message}</span>
             <button class="ignore-error-btn">Ignore</button>`;
 
-        container.appendChild(div);
+   
+        if (div.className == "error-text-item red-alert")
+        {
+            redContainer.appendChild(div);
+        } else
+        {
+            yellowContainer.appendChild(div);
+        }
+
+        
 
         //Schedule table highlighting of errors
         if (error.positions) {

@@ -31,25 +31,26 @@
             "COMP610",
             "COMP613",
             "COMP604",
-            "COMP607"
-        ],
-        [
-            "COMP611",
-            "COMP612",
-            "COMP609",
             "ENEL611"
         ],
         [
-            "COMP702",
-            "COMP711",
+            "COMP611",
             "COMP712",
+            "COMP607",
             "COMP715"
         ],
         [
+            "COMP702",
+            "COMP716",
+            "COMP612",
+            "COMP609"
+        ],
+        [
             "COMP703",
+            "COMP711",
             "COMP713",
-            "COMP714",
-            "COMP716"
+            "COMP714"
         ]
-    ]
+    ],
+    "ignoredErrors": []
 }
