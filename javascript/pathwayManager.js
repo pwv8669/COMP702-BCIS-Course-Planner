@@ -21,18 +21,17 @@ export function updatePathwayOptions(pathway)
     }
     
     // Update the selected pathway enum.
-	console.log(`Selected pathway: ${state.selectedPathway.Name}`);
-	// Clear the unused selected majors, minors, and electives based on the selected pathway.
-	if(state.selectedPathway == pathways.doubleMajors){
-		state.selectedMinors = [null, null];
-		state.selectedElectives = [null, null, null, null];
-	} else if (state.selectedPathway == pathways.doubleMinors){
-		state.selectedMajors[1] = null;
-		state.selectedElectives = [null, null, null, null];
-	} else if (state.selectedPathway == pathways.electives){
-		state.selectedMajors[1] = null;
-		state.selectedMinors[1] = null;
-	}
+	console.log(`Selected pathway: ${state.selectedPathway.name}`);
+	// Clear selections that are not used by the selected pathway.
+	state.selectedMajors = state.selectedMajors.map((major, index) =>
+		index < state.selectedPathway.numMajors ? major : null
+	);
+	state.selectedMinors = state.selectedMinors.map((minor, index) =>
+		index < state.selectedPathway.numMinors ? minor : null
+	);
+	state.selectedElectives = state.selectedElectives.map((elective, index) =>
+		index < state.selectedPathway.numElectives ? elective : null
+	);
 
     const pathwayOptionContainer = document.getElementById(`pathwayOptionContainer`);
     // Clear the container before adding new options.
