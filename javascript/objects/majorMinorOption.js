@@ -17,6 +17,8 @@ export class MinorOption {
         this.Code = data.Code;
         this.Name = data.Name;
         this.Requirements = resolveRequirements(data.Requirements, courses);
+        this.IncompatibleMajors = data.IncompatibleMajors ?? [];
+        this.IncompatibleMinors = data.IncompatibleMinors ?? [];
     }
 }
 
