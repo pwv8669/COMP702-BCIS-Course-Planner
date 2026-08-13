@@ -101,7 +101,9 @@ function createMajorDropdowns()
     }
     // Set the value of the major 1 select element to the currently selected major in the state, or '---' if no major is selected.
     addPlaceholderOption(major1);
-    major1.value = state.selectedMajors[0] ?? "";
+    major1.value = state.selectedMajors[0]?.Code
+        ?? state.selectedMajors[0]
+        ?? "";
 
     // Create the second major dropdown when the selected pathway requires it.
     if (state.selectedPathway.numMajors >= 2){
@@ -128,7 +130,9 @@ function createMajorDropdowns()
         }
         // Set the value of the major 2 select element to the currently selected major in the state, or '---' if no major is selected.
         addPlaceholderOption(major2);
-        major2.value = state.selectedMajors[1] ?? "";
+        major2.value = state.selectedMajors[1]?.Code
+            ?? state.selectedMajors[1]
+            ?? "";
     }
 }
 
@@ -161,7 +165,9 @@ function createMinorDropdowns()
         }
         // Set the value of the minor 1 select element to the currently selected minor in the state, or '---' if no minor is selected.
         addPlaceholderOption(minor1);
-        minor1.value = state.selectedMinors[0] ?? "";
+        minor1.value = state.selectedMinors[0]?.Code
+            ?? state.selectedMinors[0]
+            ?? "";
     }
     // Create the second minor dropdown when the selected pathway requires it.
     if (state.selectedPathway.numMinors >= 2)
@@ -189,7 +195,9 @@ function createMinorDropdowns()
         }	
         // Set the value of the minor 2 select element to the currently selected minor in the state, or '---' if no minor is selected.
         addPlaceholderOption(minor2);
-        minor2.value = state.selectedMinors[1] ?? "";
+        minor2.value = state.selectedMinors[1]?.Code
+            ?? state.selectedMinors[1]
+            ?? "";
     }
 }
 
