@@ -1,8 +1,11 @@
 import { validateStudyPlan } from './planValidator.js';
 import { loadPathways } from './objects/pathway.js';
+import { loadMajorOptions, loadMinorOptions } from './objects/majorMinorOption.js';
 import { state } from './state.js';
 
 const pathways = await loadPathways();
+const majorOptions = await loadMajorOptions();
+const minorOptions = await loadMinorOptions();
 
 // Arrays to hold the majors and minors options fetched from the json files. These will be used to populate the dropdowns in the HTML form for selecting majors and minors.
 let majorsArray = [];
@@ -269,16 +272,16 @@ async function applyOptionChange(slot, target)
     switch (slot)
     {
         case 'major1':
-            state.selectedMajors[0] = target;
+            state.selectedMajors[0] = majorOptions[target] ?? null;
             break;
         case 'major2':
-            state.selectedMajors[1] = target;
+            state.selectedMajors[1] = majorOptions[target] ?? null;
             break;
         case 'minor1':
-            state.selectedMinors[0] = target;
+            state.selectedMinors[0] = minorOptions[target] ?? null;
             break;
         case 'minor2':
-            state.selectedMinors[1] = target;
+            state.selectedMinors[1] = minorOptions[target] ?? null;
             break;
         default:
             console.log('Invalid slot type');
