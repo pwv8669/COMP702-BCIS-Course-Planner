@@ -2,7 +2,7 @@ import { validateStudyPlan } from './planValidator.js';
 import { state } from './state.js';
 import { SaveFile } from './filehandler.js';
 
-//Gets the Gets the error list container from the html and the error list from validateStudyPlan() populates it with error messages by calling renderErrors()
+//Gets the error list container from the html and the error list from validateStudyPlan() populates it with error messages by calling renderErrors()
 export function errorDisplay()
 {
     const errors = validateStudyPlan();
@@ -39,8 +39,10 @@ opens a note creation panel.
 
 */
 function renderErrors(errorList) {
-    const container = document.getElementById("error-list-container");
-    container.innerHTML = "";
+    const redContainer = document.getElementById("red-error-list-container");
+    const yellowContainer = document.getElementById("yellow-error-list-container");
+    redContainer.innerHTML = "";
+    yellowContainer.innerHTML = "";
 
     for (const error of errorList) {
 
@@ -65,7 +67,16 @@ function renderErrors(errorList) {
         `   <span>${error.message}</span>
             <button class="ignore-error-btn">Ignore</button>`;
 
-        container.appendChild(div);
+   
+        if (div.className == "error-text-item red-alert")
+        {
+            redContainer.appendChild(div);
+        } else
+        {
+            yellowContainer.appendChild(div);
+        }
+
+        
 
         //Schedule table highlighting of errors
         if (error.positions) {
