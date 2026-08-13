@@ -1,35 +1,40 @@
 import { validateStudyPlan } from './planValidator.js';
-import { state, Pathways } from './state.js';
+import { loadPathways } from './objects/pathway.js';
+import { loadMajorOptions, loadMinorOptions } from './objects/majorMinorOption.js';
+import { state } from './state.js';
+
+const pathways = await loadPathways();
+const majorOptions = await loadMajorOptions();
+const minorOptions = await loadMinorOptions();
 
 // Arrays to hold the majors and minors options fetched from the json files. These will be used to populate the dropdowns in the HTML form for selecting majors and minors.
 let majorsArray = [];
 let minorsArray = [];
 
-export async function updatePathwayOptions(pathway)
+export function updatePathwayOptions(pathway)
 {
     if (pathway){
         // If the user changed the selected pathway in the dropdown, change it in state.
         console.log(pathway);
-        state.selectedPathway = Pathways[pathway];
+        state.selectedPathway = pathways[pathway];
     } else {
         // If they didn't, no argument is passed, so the 'pathway' argument is undefined.
         console.log("Set selected pathway to Double Majors by default.");
-        state.selectedPathway = Pathways.doubleMajors;
+        state.selectedPathway = pathways.doubleMajors;
     }
     
     // Update the selected pathway enum.
-	console.log(`Selected pathway: ${state.selectedPathway}`);
-	// Clear the unused selected majors, minors, and electives based on the selected pathway.
-	if(state.selectedPathway == Pathways.doubleMajors){
-		state.selectedMinors = [null, null];
-		state.selectedElectives = [null, null, null, null];
-	} else if (state.selectedPathway == Pathways.doubleMinors){
-		state.selectedMajors[1] = null;
-		state.selectedElectives = [null, null, null, null];
-	} else if (state.selectedPathway == Pathways.electives){
-		state.selectedMajors[1] = null;
-		state.selectedMinors[1] = null;
-	}
+	console.log(`Selected pathway: ${state.selectedPathway.name}`);
+	// Clear selections that are not used by the selected pathway.
+	state.selectedMajors = state.selectedMajors.map((major, index) =>
+		index < state.selectedPathway.numMajors ? major : null
+	);
+	state.selectedMinors = state.selectedMinors.map((minor, index) =>
+		index < state.selectedPathway.numMinors ? minor : null
+	);
+	state.selectedElectives = state.selectedElectives.map((elective, index) =>
+		index < state.selectedPathway.numElectives ? elective : null
+	);
 
     const pathwayOptionContainer = document.getElementById(`pathwayOptionContainer`);
     // Clear the container before adding new options.
@@ -40,7 +45,7 @@ export async function updatePathwayOptions(pathway)
     createMinorDropdowns();
 
     // If the selected pathway does not match any of the defined pathways, log an error message to the console.
-    if (state.selectedPathway != Pathways.doubleMajors && state.selectedPathway != Pathways.doubleMinors && state.selectedPathway != Pathways.electives)
+    if (state.selectedPathway != pathways.doubleMajors && state.selectedPathway != pathways.doubleMinors && state.selectedPathway != pathways.electives)
     {
         console.log(`Could not update pathway options because of invalid pathway selection: ${state.selectedPathway}`);
     }
@@ -66,10 +71,14 @@ export async function initPathwayOptions()
     updatePathwayOptions();
 }
 
-// This function creates the major dropdowns in the HTML form based on the selected pathway. If the selected pathway is double majors, it creates two major dropdowns. If the selected pathway is double minors or electives, it creates one major dropdown. It also adds event listeners to the dropdowns to handle changes and validate the selected options.
+// This function creates the number of major dropdowns required by the selected pathway. It also adds event listeners to the dropdowns to handle changes and validate the selected options.
 function createMajorDropdowns()
 {
-    // Major 1 is always present regardless of the pathway, so we create it first.
+    if (state.selectedPathway.numMajors < 1)
+    {
+        return;
+    }
+
     // Create the major 1 select element.
     const major1Label = document.createElement('label');
     major1Label.textContent = 'Major 1: ';
@@ -92,10 +101,12 @@ function createMajorDropdowns()
     }
     // Set the value of the major 1 select element to the currently selected major in the state, or '---' if no major is selected.
     addPlaceholderOption(major1);
-    major1.value = state.selectedMajors[0] ?? "";
+    major1.value = state.selectedMajors[0]?.Code
+        ?? state.selectedMajors[0]
+        ?? "";
 
-    // If the selected pathway is double majors, we create the major 2 select element as well.
-    if (state.selectedPathway == Pathways.doubleMajors){
+    // Create the second major dropdown when the selected pathway requires it.
+    if (state.selectedPathway.numMajors >= 2){
         // Create the major 2 select element.
         const major2Label = document.createElement('label');
         major2Label.textContent = 'Major 2: ';
@@ -119,15 +130,17 @@ function createMajorDropdowns()
         }
         // Set the value of the major 2 select element to the currently selected major in the state, or '---' if no major is selected.
         addPlaceholderOption(major2);
-        major2.value = state.selectedMajors[1] ?? "";
+        major2.value = state.selectedMajors[1]?.Code
+            ?? state.selectedMajors[1]
+            ?? "";
     }
 }
 
-// This function creates the minor dropdowns in the HTML form based on the selected pathway. If the selected pathway is double minors, it creates two minor dropdowns. If the selected pathway is electives, it creates one minor dropdown. It also adds event listeners to the dropdowns to handle changes and validate the selected options.
+// This function creates the number of minor dropdowns required by the selected pathway. It also adds event listeners to the dropdowns to handle changes and validate the selected options.
 function createMinorDropdowns()
 {
-    // If the selected pathway is double minors or electives, we create the minor 1 select element.
-    if (state.selectedPathway == Pathways.doubleMinors || state.selectedPathway == Pathways.electives)
+    // Create the first minor dropdown when the selected pathway requires it.
+    if (state.selectedPathway.numMinors >= 1)
     {
         // Create the minor 1 select element.
         const minor1Label = document.createElement('label');
@@ -152,10 +165,12 @@ function createMinorDropdowns()
         }
         // Set the value of the minor 1 select element to the currently selected minor in the state, or '---' if no minor is selected.
         addPlaceholderOption(minor1);
-        minor1.value = state.selectedMinors[0] ?? "";
+        minor1.value = state.selectedMinors[0]?.Code
+            ?? state.selectedMinors[0]
+            ?? "";
     }
-    // If the selected pathway is double minors, we create the minor 2 select element as well.
-    if (state.selectedPathway == Pathways.doubleMinors)
+    // Create the second minor dropdown when the selected pathway requires it.
+    if (state.selectedPathway.numMinors >= 2)
     {
         // Create the minor 2 select element.
         const minor2Label = document.createElement('label');
@@ -180,7 +195,9 @@ function createMinorDropdowns()
         }	
         // Set the value of the minor 2 select element to the currently selected minor in the state, or '---' if no minor is selected.
         addPlaceholderOption(minor2);
-        minor2.value = state.selectedMinors[1] ?? "";
+        minor2.value = state.selectedMinors[1]?.Code
+            ?? state.selectedMinors[1]
+            ?? "";
     }
 }
 
@@ -194,8 +211,19 @@ async function checkValidOptionChange(self, slot, target)
         return;
     }
 
+    // Compare the option code because selected majors/minors may be stored as objects.
+    // The string fallback keeps selections imported from older templates compatible.
+    const selectedCodes = [
+        ...state.selectedMajors,
+        ...state.selectedMinors
+    ]
+        .filter(Boolean)
+        .map(option =>
+            typeof option === 'string' ? option : option.Code
+        );
+
     // Check if the selected option is already selected in another slot. If it is, alert the user and reset the select element to '---'.
-    if (state.selectedMajors.includes(target) || state.selectedMinors.includes(target))
+    if (selectedCodes.includes(target))
     {
         alert(`You cannot take the same major/minor twice.`);
         self.value = "";
@@ -221,8 +249,14 @@ function findIncompatibility(slot, target)
     const selectedOption = (selectingMajor ? majorsArray : minorsArray)
         .find(option => option.Code === target);
     const existingOptions = [
-        ...state.selectedMajors.map(code => ({ code, isMajor: true })),
-        ...state.selectedMinors.map(code => ({ code, isMajor: false }))
+    ...state.selectedMajors.map(option => ({
+        code: typeof option === 'string' ? option : option?.Code,
+        isMajor: true
+    })),
+    ...state.selectedMinors.map(option => ({
+        code: typeof option === 'string' ? option : option?.Code,
+        isMajor: false
+    }))
     ].filter(option => option.code);
 
     for (const existing of existingOptions)
@@ -263,16 +297,16 @@ async function applyOptionChange(slot, target)
     switch (slot)
     {
         case 'major1':
-            state.selectedMajors[0] = target;
+            state.selectedMajors[0] = majorOptions[target] ?? null;
             break;
         case 'major2':
-            state.selectedMajors[1] = target;
+            state.selectedMajors[1] = majorOptions[target] ?? null;
             break;
         case 'minor1':
-            state.selectedMinors[0] = target;
+            state.selectedMinors[0] = minorOptions[target] ?? null;
             break;
         case 'minor2':
-            state.selectedMinors[1] = target;
+            state.selectedMinors[1] = minorOptions[target] ?? null;
             break;
         default:
             console.log('Invalid slot type');
