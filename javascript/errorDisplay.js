@@ -1,6 +1,5 @@
 import { validateStudyPlan } from './planValidator.js';
 import { state } from './state.js';
-import { SaveFile } from './filehandler.js';
 
 //Gets the error list container from the html and the error list from validateStudyPlan() populates it with error messages by calling renderErrors()
 export function errorDisplay()
