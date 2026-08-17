@@ -29,11 +29,6 @@ input,textarea {
   text-align: left;   
 }
 
-
-
-
-
-
 /* input styling */
 input[type="checkbox"] {
     display: none;
@@ -58,15 +53,10 @@ input[type=checkbox]:checked + label:before {
   color: #BD6FC1;
 }
 
-
-
-
 .submit:hover {
      background-color: #fff8f5;
    transform: scale(1.1);
 }
-
-
 
 .submit {
   cursor:pointer;
@@ -84,7 +74,6 @@ input[type=checkbox]:checked + label:before {
  transform: scale(1);
    transition: background-color .2s, transform .2s;
 }
-
 
 select {
     color: #ffffff;
@@ -113,7 +102,6 @@ select {
     overflow-y: auto;
     flex: 1;
 }
-
 
 .center-container {
   display: flex;
@@ -148,6 +136,7 @@ select {
             <form id="MajorMinorPostForm" method="POST" action="./php/editMajor.php">
                 <input name="Code" type="text" placeholder="Code" required><br>
                 <input name="Name" type="text" placeholder="Name" required><br><br>
+                <input name="OriginalCode" type="hidden">
                 <p>Courses: </p>
                 <textarea style="field-sizing: content;resize: vertical;" name="Courses" type="text" placeholder="e.g. MATH503 AND (COMP603 OR COMP610)">
 </textarea><br>
