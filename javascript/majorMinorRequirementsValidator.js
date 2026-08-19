@@ -1,12 +1,8 @@
-import { loadPathways } from "./objects/pathway.js";
-import { loadMajorOptions, loadMinorOptions } from "./objects/majorMinorOption.js";
-
 import { state } from "./state.js";
+import { loadMajorOptions } from "./objects/majorMinorOption.js";
 import { PlanError } from './objects/planError.js';
 
-const pathways = await loadPathways();
 const majorOptions = await loadMajorOptions();
-const minorOptions = await loadMinorOptions();
 
 var errors = [];
 const attributedCourses = new Map();
@@ -14,6 +10,15 @@ const coursePlanCourses = new Set();
 const requiredCourseOverlaps = new Map();
 const chooseNSubstitutions = [];
 let selectedOptions = [];
+
+function isDoubleMajorPathway() {
+    const pathway = state.selectedPathway;
+
+    return pathway === "doubleMajors" || (
+        pathway?.numMajors === 2 &&
+        pathway?.numMinors === 0
+    );
+}
 
 export function validateMajorMinorRequirements(){
     // Clear the errors course sets before validating.
@@ -31,7 +36,7 @@ export function validateMajorMinorRequirements(){
 	}
 
     // Derive the json data for the selected pathway in order to determine the number of majors and minors required.
-    const pathway = pathways[state.selectedPathway];
+    const pathway = state.selectedPathway;
 
     if(!pathway) {
         let message = "No valid pathway is selected.";
@@ -63,12 +68,12 @@ export function validateMajorMinorRequirements(){
     selectedOptions = [];
     for (let i = 0; i < pathway.numMajors; i++) {
         if (state.selectedMajors[i]) {
-            selectedOptions.push(majorOptions[state.selectedMajors[i]]);
+            selectedOptions.push(state.selectedMajors[i]);
         }
     }
     for (let i = 0; i < pathway.numMinors; i++) {
         if (state.selectedMinors[i]) {
-            selectedOptions.push(minorOptions[state.selectedMinors[i]]);
+            selectedOptions.push(state.selectedMinors[i]);
         }
     }
 
@@ -79,14 +84,14 @@ export function validateMajorMinorRequirements(){
     for (let i = 0; i < pathway.numMajors; i++) {
         if (state.selectedMajors[i]) {
             attributeRequiredCourses(
-                majorOptions[state.selectedMajors[i]]
+                state.selectedMajors[i]
             );
         }
     }
     for (let i = 0; i < pathway.numMinors; i++) {
         if (state.selectedMinors[i]) {
             attributeRequiredCourses(
-                minorOptions[state.selectedMinors[i]]
+                state.selectedMinors[i]
             );
         }
     }
@@ -95,14 +100,14 @@ export function validateMajorMinorRequirements(){
     for (let i = 0; i < pathway.numMajors; i++) {
         if (state.selectedMajors[i]) {
             attributeChooseNCourses(
-                majorOptions[state.selectedMajors[i]]
+                state.selectedMajors[i]
             );
         }
     }
     for (let i = 0; i < pathway.numMinors; i++) {
         if (state.selectedMinors[i]) {
             attributeChooseNCourses(
-                minorOptions[state.selectedMinors[i]]
+                state.selectedMinors[i]
             );
         }
     }
@@ -356,7 +361,7 @@ function getRequiredSubstitutionCandidates(substitution) {
         unfulfilledOption
     );
     const canUseUnrestrictedSubstitute =
-        state.selectedPathway === "doubleMajors" &&
+        isDoubleMajorPathway() &&
         requiredCourseOverlaps.size <= 2;
     const possibleCourses = canUseUnrestrictedSubstitute
         ? getCourseObjectsFromPlan()
@@ -386,7 +391,7 @@ function getChooseNSubstitutionCandidates(
     totalSubstitutions
 ) {
     const isUnrestrictedDoubleMajorSubstitution =
-        state.selectedPathway === "doubleMajors" &&
+        isDoubleMajorPathway() &&
         totalSubstitutions <= 2;
     const minimumLevel = Math.min(
         ...substitution.requirement.Courses.map(

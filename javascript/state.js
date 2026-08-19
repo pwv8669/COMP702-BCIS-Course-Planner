@@ -1,10 +1,3 @@
-// Define the pathways available in the course planner.
-export const Pathways = {
-    doubleMajors: 'doubleMajors',
-    doubleMinors: 'doubleMinors',
-    electives: 'electives'
-};
-
 // Define the state of the application.
 export const state = {
     // The course plan is a 2D array representing the courses selected for each semester (6 semesters, 4 courses per semester).

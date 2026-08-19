@@ -5,22 +5,39 @@
         "Requirements": [
             {
                 "Type": "Required",
-                "Courses": ["COMP517"]
+                "Courses": [
+                    "COMP517"
+                ]
             },
             {
                 "Type": "ChooseN",
                 "Count": 1,
-                "Courses": ["COMP610", "COMP613", "COMP615"]
+                "Courses": [
+                    "COMP610",
+                    "COMP613",
+                    "COMP615"
+                ]
             },
             {
                 "Type": "ChooseN",
                 "Count": 1,
-                "Courses": ["COMP700", "COMP701"]
+                "Courses": [
+                    "COMP700",
+                    "COMP701"
+                ]
             },
             {
                 "Type": "Required",
-                "Courses": ["COMP717"]
+                "Courses": [
+                    "COMP717"
+                ]
             }
+        ],
+        "IncompatibleMajors": [
+            "DataScience"
+        ],
+        "IncompatibleMinors": [
+            "DataScience"
         ]
     },
     "ComputerScience": {
@@ -29,19 +46,33 @@
         "Requirements": [
             {
                 "Type": "Required",
-                "Courses": ["COMP503"]
+                "Courses": [
+                    "COMP503"
+                ]
             },
             {
                 "Type": "ChooseN",
                 "Count": 2,
-                "Courses": ["COMP610", "COMP611", "COMP612", "COMP613"]
+                "Courses": [
+                    "COMP610",
+                    "COMP611",
+                    "COMP612",
+                    "COMP613"
+                ]
             },
             {
                 "Type": "ChooseN",
                 "Count": 1,
-                "Courses": ["COMP711", "COMP712", "COMP713", "COMP719"]
+                "Courses": [
+                    "COMP711",
+                    "COMP712",
+                    "COMP713",
+                    "COMP719"
+                ]
             }
-        ]
+        ],
+        "IncompatibleMajors": [],
+        "IncompatibleMinors": []
     },
     "DataScience": {
         "Code": "DataScience",
@@ -49,18 +80,35 @@
         "Requirements": [
             {
                 "Type": "Required",
-                "Courses": ["COMP517"]
+                "Courses": [
+                    "COMP517"
+                ]
             },
             {
                 "Type": "ChooseN",
                 "Count": 2,
-                "Courses": ["COMP610", "COMP613", "COMP615", "COMP616", "STAT603"]
+                "Courses": [
+                    "COMP610",
+                    "COMP613",
+                    "COMP615",
+                    "COMP616",
+                    "STAT603"
+                ]
             },
             {
                 "Type": "ChooseN",
                 "Count": 1,
-                "Courses": ["COMP700", "COMP701", "COMP717", "COMP723"]
+                "Courses": [
+                    "COMP700",
+                    "COMP701",
+                    "COMP717",
+                    "COMP723"
+                ]
             }
+        ],
+        "IncompatibleMajors": [],
+        "IncompatibleMinors": [
+            "ArtificialIntelligence"
         ]
     },
     "DigitalServices": {
@@ -69,19 +117,34 @@
         "Requirements": [
             {
                 "Type": "Required",
-                "Courses": ["INFS502"]
+                "Courses": [
+                    "INFS502"
+                ]
             },
             {
                 "Type": "ChooseN",
                 "Count": 2,
-                "Courses": ["COMP603", "COMP607", "INFS603", "INFS604", "INFS605"]
+                "Courses": [
+                    "COMP603",
+                    "COMP607",
+                    "INFS603",
+                    "INFS604",
+                    "INFS605"
+                ]
             },
             {
                 "Type": "ChooseN",
                 "Count": 1,
-                "Courses": ["COMP718", "COMP726", "COMP728", "INFS704"]
+                "Courses": [
+                    "COMP718",
+                    "COMP726",
+                    "COMP728",
+                    "INFS704"
+                ]
             }
-        ]
+        ],
+        "IncompatibleMajors": [],
+        "IncompatibleMinors": []
     },
     "NetworksAndCybersecurity": {
         "Code": "NetworksAndCybersecurity",
@@ -89,19 +152,34 @@
         "Requirements": [
             {
                 "Type": "Required",
-                "Courses": ["COMP504"]
+                "Courses": [
+                    "COMP504"
+                ]
             },
             {
                 "Type": "ChooseN",
                 "Count": 2,
-                "Courses": ["COMP604", "COMP607", "COMP609", "ENEL611"]
+                "Courses": [
+                    "COMP604",
+                    "COMP607",
+                    "COMP609",
+                    "ENEL611"
+                ]
             },
-             {
+            {
                 "Type": "ChooseN",
                 "Count": 1,
-                "Courses": ["COMP714", "COMP729", "COMP715", "COMP716", "COMP718"]
+                "Courses": [
+                    "COMP714",
+                    "COMP729",
+                    "COMP715",
+                    "COMP716",
+                    "COMP718"
+                ]
             }
-        ]
+        ],
+        "IncompatibleMajors": [],
+        "IncompatibleMinors": []
     },
     "SoftwareDevelopment": {
         "Code": "SoftwareDevelopment",
@@ -109,18 +187,34 @@
         "Requirements": [
             {
                 "Type": "Required",
-                "Courses": ["COMP503"]
+                "Courses": [
+                    "COMP503"
+                ]
             },
             {
                 "Type": "ChooseN",
                 "Count": 2,
-                "Courses": ["COMP602", "COMP603", "COMP604", "COMP611", "COMP610"]
+                "Courses": [
+                    "COMP602",
+                    "COMP603",
+                    "COMP604",
+                    "COMP611",
+                    "COMP610"
+                ]
             },
             {
                 "Type": "ChooseN",
                 "Count": 1,
-                "Courses": ["COMP705", "ENSE707", "COMP713", "COMP721", "COMP719"]
+                "Courses": [
+                    "COMP705",
+                    "ENSE707",
+                    "COMP713",
+                    "COMP721",
+                    "COMP719"
+                ]
             }
-        ]
+        ],
+        "IncompatibleMajors": [],
+        "IncompatibleMinors": []
     }
 }

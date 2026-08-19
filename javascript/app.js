@@ -1,5 +1,5 @@
 // Importing the state object from the state.js file which contains the coursePlan array. This allows us to manipulate the course plan data from this file globally.
-import { state, Pathways } from './state.js';
+import { state } from './state.js';
 import { loadCourses } from "./courseObjectConverter.js";
 import { validateStudyPlan } from './planValidator.js';
 import { renderCoursePlan } from './renderCoursePlan.js';
@@ -38,7 +38,7 @@ async function init() {
 	})
 	
 	await refreshStudyPlan();
-	await initPathwayOptions(state, Pathways);
+	await initPathwayOptions();
 }
 
 

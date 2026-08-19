@@ -1,13 +1,12 @@
 import { initDragAndDrop } from './dragAndDropController.js';
 import { refreshStudyPlan } from './app.js';
 import { state } from './state.js';
-import { loadMajorOptions, loadMinorOptions } from "./objects/majorMinorOption.js";
 
 /**
  * Generates collapsible lists from instantiated Course objects
  * @param {Object} coursesMap - Object mapping course codes to Course instances
  */
-export async function generateDynamicCourseList(courses) {
+export function generateDynamicCourseList(courses) {
 
     const sidebar = document.getElementById('dynamic-course-sidebar');
     if (!sidebar) {
@@ -40,13 +39,10 @@ export async function generateDynamicCourseList(courses) {
     });
 
     //Major minor storage as the only courses to be shown in the level based accordions should be in the selected major/minor
-    const majorCourses = await loadMajorOptions();
-    const minorCourses = await loadMinorOptions();
     const coreCourses = ["COMP500","COMP501","COMP508","MATH503","COMP507","DIGD507","COMP702","COMP703"]; //temporarily hard coded 
     const allowedCourses = [];
    
-    state.selectedMajors.forEach(majorName => {
-        const major = majorCourses[majorName];
+    state.selectedMajors.forEach(major => {
         if (major && major.Requirements) {
             major.Requirements.forEach(req => {
                 req.Courses.forEach(courseObj => {
@@ -56,8 +52,7 @@ export async function generateDynamicCourseList(courses) {
         }
     });
 
-    state.selectedMinors.forEach(minorName => {
-        const minor = minorCourses[minorName];
+    state.selectedMinors.forEach(minor => {
         if (minor && minor.Requirements) {
             minor.Requirements.forEach(req => {
                 req.Courses.forEach(courseObj => {

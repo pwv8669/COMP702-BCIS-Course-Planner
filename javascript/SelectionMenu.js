@@ -6,7 +6,7 @@ import { state } from './state.js';
 export async function SetupSelections()
 {
 	try{
-		const coursesData = await fetch('json/courses.json');//open file
+		const coursesData = await fetch('json/courses.json', { cache: 'no-store' });//open file
 		const courses = await coursesData.json();
 		
 		let text = "<select id=\"courseselectionedit\" onchange=\"setInput()\">"//this will be the 
@@ -40,9 +40,9 @@ export async function SetupMajorMinorSelections()
 	else{
 		majorminor = "Major";
 	}
-	let optionsData  = await fetch('json/majors.json');
+	let optionsData  = await fetch('json/majors.json', { cache: 'no-store' });
 	if(majorminor == "Minor"){
-			optionsData = await fetch('json/minors.json');//open file
+			optionsData = await fetch('json/minors.json', { cache: 'no-store' });//open file
 	}
 	const options = await optionsData.json();
 	console.log(options);

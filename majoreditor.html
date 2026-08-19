@@ -9,10 +9,12 @@ body{
   color: #ffffff;
   font-family: 'Trebuchet MS'; 
   font-weight: bolder;
-  background-color: #f4eee5;
+  background-color: #373537;
+  margin:0;
+  height: 100%;
 }
 div{
-  background-color: #6eacc4;
+  background-color: #652d7c;
 }
 input,textarea {
   color: #fcfbfa;
@@ -20,7 +22,7 @@ input,textarea {
   font-weight: bolder;
   border-radius: 1px;
   border:0px;
-  background-color: #5c93ab;
+  background-color: #743b76;
   font-size: 20px;
   padding:10px;
   width:80%;
@@ -36,6 +38,10 @@ input,textarea {
 input[type="checkbox"] {
     display: none;
 }
+#IsCoreRow input[type="checkbox"] {
+    display: inline-block;
+    width: auto;
+}
 .checkbox label:before {
   border-radius: 3px;
 }
@@ -49,15 +55,13 @@ input[type=checkbox]:checked + label:before {
 }
 
 ::placeholder {
-  color: #475d7a;
+  color: #BD6FC1;
 }
 
 
 
 
 .submit:hover {
-
-
      background-color: #fff8f5;
    transform: scale(1.1);
 }
@@ -74,7 +78,7 @@ input[type=checkbox]:checked + label:before {
   align-content: center;
   border:0px; 
   width:20%;
-  background-color: #73c0e1;
+  background-color: #BD6FC1;
   font-size: 20px;
   padding:12px;
  transform: scale(1);
@@ -90,13 +94,38 @@ select {
   align-content: center;
   border:0px;
   width:40%;
-  background-color: #639db5;
+  background-color: #743b76;
   font-size: 20px;
   padding:12px;
   cursor:pointer; 
 }
 
+.center-container {
+    display: flex;
+    flex-direction: column;
+    align-items: left;     
+    justify-content: flex-start; 
+    text-align: left;      
+    padding-left: 20px;
+    padding-right: 5px;
+    padding-top: 35px;
+    height: 100%;
+    overflow-y: auto;
+    flex: 1;
+}
 
+
+.center-container {
+  display: flex;
+  flex-direction: column;
+  align-items: left;
+  justify-content: flex-start;
+  text-align: left;
+  padding: 35px 5px 0 20px;
+  height: 100%;
+  overflow-y: auto;
+  flex: 1;
+}
 </style>
 
 
@@ -106,36 +135,42 @@ select {
 </head>
 <title>BCIS Major/Minor Editor</title>
 <body>
-  <div style="width: 45%; padding-bottom: 2px;padding-top: 0.5px;padding-left: 1%;">
-  <h1>BCIS Major/Minor Editor</h1>
+    <div style="display: flex; flex-direction: column; position: relative; height: 100vh; width: 70%; margin-left: auto;  margin-right: auto; background-color: #b063c3">
+        <div class="center-container" style=" width: 70%; margin-left: auto; margin-right: auto;">
+            <h1 style="margin-top: 0; width: 100%;">BCIS Major/Minor Editor</h1>
 
-      <label>Major or Minor:</label>
- <select id="MajorMinorSelection" onchange = "SetupMajorMinorSelections()">
-  <option>Major</option>
-  <option>Minor</option>
-  </select>
-<br></br>
-  <form id="MajorMinorPostForm" method="POST" action="./php/editMajor.php">
-    <input name="Code" type="text" placeholder="Code" required><br>
-    <input name="Name" type="text" placeholder="Name" required><br><br>
-<p>Courses: </p>
-  <textarea style="field-sizing: content;resize: vertical;" name="Courses" type="text" placeholder="e.g. MATH503 AND (COMP603 OR COMP610)">
+            <label>Major or Minor:</label><br>
+            <select id="MajorMinorSelection" onchange="SetupMajorMinorSelections()" style="margin-top: 10px;">
+                <option>Major</option>
+                <option>Minor</option>
+            </select>
+            <br></br>
+            <form id="MajorMinorPostForm" method="POST" action="./php/editMajor.php">
+                <input name="Code" type="text" placeholder="Code" required><br>
+                <input name="Name" type="text" placeholder="Name" required><br><br>
+                <p>Courses: </p>
+                <textarea style="field-sizing: content;resize: vertical;" name="Courses" type="text" placeholder="e.g. MATH503 AND (COMP603 OR COMP610)">
 </textarea><br>
-   
-   <br>
-    <input class="submit" type="submit" value="Edit Option">
-  </form>
+                <input name="IncompatibleMajors" type="text" placeholder="Incompatible major codes (comma-separated)"><br>
+                <input name="IncompatibleMinors" type="text" placeholder="Incompatible minor codes (comma-separated)"><br>
+                <label id="IsCoreRow"><input name="IsCore" type="checkbox" value="1"> Core option</label><br>
+                <br>
+                <input class="submit" type="submit" value="Edit Option" style="width: 130px">
+            </form>
 
 
 
 
-  <!-- Selection Dropdown -->
-   <br>
-  <div for="majortoedit">Choose an option to edit:
-    <!-- This part will be directly modified by selection menu with a list containing all the names
-   of the courses, as well as their indexin optionobjectsstore array (see below) -->
-  <p id="majortoedit" style="margin-top: 0%; "></p></div>
-  </div>
+            <!-- Selection Dropdown -->
+            <br>
+            <div for="majortoedit">
+                Choose an option to edit:
+                <!-- This part will be directly modified by selection menu with a list containing all the names
+            of the courses, as well as their indexin optionobjectsstore array (see below) -->
+                <p id="majortoedit" style="margin-top: 0%; "></p>
+            </div>
+        </div>
+    </div>
 </body>
 <script type="module">
   import {SetupMajorMinorSelections} from "./javascript/SelectionMenu.js";
@@ -148,9 +183,15 @@ select {
       //console.log("setposttominor");
     }
     SetupMajorMinorSelections();
-     document.getElementsByName("Code")[0].value = "";//reset
+      document.getElementsByName("Code")[0].value = "";//reset
+      document.getElementsByName("OriginalCode")[0].value = "";
       document.getElementsByName("Name")[0].value = "";
       document.getElementsByName("Courses")[0].value = "";
+      document.getElementsByName("IncompatibleMajors")[0].value = "";
+      document.getElementsByName("IncompatibleMinors")[0].value = "";
+      document.getElementsByName("IsCore")[0].checked = false;
+      document.getElementById("IsCoreRow").style.display =
+        document.getElementById("MajorMinorSelection").value == "Major" ? "block" : "none";
     
   }
   console.log(document.getElementById("MajorMinorSelection").onchange = testfunc);
@@ -166,7 +207,11 @@ let optionobjectsstore = [];//this is the array that will hold the objects for t
         //replace with their respective information
         console.log(optionobjectsstore[x]);
         document.getElementsByName("Code")[0].value = optionobjectsstore[x].Code;
+        document.getElementsByName("OriginalCode")[0].value = optionobjectsstore[x].Code;
         document.getElementsByName("Name")[0].value = optionobjectsstore[x].Name;
+        document.getElementsByName("IncompatibleMajors")[0].value = (optionobjectsstore[x].IncompatibleMajors ?? []).join(", ");
+        document.getElementsByName("IncompatibleMinors")[0].value = (optionobjectsstore[x].IncompatibleMinors ?? []).join(", ");
+        document.getElementsByName("IsCore")[0].checked = optionobjectsstore[x].IsCore === true;
        
 
         //creating the text for the courses
@@ -201,8 +246,12 @@ let optionobjectsstore = [];//this is the array that will hold the objects for t
       }
       else{//if its the null selection
          document.getElementsByName("Code")[0].value = "";//reset
+      document.getElementsByName("OriginalCode")[0].value = "";
       document.getElementsByName("Name")[0].value = "";
       document.getElementsByName("Courses")[0].value = "";
+      document.getElementsByName("IncompatibleMajors")[0].value = "";
+      document.getElementsByName("IncompatibleMinors")[0].value = "";
+      document.getElementsByName("IsCore")[0].checked = false;
       }
      
     }
