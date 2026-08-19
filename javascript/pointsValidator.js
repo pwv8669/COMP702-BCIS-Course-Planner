@@ -26,7 +26,7 @@ export function validatePoints()
         }
     }
 
-    const pathway = pathways[state.selectedPathway];
+    const pathway = state.selectedPathway;
 
     if(!pathway) {
         let message = "No valid pathway is selected, cannot validate points.";
