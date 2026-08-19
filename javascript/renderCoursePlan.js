@@ -75,14 +75,22 @@ export async function renderCoursePlan(state) {
                 
             `;
 
-            if(prereqText != "No prerequisites"){
+            if(prereqText != "No prerequisites" || coreqText != "No prerequisites" ){
                   cell.innerHTML += `<button class="prereq-btn" data-html2canvas-ignore="true">
                         Show reqs
-                    </button>
+                    </button>`
+                    if(prereqText != "No prerequisites"){
+                        cell.innerHTML +=`<div class="prereq-list" style="display:none;">
+                            Prerequisites: ${prereqText}
+                        </div>`;
+                    }
 
-                    <div class="prereq-list" style="display:none;">
-                        ${prereqText}
-                    </div>`;
+                    if(coreqText != "No prerequisites"){
+                        cell.innerHTML +=`<div class="prereq-list" style="display:none;">
+                            Corequisites: ${coreqText}
+                        </div>`;
+                    }
+                    
             }
 
             cell.innerHTML += `</div>`;
