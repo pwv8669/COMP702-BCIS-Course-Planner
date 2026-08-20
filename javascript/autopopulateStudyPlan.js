@@ -8,7 +8,7 @@ import { refreshStudyPlan } from './app.js';
 import { state } from './state.js';
 import { loadMajorOptions } from "./objects/majorMinorOption.js";
 import { evaluatePrerequisiteTree } from './prerequisiteValidator.js';
-import { loadCourses } from './courseObjectConverter.js';
+import { loadCourses, NodeType } from './courseObjectConverter.js';
 
 // Global consts ---------- //
 const coursesObject = await loadCourses();
@@ -23,12 +23,13 @@ function isDoubleMajorPathway() {
     );
 }
 
-// Map to track how many substitutes are required for each course.
-// Courses must be substituted when 2+ majors/minors require the same course.
-// Key: course.code, Value: Number of substitutions required.
-const coursesToSubstitute = new Map();
+// Track the option which first receives each required course and every later
+// option whose identical requirement must be fulfilled by a substitute.
+const requiredCourseOwners = new Map();
+const requiredCourseSubstitutions = [];
 
 const chooseNSubstitutions = [];
+const MAX_UNRESTRICTED_DOUBLE_MAJOR_SUBSTITUTION_POINTS = 30;
 
 /*
  * Course data and semester rules are static for the lifetime of the page, so
@@ -37,6 +38,7 @@ const chooseNSubstitutions = [];
  * requirement-choice paths.
  */
 const scheduleCache = new Map();
+const effectivePrerequisiteTreeCache = new WeakMap();
 
 // Rigging event listener to button that triggers autopopulation
 const button = document.getElementById('AutocompletePlanButton');
@@ -67,7 +69,8 @@ export function generateStudyPlan() {
     }
 
     // Wipes the substitution list, as it should not contain leftover data.
-    coursesToSubstitute.clear();
+    requiredCourseOwners.clear();
+    requiredCourseSubstitutions.length = 0;
     chooseNSubstitutions.length = 0;
 
     // Builds a list of courses, if it could not build a valid study plan, it fails.
@@ -113,54 +116,59 @@ function addCoreCourses(selectedCourses) {
         for (const course of requirement.Courses) {
             if (selectedCourses.has(course.code)) continue;
             selectedCourses.set(course.code, course);
+            requiredCourseOwners.set(course.code, core);
         }
     }
 }
 
-// Adds only the required courses to the selectedCourses map.
-// If there are overlaps, it adds the course to corsesToSubstitute so that we can revisit it.
+// Adds required courses in the same core-major-minor order as the requirements
+// validator and records both options involved in every overlap.
 function addRequiredCourses(selectedCourses) {
     const selectedPathway = state.selectedPathway;
+
     // Add major required courses
     for (let i = 0; i < selectedPathway.numMajors; i++) {
         const major = state.selectedMajors[i];
-        if (!major) continue; 
-        
-        for (const requirement of major.Requirements) {
-            if (requirement.Type !== "Required") continue;
-            
-            for (const course of requirement.Courses) {
-                if (selectedCourses.has(course.code)) {
-                    if (!coursesToSubstitute.has(course.code)) {
-                        coursesToSubstitute.set(course.code, 0);
-                    }
+        if (!major) continue;
 
-                    coursesToSubstitute.set(course.code, coursesToSubstitute.get(course.code) + 1);
-                    continue;
-                }
-                selectedCourses.set(course.code, course);
-            }
-        }
+        addRequiredCoursesFromOption(
+            major,
+            selectedCourses
+        );
     }
+
     // Add minor required courses
     for (let i = 0; i < selectedPathway.numMinors; i++) {
         const minor = state.selectedMinors[i];
-        if (!minor) continue; 
+        if (!minor) continue;
 
-        for (const requirement of minor.Requirements) {
-            if (requirement.Type !== "Required") continue;
-            
-            for (const course of requirement.Courses) {
-                if (selectedCourses.has(course.code)) {
-                    if (!coursesToSubstitute.has(course.code)) {
-                        coursesToSubstitute.set(course.code, 0);
-                    }
+        addRequiredCoursesFromOption(
+            minor,
+            selectedCourses
+        );
+    }
+}
 
-                    coursesToSubstitute.set(course.code, coursesToSubstitute.get(course.code) + 1);
-                    continue;
-                }
-                selectedCourses.set(course.code, course);
+function addRequiredCoursesFromOption(
+    option,
+    selectedCourses
+) {
+    for (const requirement of option.Requirements) {
+        if (requirement.Type !== "Required") continue;
+
+        for (const course of requirement.Courses) {
+            if (selectedCourses.has(course.code)) {
+                requiredCourseSubstitutions.push({
+                    duplicatedCourse: course,
+                    possessingOption:
+                        requiredCourseOwners.get(course.code),
+                    unfulfilledOption: option
+                });
+                continue;
             }
+
+            selectedCourses.set(course.code, course);
+            requiredCourseOwners.set(course.code, option);
         }
     }
 }
@@ -190,9 +198,13 @@ function tryChooseNRequirements(
             availableCourses,
             selectedCourses
         );
+    const overlappingCourses =
+        requirement.Courses.filter(
+            course =>
+                selectedCourses.has(course.code)
+        );
     const overlappingCourseCount =
-        requirement.Courses.length -
-        availableCourses.length;
+        overlappingCourses.length;
     const minimumSubstitutionCount =
         Math.max(
             0,
@@ -236,7 +248,14 @@ function tryChooseNRequirements(
             if (substitutionCount > 0) {
                 chooseNSubstitutions.push({
                     requirement,
-                    count: substitutionCount
+                    count: substitutionCount,
+                    points: overlappingCourses
+                        .slice(0, substitutionCount)
+                        .reduce(
+                            (total, course) =>
+                                total + course.points,
+                            0
+                        )
                 });
             }
 
@@ -284,7 +303,7 @@ function orderRequirementCourses(
                 originalIndex,
                 prerequisitesAvailable:
                     prerequisiteTreeIsCovered(
-                        course.prerequisites,
+                        getEffectivePrerequisiteTree(course),
                         selectedCourseCodes
                     )
             })
@@ -455,7 +474,7 @@ function tryReplacementGroups(
     for (const course of selectedCourses.values()) {
         if (
             !prerequisiteTreeIsCovered(
-                course.prerequisites,
+                getEffectivePrerequisiteTree(course),
                 potentiallySelectableCourseCodes
             )
         ) {
@@ -473,7 +492,7 @@ function tryReplacementGroups(
             candidateLists[index].filter(
                 course =>
                     prerequisiteTreeIsCovered(
-                        course.prerequisites,
+                        getEffectivePrerequisiteTree(course),
                         potentiallySelectableCourseCodes
                     )
             );
@@ -564,7 +583,7 @@ function getReplacementCandidates(
     } else {
         candidates =
             getAvailableReplacementCourses(
-                group.duplicatedCourse,
+                group,
                 selectedCourses
             );
     }
@@ -598,7 +617,7 @@ function orderCandidateCourses(
             new Set();
 
         collectPrerequisiteCodes(
-            selectedCourse.prerequisites,
+            getEffectivePrerequisiteTree(selectedCourse),
             prerequisiteCodes
         );
 
@@ -647,12 +666,12 @@ function orderCandidateCourses(
 
         const aPrerequisitesAvailable =
             prerequisiteTreeIsCovered(
-                a.prerequisites,
+                getEffectivePrerequisiteTree(a),
                 selectedCourseCodes
             );
         const bPrerequisitesAvailable =
             prerequisiteTreeIsCovered(
-                b.prerequisites,
+                getEffectivePrerequisiteTree(b),
                 selectedCourseCodes
             );
 
@@ -681,6 +700,137 @@ function orderCandidateCourses(
 
         return a.level - b.level;
     });
+}
+
+/*
+ * Convert prerequisites which depend on the selected majors into the same
+ * AND/OR tree used by ordinary course prerequisites. This lets selection,
+ * domain propagation, and final validation all enforce the same rule.
+ */
+function getEffectivePrerequisiteTree(course) {
+    const maximumLevel =
+        course.requiresAllCoreAndMajorRequirementsUpToLevel;
+
+    if (maximumLevel === null || maximumLevel === undefined) {
+        return course.prerequisites;
+    }
+
+    const selectedMajorCodes = state.selectedMajors
+        .filter(major => major)
+        .map(major => major.Code)
+        .sort();
+    const cacheKey =
+        `${maximumLevel}|${selectedMajorCodes.join("|")}`;
+    const cached =
+        effectivePrerequisiteTreeCache.get(course);
+
+    if (cached?.key === cacheKey) {
+        return cached.tree;
+    }
+
+    const options = [
+        majorOptions.Core,
+        ...state.selectedMajors.filter(major => major)
+    ].filter(option => option);
+    const requirementNodes = [];
+
+    for (const option of options) {
+        for (const requirement of option.Requirements) {
+            const requirementNode =
+                buildRequirementPrerequisiteTree(
+                    requirement,
+                    maximumLevel
+                );
+
+            if (requirementNode) {
+                requirementNodes.push(requirementNode);
+            }
+        }
+    }
+
+    const dynamicTree = combinePrerequisiteNodes(
+        NodeType.AND,
+        requirementNodes
+    );
+    const effectiveTree = combinePrerequisiteNodes(
+        NodeType.AND,
+        [course.prerequisites, dynamicTree].filter(node => node)
+    );
+
+    effectivePrerequisiteTreeCache.set(course, {
+        key: cacheKey,
+        tree: effectiveTree
+    });
+
+    return effectiveTree;
+}
+
+function buildRequirementPrerequisiteTree(
+    requirement,
+    maximumLevel
+) {
+    const courseNodes = requirement.Courses
+        .filter(course => course.level <= maximumLevel)
+        .map(course => ({
+            type: NodeType.COURSE,
+            value: course.code,
+            children: []
+        }));
+
+    if (courseNodes.length === 0) {
+        return null;
+    }
+
+    if (requirement.Type === "Required") {
+        return combinePrerequisiteNodes(
+            NodeType.AND,
+            courseNodes
+        );
+    }
+
+    if (requirement.Type === "ChooseN") {
+        const alternatives = Array.from(
+            getCombinations(
+                courseNodes,
+                requirement.Count
+            ),
+            combination =>
+                combinePrerequisiteNodes(
+                    NodeType.AND,
+                    combination
+                )
+        );
+
+        return alternatives.length > 0
+            ? combinePrerequisiteNodes(
+                NodeType.OR,
+                alternatives
+            )
+            : {
+                type: "INVALID",
+                children: []
+            };
+    }
+
+    return {
+        type: "INVALID",
+        children: []
+    };
+}
+
+function combinePrerequisiteNodes(type, nodes) {
+    if (nodes.length === 0) {
+        return null;
+    }
+
+    if (nodes.length === 1) {
+        return nodes[0];
+    }
+
+    return {
+        type,
+        children: nodes
+    };
 }
 
 function prerequisiteTreeIsCovered(
@@ -749,29 +899,17 @@ function getCombinationCount(
     return result;
 }
 
-// Build replacement groups from coursesToSubstitute map.
+// Build one replacement group for each required-course overlap. Keeping the
+// two participating options on the group allows the candidate policy to
+// match the requirements validator.
 function getReplacementGroups() {
-    const replacementGroups = [];
-
-    for (
-        const [
-            duplicatedCourseCode,
-            numberOfSubstitutes
-        ]
-        of coursesToSubstitute
-    ) {
-        const duplicatedCourse =
-            getCourseByCode(duplicatedCourseCode);
-
-        if (!duplicatedCourse) {
-            continue;
-        }
-
-        replacementGroups.push({
-            duplicatedCourse,
-            count: numberOfSubstitutes
-        });
-    }
+    const replacementGroups =
+        requiredCourseSubstitutions.map(
+            substitution => ({
+                ...substitution,
+                count: 1
+            })
+        );
 
     replacementGroups.sort(
         (a, b) =>
@@ -786,28 +924,30 @@ function getChooseNReplacementGroups() {
         substitution => ({
             duplicatedCourse: null,
             requirement: substitution.requirement,
-            count: substitution.count
+            count: substitution.count,
+            points: substitution.points
         })
     );
 }
 
 // Determine candidate courses that can substitute for a duplicated required course.
-// - For double majors with <=2 total substitutes needed, electives are allowed
-// - Otherwise only courses from selected majors/minors are considered
+// - For double majors with <=30 overlapping points, electives are allowed
+// - Otherwise only courses from the two overlapping options are considered
 // - Filters out courses already selected and, for safety, courses below the duplicated course's level
 function getAvailableReplacementCourses(
-    duplicatedCourse,
+    group,
     selectedCourses
 ) {
     const isDoubleMajor =
         isDoubleMajorPathway();
 
-    const totalSubstitutes =
-        getNumberOfSubstitutesNeeded();
+    const requiredSubstitutionPoints =
+        getRequiredSubstitutionPoints();
 
     const canUseElectives =
         isDoubleMajor &&
-        totalSubstitutes <= 2;
+        requiredSubstitutionPoints <=
+            MAX_UNRESTRICTED_DOUBLE_MAJOR_SUBSTITUTION_POINTS;
 
     if (canUseElectives) {
         return getAvailableElectiveCourses(
@@ -815,10 +955,18 @@ function getAvailableReplacementCourses(
         );
     }
 
-    const courses =
-        getCoursesFromSelectedMajorsAndMinors();
+    const courseMap = new Map();
 
-    return courses
+    addCoursesFromOption(
+        group.possessingOption,
+        courseMap
+    );
+    addCoursesFromOption(
+        group.unfulfilledOption,
+        courseMap
+    );
+
+    return Array.from(courseMap.values())
         .filter(course => {
             if (selectedCourses.has(course.code)) {
                 return false;
@@ -826,7 +974,7 @@ function getAvailableReplacementCourses(
 
             if (
                 course.level <
-                duplicatedCourse.level
+                group.duplicatedCourse.level
             ) {
                 return false;
             }
@@ -843,27 +991,28 @@ function getAvailableChooseNReplacementCourses(
     const isDoubleMajor =
         isDoubleMajorPathway();
 
-    const totalSubstitutes =
-        getNumberOfSubstitutesNeeded();
+    const requiredSubstitutionPoints =
+        getRequiredSubstitutionPoints();
 
-    const totalChooseNSubstitutes =
+    const chooseNSubstitutionPoints =
         chooseNSubstitutions.reduce(
             (total, substitution) =>
-                total + substitution.count,
+                total + substitution.points,
             0
         );
 
-    const totalSubstitutions =
-        totalSubstitutes +
-        totalChooseNSubstitutes;
+    const totalSubstitutionPoints =
+        requiredSubstitutionPoints +
+        chooseNSubstitutionPoints;
 
     /*
-     * Double majors can use up to two unrestricted electives
-     * for substitutions.
+     * Double majors can use unrestricted electives for up to 30 points of
+     * overlapping requirements.
      */
     if (
         isDoubleMajor &&
-        totalSubstitutions <= 2
+        totalSubstitutionPoints <=
+            MAX_UNRESTRICTED_DOUBLE_MAJOR_SUBSTITUTION_POINTS
     ) {
         return getAvailableElectiveCourses(
             selectedCourses
@@ -871,7 +1020,7 @@ function getAvailableChooseNReplacementCourses(
     }
 
     /*
-     * Once the two double-major elective slots are exhausted,
+     * Once the 30-point double-major allowance is exceeded,
      * replacements must come from courses offered by the
      * selected majors/minors.
      *
@@ -907,18 +1056,13 @@ function getAvailableChooseNReplacementCourses(
         );
 }
 
-// Total count of needed substitutes (sum of values in coursesToSubstitute)
-function getNumberOfSubstitutesNeeded() {
-    let total = 0;
-
-    for (
-        const numberOfSubstitutes
-        of coursesToSubstitute.values()
-    ) {
-        total += numberOfSubstitutes;
-    }
-
-    return total;
+// Total points represented by required-course overlaps.
+function getRequiredSubstitutionPoints() {
+    return requiredCourseSubstitutions.reduce(
+        (total, substitution) =>
+            total + substitution.duplicatedCourse.points,
+        0
+    );
 }
 
 function getAvailableElectiveCourses(selectedCourses) {
@@ -994,10 +1138,6 @@ function addCoursesFromOption(
     }
 }
 
-function getCourseByCode(courseCode) {
-    return coursesObject[courseCode];
-}
-
 const FIXED_COURSE_PLACEMENTS = new Map([
     ["COMP500", { semester: 0, slot: 0 }],
     ["COMP501", { semester: 0, slot: 1 }],
@@ -1036,7 +1176,13 @@ function scheduleCourses(selectedCourses) {
         return false;
     }
 
+    const selectedMajorKey = state.selectedMajors
+        .filter(major => major)
+        .map(major => major.Code)
+        .sort()
+        .join("|");
     const courseSetKey =
+        `${selectedMajorKey}::` +
         Array.from(courses.keys())
             .sort()
             .join("|");
@@ -1071,7 +1217,7 @@ function scheduleCourses(selectedCourses) {
     for (const course of courses.values()) {
         if (
             !prerequisiteTreeIsCovered(
-                course.prerequisites,
+                getEffectivePrerequisiteTree(course),
                 selectedCourseCodes
             )
         ) {
@@ -1354,7 +1500,7 @@ function propagateSemesterDomains(
 
                 if (
                     !prerequisiteTreeCanBeSatisfied(
-                        course.prerequisites,
+                        getEffectivePrerequisiteTree(course),
                         semester,
                         assignments,
                         propagatedDomains
@@ -1376,7 +1522,7 @@ function propagateSemesterDomains(
                         semesterLoads[semester] <
                             semesterCapacity &&
                         prerequisiteTreeCanBeSatisfied(
-                            course.prerequisites,
+                            getEffectivePrerequisiteTree(course),
                             semester,
                             assignments,
                             propagatedDomains
@@ -1406,7 +1552,7 @@ function propagateSemesterDomains(
                 );
             const result =
                 restrictPrerequisiteDomains(
-                    course.prerequisites,
+                    getEffectivePrerequisiteTree(course),
                     dependentDomain,
                     assignments,
                     propagatedDomains
@@ -1445,8 +1591,8 @@ function propagateSemesterDomains(
  * Prerequisite checking normally narrows a dependent course from left to
  * right. This complementary pass also narrows prerequisite courses from
  * right to left. For example, because COMP702 is fixed in semester five, all
- * six of its mandatory prerequisites are immediately restricted to the
- * first four semesters.
+ * of its effective core and major prerequisites are immediately restricted
+ * to the first four semesters.
  */
 function restrictPrerequisiteDomains(
     node,
@@ -1930,7 +2076,7 @@ function buildDependencyCounts(courses) {
             new Set();
 
         collectPrerequisiteCodes(
-            course.prerequisites,
+            getEffectivePrerequisiteTree(course),
             prerequisiteCodes
         );
 
@@ -1999,7 +2145,7 @@ function assignmentsAreValid(
                 semester
             ) ||
             !evaluatePrerequisiteTree(
-                course.prerequisites,
+                getEffectivePrerequisiteTree(course),
                 completedCourses
             )
         ) {
