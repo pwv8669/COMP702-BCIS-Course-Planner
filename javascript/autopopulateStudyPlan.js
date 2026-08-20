@@ -23,10 +23,10 @@ function isDoubleMajorPathway() {
     );
 }
 
-// Map to track how many substitutes are required for each course.
-// Courses must be substituted when 2+ majors/minors require the same course.
-// Key: course.code, Value: Number of substitutions required.
-const coursesToSubstitute = new Map();
+// Track the option which first receives each required course and every later
+// option whose identical requirement must be fulfilled by a substitute.
+const requiredCourseOwners = new Map();
+const requiredCourseSubstitutions = [];
 
 const chooseNSubstitutions = [];
 
@@ -68,7 +68,8 @@ export function generateStudyPlan() {
     }
 
     // Wipes the substitution list, as it should not contain leftover data.
-    coursesToSubstitute.clear();
+    requiredCourseOwners.clear();
+    requiredCourseSubstitutions.length = 0;
     chooseNSubstitutions.length = 0;
 
     // Builds a list of courses, if it could not build a valid study plan, it fails.
@@ -114,54 +115,59 @@ function addCoreCourses(selectedCourses) {
         for (const course of requirement.Courses) {
             if (selectedCourses.has(course.code)) continue;
             selectedCourses.set(course.code, course);
+            requiredCourseOwners.set(course.code, core);
         }
     }
 }
 
-// Adds only the required courses to the selectedCourses map.
-// If there are overlaps, it adds the course to corsesToSubstitute so that we can revisit it.
+// Adds required courses in the same core-major-minor order as the requirements
+// validator and records both options involved in every overlap.
 function addRequiredCourses(selectedCourses) {
     const selectedPathway = state.selectedPathway;
+
     // Add major required courses
     for (let i = 0; i < selectedPathway.numMajors; i++) {
         const major = state.selectedMajors[i];
-        if (!major) continue; 
-        
-        for (const requirement of major.Requirements) {
-            if (requirement.Type !== "Required") continue;
-            
-            for (const course of requirement.Courses) {
-                if (selectedCourses.has(course.code)) {
-                    if (!coursesToSubstitute.has(course.code)) {
-                        coursesToSubstitute.set(course.code, 0);
-                    }
+        if (!major) continue;
 
-                    coursesToSubstitute.set(course.code, coursesToSubstitute.get(course.code) + 1);
-                    continue;
-                }
-                selectedCourses.set(course.code, course);
-            }
-        }
+        addRequiredCoursesFromOption(
+            major,
+            selectedCourses
+        );
     }
+
     // Add minor required courses
     for (let i = 0; i < selectedPathway.numMinors; i++) {
         const minor = state.selectedMinors[i];
-        if (!minor) continue; 
+        if (!minor) continue;
 
-        for (const requirement of minor.Requirements) {
-            if (requirement.Type !== "Required") continue;
-            
-            for (const course of requirement.Courses) {
-                if (selectedCourses.has(course.code)) {
-                    if (!coursesToSubstitute.has(course.code)) {
-                        coursesToSubstitute.set(course.code, 0);
-                    }
+        addRequiredCoursesFromOption(
+            minor,
+            selectedCourses
+        );
+    }
+}
 
-                    coursesToSubstitute.set(course.code, coursesToSubstitute.get(course.code) + 1);
-                    continue;
-                }
-                selectedCourses.set(course.code, course);
+function addRequiredCoursesFromOption(
+    option,
+    selectedCourses
+) {
+    for (const requirement of option.Requirements) {
+        if (requirement.Type !== "Required") continue;
+
+        for (const course of requirement.Courses) {
+            if (selectedCourses.has(course.code)) {
+                requiredCourseSubstitutions.push({
+                    duplicatedCourse: course,
+                    possessingOption:
+                        requiredCourseOwners.get(course.code),
+                    unfulfilledOption: option
+                });
+                continue;
             }
+
+            selectedCourses.set(course.code, course);
+            requiredCourseOwners.set(course.code, option);
         }
     }
 }
@@ -565,7 +571,7 @@ function getReplacementCandidates(
     } else {
         candidates =
             getAvailableReplacementCourses(
-                group.duplicatedCourse,
+                group,
                 selectedCourses
             );
     }
@@ -881,29 +887,17 @@ function getCombinationCount(
     return result;
 }
 
-// Build replacement groups from coursesToSubstitute map.
+// Build one replacement group for each required-course overlap. Keeping the
+// two participating options on the group allows the candidate policy to
+// match the requirements validator.
 function getReplacementGroups() {
-    const replacementGroups = [];
-
-    for (
-        const [
-            duplicatedCourseCode,
-            numberOfSubstitutes
-        ]
-        of coursesToSubstitute
-    ) {
-        const duplicatedCourse =
-            getCourseByCode(duplicatedCourseCode);
-
-        if (!duplicatedCourse) {
-            continue;
-        }
-
-        replacementGroups.push({
-            duplicatedCourse,
-            count: numberOfSubstitutes
-        });
-    }
+    const replacementGroups =
+        requiredCourseSubstitutions.map(
+            substitution => ({
+                ...substitution,
+                count: 1
+            })
+        );
 
     replacementGroups.sort(
         (a, b) =>
@@ -925,10 +919,10 @@ function getChooseNReplacementGroups() {
 
 // Determine candidate courses that can substitute for a duplicated required course.
 // - For double majors with <=2 total substitutes needed, electives are allowed
-// - Otherwise only courses from selected majors/minors are considered
+// - Otherwise only courses from the two overlapping options are considered
 // - Filters out courses already selected and, for safety, courses below the duplicated course's level
 function getAvailableReplacementCourses(
-    duplicatedCourse,
+    group,
     selectedCourses
 ) {
     const isDoubleMajor =
@@ -947,10 +941,18 @@ function getAvailableReplacementCourses(
         );
     }
 
-    const courses =
-        getCoursesFromSelectedMajorsAndMinors();
+    const courseMap = new Map();
 
-    return courses
+    addCoursesFromOption(
+        group.possessingOption,
+        courseMap
+    );
+    addCoursesFromOption(
+        group.unfulfilledOption,
+        courseMap
+    );
+
+    return Array.from(courseMap.values())
         .filter(course => {
             if (selectedCourses.has(course.code)) {
                 return false;
@@ -958,7 +960,7 @@ function getAvailableReplacementCourses(
 
             if (
                 course.level <
-                duplicatedCourse.level
+                group.duplicatedCourse.level
             ) {
                 return false;
             }
@@ -1039,18 +1041,9 @@ function getAvailableChooseNReplacementCourses(
         );
 }
 
-// Total count of needed substitutes (sum of values in coursesToSubstitute)
+// Total number of required-course overlaps needing substitutes.
 function getNumberOfSubstitutesNeeded() {
-    let total = 0;
-
-    for (
-        const numberOfSubstitutes
-        of coursesToSubstitute.values()
-    ) {
-        total += numberOfSubstitutes;
-    }
-
-    return total;
+    return requiredCourseSubstitutions.length;
 }
 
 function getAvailableElectiveCourses(selectedCourses) {
@@ -1124,10 +1117,6 @@ function addCoursesFromOption(
             );
         }
     }
-}
-
-function getCourseByCode(courseCode) {
-    return coursesObject[courseCode];
 }
 
 const FIXED_COURSE_PLACEMENTS = new Map([
