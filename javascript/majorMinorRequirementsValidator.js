@@ -65,7 +65,7 @@ export function validateMajorMinorRequirements(){
     }
 
     // Populate an array of all selected options.
-    selectedOptions = [];
+    selectedOptions = [majorOptions.Core];
     for (let i = 0; i < pathway.numMajors; i++) {
         if (state.selectedMajors[i]) {
             selectedOptions.push(state.selectedMajors[i]);
@@ -77,10 +77,11 @@ export function validateMajorMinorRequirements(){
         }
     }
 
-    // Core courses occupy degree slots and cannot be used as substitutes.
-    attributeCoreCourses();
-
     // Assign required courses only, to make overlap solving easier in the future.
+    // Validate and assign the core first so its courses occupy degree slots and
+    // cannot be used as substitutes for another major or minor.
+    attributeRequiredCourses(majorOptions.Core);
+
     for (let i = 0; i < pathway.numMajors; i++) {
         if (state.selectedMajors[i]) {
             attributeRequiredCourses(
@@ -96,7 +97,9 @@ export function validateMajorMinorRequirements(){
         }
     }
 
-    // Assign ChooseN courses
+    // Assign ChooseN courses, including any defined by the core major.
+    attributeChooseNCourses(majorOptions.Core);
+
     for (let i = 0; i < pathway.numMajors; i++) {
         if (state.selectedMajors[i]) {
             attributeChooseNCourses(
@@ -134,19 +137,6 @@ export function validateMajorMinorRequirements(){
     // Uncomment below to see which courses correspond to which major/minor.
     console.log(attributedCourses);
     return errors;
-}
-
-function attributeCoreCourses() {
-    const core = majorOptions.Core;
-    if (!core) return;
-
-    for (const requirement of core.Requirements) {
-        for (const course of requirement.Courses) {
-            if (coursePlanCourses.has(course.code)) {
-                attributedCourses.set(course.code, core.Code);
-            }
-        }
-    }
 }
 
 function attributeRequiredCourses(majorOrMinor){
