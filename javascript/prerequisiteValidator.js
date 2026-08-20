@@ -17,6 +17,23 @@ export function getCompletedCourses(currentSemester){
     return completed;
 }
 
+// Returns all codes for courses taken in one specific semester.
+function getCoursesInSemester(semester) {
+    const courses = new Set();
+
+    if (semester < 0 || semester >= state.coursePlan.length) {
+        return courses;
+    }
+
+    for (const course of state.coursePlan[semester]) {
+        if (course) {
+            courses.add(course.code);
+        }
+    }
+
+    return courses;
+}
+
 export function evaluatePrerequisiteTree(node, completedCourses) {
     // No Prerequisites
     if (!node) return true;
@@ -56,6 +73,27 @@ export function validatePrerequisites(){
                 let message = `The prerequisites for ${currentCourse.code} are not met by semester ${semester+1}.`; 
                 let id = `MissingPreq-${currentCourse.code}`;
                 let errorMsg = new PlanError(currentCourse.code, message, id);
+                errorMsg.positions[semester][slot] = true;
+                errors.push(errorMsg);
+                continue;
+            }
+
+            if (
+                currentCourse.mustBeTakenConsequtively &&
+                !evaluatePrerequisiteTree(
+                    currentCourse.prerequisites,
+                    getCoursesInSemester(semester - 1)
+                )
+            ) {
+                const message =
+                    `The prerequisites for ${currentCourse.code} must be ` +
+                    `taken in the immediately preceding semester.`;
+                const id = `NonConsecutivePreq-${currentCourse.code}`;
+                const errorMsg = new PlanError(
+                    currentCourse.code,
+                    message,
+                    id
+                );
                 errorMsg.positions[semester][slot] = true;
                 errors.push(errorMsg);
             }
