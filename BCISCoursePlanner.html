@@ -547,13 +547,18 @@ select:hover,button:hover{
 
     <div class="button-grid">
 
-        <button id="openTemplates">Pre-made study plans</button>
-        <button id="saveTemplateBtn" type="button">Save Current Plan</button>
+        <button title="View and use pre-made templates" id="openTemplates">Pre-made study plans</button>
+        <button title="Save course plan as a pre-made template" id="saveTemplateBtn" type="button">Save Current Plan</button>
 
-        <button id="SaveFileButton">Save Schedule as File</button>
-        <button onclick="getPDF()">Save as PDF</button>
+        <button title="Download course plan as importable file" id="SaveFileButton">Save Schedule as File</button>
+        <button title="Download course plan as PDF document" onclick="getPDF()">Save as PDF</button>
 
-        <button id="AutocompletePlanButton">Autopopulate Plan</button>
+        <button title="Autopopulate course plan according to selected majors/minors" id="AutocompletePlanButton">Autopopulate Plan</button>
+
+        <form action="https://www.aut.ac.nz/__data/assets/pdf_file/0011/952796/BCIS-Programme-Structure-2026.pdf" method="get" target="_blank">
+            <button title="Open BCIS Programme Structure PDF in new tab" id="pdf">Programme Stucture PDF</button>
+        </form>
+
 
         <div id="ignoreModal" class="hidden">
             <div class="modal-content">
