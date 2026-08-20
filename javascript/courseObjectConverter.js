@@ -13,6 +13,8 @@ class Course {
         this.corequisites = data.Corequisites
             ? flattenTree(parse(tokenize(data.Corequisites)))
             : null;
+        this.mustBeTakenConsequtively =
+            data.MustBeTakenConsequtively === true;
     }
 }
 
