@@ -47,22 +47,32 @@ function parsePrereqs(node) {
     return "Unknown prerequisite structure";
 }
 import { getCoursesFromSelectedMajorsAndMinors } from './autopopulateStudyPlan.js';
+import { loadMajorOptions } from "./objects/majorMinorOption.js";
 
 async function TypeOfCell(coursecode){
 try{
+    const majorOptions = await loadMajorOptions();
+    let coreOptions = majorOptions["Core"];
+
     let arrayofcourses = (getCoursesFromSelectedMajorsAndMinors());
     console.log(arrayofcourses);
     for (let requiredcourse = 0; requiredcourse < arrayofcourses.length; requiredcourse++) {
         if( coursecode == arrayofcourses[requiredcourse].code){
-            return true;
+            return "Required";
+        }
+    }
+    for (let requiredcore = 0; requiredcore < coreOptions.Requirements.length; requiredcore++) {
+        console.log("readthisc"+coreOptions.Requirements[requiredcore].Courses[0].code);
+        if( coursecode == coreOptions.Requirements[requiredcore].Courses[0].code){
+            return "Core";
         }
     }
 
-    return false;
+    return "Elective";
 
 }
 catch{
-    return false;
+    return "Core";
 }
 }
 
@@ -81,15 +91,7 @@ export async function renderCoursePlan(state) {
             }
             const prereqText = parsePrereqs(course.prerequisites);
             
-             if(await TypeOfCell(course.code)){
-                
-                cell.innerHTML = `
-                <div class="course-cell"> Required`;
-            }
-            else{
-                cell.innerHTML = `<div class="course-cell">
-                `;
-            }
+            cell.innerHTML = `<div class="course-cell">${await TypeOfCell(course.code)}:`;
             
 
             cell.innerHTML +=`<div class="course-name">${course.code}: ${course.name}</div>
