@@ -8,7 +8,7 @@ import { refreshStudyPlan } from './app.js';
 import { state } from './state.js';
 import { loadMajorOptions } from "./objects/majorMinorOption.js";
 import { evaluatePrerequisiteTree } from './prerequisiteValidator.js';
-import { loadCourses } from './courseObjectConverter.js';
+import { loadCourses, NodeType } from './courseObjectConverter.js';
 
 // Global consts ---------- //
 const coursesObject = await loadCourses();
@@ -37,6 +37,7 @@ const chooseNSubstitutions = [];
  * requirement-choice paths.
  */
 const scheduleCache = new Map();
+const effectivePrerequisiteTreeCache = new WeakMap();
 
 // Rigging event listener to button that triggers autopopulation
 const button = document.getElementById('AutocompletePlanButton');
@@ -284,7 +285,7 @@ function orderRequirementCourses(
                 originalIndex,
                 prerequisitesAvailable:
                     prerequisiteTreeIsCovered(
-                        course.prerequisites,
+                        getEffectivePrerequisiteTree(course),
                         selectedCourseCodes
                     )
             })
@@ -455,7 +456,7 @@ function tryReplacementGroups(
     for (const course of selectedCourses.values()) {
         if (
             !prerequisiteTreeIsCovered(
-                course.prerequisites,
+                getEffectivePrerequisiteTree(course),
                 potentiallySelectableCourseCodes
             )
         ) {
@@ -473,7 +474,7 @@ function tryReplacementGroups(
             candidateLists[index].filter(
                 course =>
                     prerequisiteTreeIsCovered(
-                        course.prerequisites,
+                        getEffectivePrerequisiteTree(course),
                         potentiallySelectableCourseCodes
                     )
             );
@@ -598,7 +599,7 @@ function orderCandidateCourses(
             new Set();
 
         collectPrerequisiteCodes(
-            selectedCourse.prerequisites,
+            getEffectivePrerequisiteTree(selectedCourse),
             prerequisiteCodes
         );
 
@@ -647,12 +648,12 @@ function orderCandidateCourses(
 
         const aPrerequisitesAvailable =
             prerequisiteTreeIsCovered(
-                a.prerequisites,
+                getEffectivePrerequisiteTree(a),
                 selectedCourseCodes
             );
         const bPrerequisitesAvailable =
             prerequisiteTreeIsCovered(
-                b.prerequisites,
+                getEffectivePrerequisiteTree(b),
                 selectedCourseCodes
             );
 
@@ -681,6 +682,137 @@ function orderCandidateCourses(
 
         return a.level - b.level;
     });
+}
+
+/*
+ * Convert prerequisites which depend on the selected majors into the same
+ * AND/OR tree used by ordinary course prerequisites. This lets selection,
+ * domain propagation, and final validation all enforce the same rule.
+ */
+function getEffectivePrerequisiteTree(course) {
+    const maximumLevel =
+        course.requiresAllCoreAndMajorRequirementsUpToLevel;
+
+    if (maximumLevel === null || maximumLevel === undefined) {
+        return course.prerequisites;
+    }
+
+    const selectedMajorCodes = state.selectedMajors
+        .filter(major => major)
+        .map(major => major.Code)
+        .sort();
+    const cacheKey =
+        `${maximumLevel}|${selectedMajorCodes.join("|")}`;
+    const cached =
+        effectivePrerequisiteTreeCache.get(course);
+
+    if (cached?.key === cacheKey) {
+        return cached.tree;
+    }
+
+    const options = [
+        majorOptions.Core,
+        ...state.selectedMajors.filter(major => major)
+    ].filter(option => option);
+    const requirementNodes = [];
+
+    for (const option of options) {
+        for (const requirement of option.Requirements) {
+            const requirementNode =
+                buildRequirementPrerequisiteTree(
+                    requirement,
+                    maximumLevel
+                );
+
+            if (requirementNode) {
+                requirementNodes.push(requirementNode);
+            }
+        }
+    }
+
+    const dynamicTree = combinePrerequisiteNodes(
+        NodeType.AND,
+        requirementNodes
+    );
+    const effectiveTree = combinePrerequisiteNodes(
+        NodeType.AND,
+        [course.prerequisites, dynamicTree].filter(node => node)
+    );
+
+    effectivePrerequisiteTreeCache.set(course, {
+        key: cacheKey,
+        tree: effectiveTree
+    });
+
+    return effectiveTree;
+}
+
+function buildRequirementPrerequisiteTree(
+    requirement,
+    maximumLevel
+) {
+    const courseNodes = requirement.Courses
+        .filter(course => course.level <= maximumLevel)
+        .map(course => ({
+            type: NodeType.COURSE,
+            value: course.code,
+            children: []
+        }));
+
+    if (courseNodes.length === 0) {
+        return null;
+    }
+
+    if (requirement.Type === "Required") {
+        return combinePrerequisiteNodes(
+            NodeType.AND,
+            courseNodes
+        );
+    }
+
+    if (requirement.Type === "ChooseN") {
+        const alternatives = Array.from(
+            getCombinations(
+                courseNodes,
+                requirement.Count
+            ),
+            combination =>
+                combinePrerequisiteNodes(
+                    NodeType.AND,
+                    combination
+                )
+        );
+
+        return alternatives.length > 0
+            ? combinePrerequisiteNodes(
+                NodeType.OR,
+                alternatives
+            )
+            : {
+                type: "INVALID",
+                children: []
+            };
+    }
+
+    return {
+        type: "INVALID",
+        children: []
+    };
+}
+
+function combinePrerequisiteNodes(type, nodes) {
+    if (nodes.length === 0) {
+        return null;
+    }
+
+    if (nodes.length === 1) {
+        return nodes[0];
+    }
+
+    return {
+        type,
+        children: nodes
+    };
 }
 
 function prerequisiteTreeIsCovered(
@@ -1036,7 +1168,13 @@ function scheduleCourses(selectedCourses) {
         return false;
     }
 
+    const selectedMajorKey = state.selectedMajors
+        .filter(major => major)
+        .map(major => major.Code)
+        .sort()
+        .join("|");
     const courseSetKey =
+        `${selectedMajorKey}::` +
         Array.from(courses.keys())
             .sort()
             .join("|");
@@ -1071,7 +1209,7 @@ function scheduleCourses(selectedCourses) {
     for (const course of courses.values()) {
         if (
             !prerequisiteTreeIsCovered(
-                course.prerequisites,
+                getEffectivePrerequisiteTree(course),
                 selectedCourseCodes
             )
         ) {
@@ -1354,7 +1492,7 @@ function propagateSemesterDomains(
 
                 if (
                     !prerequisiteTreeCanBeSatisfied(
-                        course.prerequisites,
+                        getEffectivePrerequisiteTree(course),
                         semester,
                         assignments,
                         propagatedDomains
@@ -1376,7 +1514,7 @@ function propagateSemesterDomains(
                         semesterLoads[semester] <
                             semesterCapacity &&
                         prerequisiteTreeCanBeSatisfied(
-                            course.prerequisites,
+                            getEffectivePrerequisiteTree(course),
                             semester,
                             assignments,
                             propagatedDomains
@@ -1406,7 +1544,7 @@ function propagateSemesterDomains(
                 );
             const result =
                 restrictPrerequisiteDomains(
-                    course.prerequisites,
+                    getEffectivePrerequisiteTree(course),
                     dependentDomain,
                     assignments,
                     propagatedDomains
@@ -1445,8 +1583,8 @@ function propagateSemesterDomains(
  * Prerequisite checking normally narrows a dependent course from left to
  * right. This complementary pass also narrows prerequisite courses from
  * right to left. For example, because COMP702 is fixed in semester five, all
- * six of its mandatory prerequisites are immediately restricted to the
- * first four semesters.
+ * of its effective core and major prerequisites are immediately restricted
+ * to the first four semesters.
  */
 function restrictPrerequisiteDomains(
     node,
@@ -1930,7 +2068,7 @@ function buildDependencyCounts(courses) {
             new Set();
 
         collectPrerequisiteCodes(
-            course.prerequisites,
+            getEffectivePrerequisiteTree(course),
             prerequisiteCodes
         );
 
@@ -1999,7 +2137,7 @@ function assignmentsAreValid(
                 semester
             ) ||
             !evaluatePrerequisiteTree(
-                course.prerequisites,
+                getEffectivePrerequisiteTree(course),
                 completedCourses
             )
         ) {
