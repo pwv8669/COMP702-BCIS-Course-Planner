@@ -207,7 +207,8 @@
         "Semester1Offered": true,
         "Semester2Offered": true,
         "Prerequisites": "",
-        "Corequisites": ""
+        "Corequisites": "",
+        "RequiresAllCoreAndMajorRequirementsUpToLevel": 6
     },
     "COMP703": {
         "Code": "COMP703",

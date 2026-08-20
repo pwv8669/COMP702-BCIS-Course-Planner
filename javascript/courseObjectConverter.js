@@ -15,6 +15,12 @@ class Course {
             : null;
         this.mustBeTakenConsequtively =
             data.MustBeTakenConsequtively === true;
+        this.requiresAllCoreAndMajorRequirementsUpToLevel =
+            Number.isInteger(
+                data.RequiresAllCoreAndMajorRequirementsUpToLevel
+            )
+            ? data.RequiresAllCoreAndMajorRequirementsUpToLevel
+            : null;
     }
 }
 
