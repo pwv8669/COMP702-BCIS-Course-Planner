@@ -55,14 +55,12 @@ try{
     let coreOptions = majorOptions["Core"];
 
     let arrayofcourses = (getCoursesFromSelectedMajorsAndMinors());
-    console.log(arrayofcourses);
     for (let requiredcourse = 0; requiredcourse < arrayofcourses.length; requiredcourse++) {
         if( coursecode == arrayofcourses[requiredcourse].code){
             return "Required";
         }
     }
     for (let requiredcore = 0; requiredcore < coreOptions.Requirements.length; requiredcore++) {
-        console.log("readthisc"+coreOptions.Requirements[requiredcore].Courses[0].code);
         if( coursecode == coreOptions.Requirements[requiredcore].Courses[0].code){
             return "Core";
         }
@@ -94,17 +92,14 @@ export async function renderCoursePlan(state) {
             cell.innerHTML = `<div class="course-cell">${await TypeOfCell(course.code)}:`;
             
 
-            cell.innerHTML +=`<div class="course-name">${course.code}: ${course.name}</div>
+            cell.innerHTML +=`<div class="course-name">${course.code}: ${course.name}</div>`
             const coreqText = parsePrereqs(course.corequisites);
             console.log("text" + coreqText);
             console.log(state.coursePlan)
-            cell.innerHTML = `
-                <div class="course-cell">
-                    <div class="course-name">${course.code}: ${course.name}</div>
                     
                   
                 
-            `;
+            ;
 
             if(prereqText != "No prerequisites" || coreqText != "No prerequisites" ){
                   cell.innerHTML += `<button class="prereq-btn" data-html2canvas-ignore="true">
@@ -124,11 +119,8 @@ export async function renderCoursePlan(state) {
                     
             }
 
-                    <div class="prereq-list" style="display:none;" data-html2canvas-ignore="true">
-                        ${prereqText}
-                    </div>
-                </div>
-            `;
+                    
+            ;
             cell.innerHTML += `</div>`;
         }
     }
