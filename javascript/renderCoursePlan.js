@@ -95,16 +95,41 @@ export async function renderCoursePlan(state) {
             
 
             cell.innerHTML +=`<div class="course-name">${course.code}: ${course.name}</div>
+            const coreqText = parsePrereqs(course.corequisites);
+            console.log("text" + coreqText);
+            console.log(state.coursePlan)
+            cell.innerHTML = `
+                <div class="course-cell">
+                    <div class="course-name">${course.code}: ${course.name}</div>
+                    
+                  
+                
+            `;
 
-                    <button class="prereq-btn" data-html2canvas-ignore="true">
+            if(prereqText != "No prerequisites" || coreqText != "No prerequisites" ){
+                  cell.innerHTML += `<button class="prereq-btn" data-html2canvas-ignore="true">
                         Show reqs
-                    </button>
+                    </button>`
+                    if(prereqText != "No prerequisites"){
+                        cell.innerHTML +=`<div class="prereq-list" style="display:none;">
+                            Prerequisites: ${prereqText}
+                        </div>`;
+                    }
+
+                    if(coreqText != "No prerequisites"){
+                        cell.innerHTML +=`<div class="prereq-list" style="display:none;">
+                            Corequisites: ${coreqText}
+                        </div>`;
+                    }
+                    
+            }
 
                     <div class="prereq-list" style="display:none;" data-html2canvas-ignore="true">
                         ${prereqText}
                     </div>
                 </div>
             `;
+            cell.innerHTML += `</div>`;
         }
     }
 }
