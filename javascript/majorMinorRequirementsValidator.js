@@ -133,7 +133,12 @@ export function validateMajorMinorRequirements(){
             );
         }
     }
-    
+    for (const courseCode of coursePlanCourses) {
+        if (!attributedCourses.has(courseCode)) {
+            attributedCourses.set(courseCode, "Unallocated");
+        }
+    }
+
     // Uncomment below to see which courses correspond to which major/minor.
     console.log(attributedCourses);
     return errors;
