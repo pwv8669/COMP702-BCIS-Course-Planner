@@ -46,8 +46,35 @@ function parsePrereqs(node) {
 
     return "Unknown prerequisite structure";
 }
+import { getCoursesFromSelectedMajorsAndMinors } from './autopopulateStudyPlan.js';
+import { loadMajorOptions } from "./objects/majorMinorOption.js";
 
+async function TypeOfCell(coursecode){
+try{
+    const majorOptions = await loadMajorOptions();
+    let coreOptions = majorOptions["Core"];
 
+    let arrayofcourses = (getCoursesFromSelectedMajorsAndMinors());
+    console.log(arrayofcourses);
+    for (let requiredcourse = 0; requiredcourse < arrayofcourses.length; requiredcourse++) {
+        if( coursecode == arrayofcourses[requiredcourse].code){
+            return "Required";
+        }
+    }
+    for (let requiredcore = 0; requiredcore < coreOptions.Requirements.length; requiredcore++) {
+        console.log("readthisc"+coreOptions.Requirements[requiredcore].Courses[0].code);
+        if( coursecode == coreOptions.Requirements[requiredcore].Courses[0].code){
+            return "Core";
+        }
+    }
+
+    return "Elective";
+
+}
+catch{
+    return "Core";
+}
+}
 
 export async function renderCoursePlan(state) {
     for (let row = 0; row < state.coursePlan.length; row++) {
@@ -62,8 +89,12 @@ export async function renderCoursePlan(state) {
                 cell.textContent = "";
                 continue;
             }
-
             const prereqText = parsePrereqs(course.prerequisites);
+            
+            cell.innerHTML = `<div class="course-cell">${await TypeOfCell(course.code)}:`;
+            
+
+            cell.innerHTML +=`<div class="course-name">${course.code}: ${course.name}</div>
             const coreqText = parsePrereqs(course.corequisites);
             console.log("text" + coreqText);
             console.log(state.coursePlan)
@@ -93,12 +124,17 @@ export async function renderCoursePlan(state) {
                     
             }
 
+                    <div class="prereq-list" style="display:none;" data-html2canvas-ignore="true">
+                        ${prereqText}
+                    </div>
+                </div>
+            `;
             cell.innerHTML += `</div>`;
         }
     }
 }
 
-document.addEventListener("DOMContentLoaded", () => {
+
     document.addEventListener("click", (e) => {
         if (!e.target.classList.contains("prereq-btn")) return;
 
@@ -108,7 +144,7 @@ document.addEventListener("DOMContentLoaded", () => {
         box.style.display = hidden ? "block" : "none";
         e.target.textContent = hidden ? "Hide reqs" : "Show reqs";
     });
-});
+
 
 
 
