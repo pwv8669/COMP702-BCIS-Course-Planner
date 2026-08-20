@@ -1072,7 +1072,7 @@ function getAvailableElectiveCourses(selectedCourses) {
 }
 
 // Collect all courses that appear in the selected majors and minors
-function getCoursesFromSelectedMajorsAndMinors() {
+export function getCoursesFromSelectedMajorsAndMinors() {
     const courses = new Map();
 
     const selectedPathway =
