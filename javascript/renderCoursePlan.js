@@ -46,8 +46,33 @@ function parsePrereqs(node) {
 
     return "Unknown prerequisite structure";
 }
+import { getCoursesFromSelectedMajorsAndMinors } from './autopopulateStudyPlan.js';
+import { loadMajorOptions } from "./objects/majorMinorOption.js";
 
+async function TypeOfCell(coursecode){
+try{
+    const majorOptions = await loadMajorOptions();
+    let coreOptions = majorOptions["Core"];
 
+    let arrayofcourses = (getCoursesFromSelectedMajorsAndMinors());
+    for (let requiredcourse = 0; requiredcourse < arrayofcourses.length; requiredcourse++) {
+        if( coursecode == arrayofcourses[requiredcourse].code){
+            return "Required";
+        }
+    }
+    for (let requiredcore = 0; requiredcore < coreOptions.Requirements.length; requiredcore++) {
+        if( coursecode == coreOptions.Requirements[requiredcore].Courses[0].code){
+            return "Core";
+        }
+    }
+
+    return "Elective";
+
+}
+catch{
+    return "Core";
+}
+}
 
 export async function renderCoursePlan(state) {
     for (let row = 0; row < state.coursePlan.length; row++) {
@@ -62,27 +87,46 @@ export async function renderCoursePlan(state) {
                 cell.textContent = "";
                 continue;
             }
-
             const prereqText = parsePrereqs(course.prerequisites);
+            
+            cell.innerHTML = `<div class="course-cell">${await TypeOfCell(course.code)}:`;
+            
 
-            cell.innerHTML = `
-                <div class="course-cell">
-                    <div class="course-name">${course.code}: ${course.name}</div>
+            cell.innerHTML +=`<div class="course-name">${course.code}: ${course.name}</div>`
+            const coreqText = parsePrereqs(course.corequisites);
+            console.log("text" + coreqText);
+            console.log(state.coursePlan)
+                    
+                  
+                
+            ;
 
-                    <button class="prereq-btn" data-html2canvas-ignore="true">
+            if(prereqText != "No prerequisites" || coreqText != "No prerequisites" ){
+                  cell.innerHTML += `<button class="prereq-btn" data-html2canvas-ignore="true">
                         Show reqs
-                    </button>
+                    </button>`
+                    if(prereqText != "No prerequisites"){
+                        cell.innerHTML +=`<div class="prereq-list" style="display:none;">
+                            Prerequisites: ${prereqText}
+                        </div>`;
+                    }
 
-                    <div class="prereq-list" style="display:none;">
-                        ${prereqText}
-                    </div>
-                </div>
-            `;
+                    if(coreqText != "No prerequisites"){
+                        cell.innerHTML +=`<div class="prereq-list" style="display:none;">
+                            Corequisites: ${coreqText}
+                        </div>`;
+                    }
+                    
+            }
+
+                    
+            ;
+            cell.innerHTML += `</div>`;
         }
     }
 }
 
-document.addEventListener("DOMContentLoaded", () => {
+
     document.addEventListener("click", (e) => {
         if (!e.target.classList.contains("prereq-btn")) return;
 
@@ -92,7 +136,7 @@ document.addEventListener("DOMContentLoaded", () => {
         box.style.display = hidden ? "block" : "none";
         e.target.textContent = hidden ? "Hide reqs" : "Show reqs";
     });
-});
+
 
 
 
