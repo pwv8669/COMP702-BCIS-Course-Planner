@@ -54,15 +54,15 @@ export function validatePoints()
         ));
     }
 
-    if (state.selectedPathway === "doubleMajors" && state.selectedMajors[0] && state.selectedMajors[1])
+    if (state.selectedPathway.numMajors == 2 && state.selectedMajors[0] && state.selectedMajors[1])
     {
         assignDoubleMajor();
     }
-    else if (state.selectedPathway === "doubleMinors" && state.selectedMajors[0] && state.selectedMinors[0] && state.selectedMinors[1])
+    else if (state.selectedPathway.numMinors == 2 && state.selectedMajors[0] && state.selectedMinors[0] && state.selectedMinors[1])
     {
         assignTwoMinor();
     }
-    else if (state.selectedPathway === "electives" && state.selectedMajors[0] && state.selectedMinors[0])
+    else if (state.selectedPathway.numElectives > 0 && state.selectedMajors[0] && state.selectedMinors[0])
     {
         assignOneMinor();
     }
@@ -111,8 +111,8 @@ function assignDoubleMajor()
     let major2PrioBucket = [];
     let prioAnyBucket = [];
 
-    const major1 = majorOptions[state.selectedMajors[0]];
-    const major2 = majorOptions[state.selectedMajors[1]];
+    const major1 = state.selectedMajors[0];
+    const major2 = state.selectedMajors[1];
     
     // steps:
     
@@ -269,15 +269,15 @@ function assignOneMinor()
     // 60 for minor
     let majorRemaining = 120;
     let minor1Remaining = 60;
-    let minor1Level6 = 30;
-    let minor1Level7 = 15;
+
 
     //let minorFilterBucket = [];
 
-    const major = majorOptions[state.selectedMajors[0]];
-    const minor = minorOptions[state.selectedMinors[0]];
+    const major = state.selectedMajors[0];
+    const minor = state.selectedMinors[0];
 
-    
+    let minor1Level6 = minor.Level6PointsRequired;
+    let minor1Level7 = minor.Level7PointsRequired;
     // steps:
     
     // step 1: course that is part of the major, subtract
@@ -325,7 +325,7 @@ function assignOneMinor()
     {
         errors.push(new PlanError(
             null,
-            `${minor.Name} requires 30 points at level 6 to complete. You have ${30-minor1Level6} (${minor1Level6} missing).`,
+            `${minor.Name} requires ${minor.Level6PointsRequired} points at level 6 to complete. You have ${minor.Level6PointsRequired-minor1Level6} (${minor1Level6} missing).`,
             `Minor1Points6Remaining`
         ));
     }
@@ -333,7 +333,7 @@ function assignOneMinor()
     {
         errors.push(new PlanError(
             null,
-            `${minor.Name} requires 15 points at level 7 to complete. You have ${15-minor1Level7} (${minor1Level7} missing).`,
+            `${minor.Name} requires ${minor.Level7PointsRequired} points at level 7 to complete. You have ${minor.Level7PointsRequired-minor1Level7} (${minor1Level7} missing).`,
             `Minor1Points7Remaining`
         ));
     }
@@ -345,21 +345,22 @@ function assignTwoMinor()
     // 60 for minors
     let majorRemaining = 120;
     let minor1Remaining = 60;
-    let minor1Level6 = 30;
-    let minor1Level7 = 15;
     let minor2Remaining = 60;
-    let minor2Level6 = 30;
-    let minor2Level7 = 15;
 
     let minor1PrioBucket = [];
     let minor2PrioBucket = [];
     let minorNoPrioBucket = [];
 
-    const major = majorOptions[state.selectedMajors[0]];
-    const minor1 = minorOptions[state.selectedMinors[0]];
-    const minor2 = minorOptions[state.selectedMinors[1]];
+    const major = state.selectedMajors[0];
+    const minor1 = state.selectedMinors[0];
+    const minor2 = state.selectedMinors[1];
 
-    
+    let minor1Level6 = minor1.Level6PointsRequired;
+    let minor1Level7 = minor1.Level7PointsRequired;
+
+    let minor2Level6 = minor2.Level6PointsRequired;
+    let minor2Level7 = minor2.Level7PointsRequired;
+    console.log('aaaaa');
     // steps:
     
     // step 1: course that is part of the major, subtract
@@ -530,7 +531,7 @@ function assignTwoMinor()
     {
         errors.push(new PlanError(
             null,
-            `${minor1.Name} requires 30 points at level 6 to complete. You have ${30-minor1Level6} (${minor1Level6} missing).`,
+            `${minor1.Name} requires ${minor1.Level6PointsRequired} points at level 6 to complete. You have ${minor1.Level6PointsRequired-minor1Level6} (${minor1Level6} missing).`,
             `Minor1Points6Remaining`
         ));
     }
@@ -538,7 +539,7 @@ function assignTwoMinor()
     {
         errors.push(new PlanError(
             null,
-            `${minor1.Name} requires 15 points at level 7 to complete. You have ${15-minor1Level7} (${minor1Level7} missing).`,
+            `${minor1.Name} requires ${minor1.Level7PointsRequired} points at level 7 to complete. You have ${minor1.Level7PointsRequired-minor1Level7} (${minor1Level7} missing).`,
             `Minor1Points7Remaining`
         ));
     }
@@ -554,7 +555,7 @@ function assignTwoMinor()
     {
         errors.push(new PlanError(
             null,
-            `${minor2.Name} requires 30 points at level 6 to complete. You have ${30-minor2Level6} (${minor2Level6} missing).`,
+            `${minor2.Name} requires ${minor2.Level6PointsRequired} points at level 6 to complete. You have ${minor2.Level6PointsRequired-minor2Level6} (${minor2Level6} missing).`,
             `Minor2Points6Remaining`
         ));
     }
@@ -562,7 +563,7 @@ function assignTwoMinor()
     {
         errors.push(new PlanError(
             null,
-            `${minor2.Name} requires 15 points at level 7 to complete. You have ${15-minor2Level7} (${minor2Level7} missing).`,
+            `${minor2.Name} requires ${minor2.Level7PointsRequired} points at level 7 to complete. You have ${minor2.Level7PointsRequired-minor2Level7} (${minor2Level7} missing).`,
             `Minor2Points7Remaining`
         ));
     }

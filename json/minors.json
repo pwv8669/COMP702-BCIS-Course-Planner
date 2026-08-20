@@ -38,7 +38,9 @@
         ],
         "IncompatibleMinors": [
             "DataScience"
-        ]
+        ],
+        "Level6PointsRequired": 15,
+        "Level7PointsRequired": 15
     },
     "ComputerScience": {
         "Code": "ComputerScience",
@@ -72,7 +74,9 @@
             }
         ],
         "IncompatibleMajors": [],
-        "IncompatibleMinors": []
+        "IncompatibleMinors": [],
+        "Level6PointsRequired": 30,
+        "Level7PointsRequired": 15
     },
     "DataScience": {
         "Code": "DataScience",
@@ -109,7 +113,9 @@
         "IncompatibleMajors": [],
         "IncompatibleMinors": [
             "ArtificialIntelligence"
-        ]
+        ],
+        "Level6PointsRequired": 30,
+        "Level7PointsRequired": 15
     },
     "DigitalServices": {
         "Code": "DigitalServices",
@@ -144,7 +150,9 @@
             }
         ],
         "IncompatibleMajors": [],
-        "IncompatibleMinors": []
+        "IncompatibleMinors": [],
+        "Level6PointsRequired": 30,
+        "Level7PointsRequired": 15
     },
     "NetworksAndCybersecurity": {
         "Code": "NetworksAndCybersecurity",
@@ -179,7 +187,9 @@
             }
         ],
         "IncompatibleMajors": [],
-        "IncompatibleMinors": []
+        "IncompatibleMinors": [],
+        "Level6PointsRequired": 30,
+        "Level7PointsRequired": 15
     },
     "SoftwareDevelopment": {
         "Code": "SoftwareDevelopment",
@@ -215,6 +225,8 @@
             }
         ],
         "IncompatibleMajors": [],
-        "IncompatibleMinors": []
+        "IncompatibleMinors": [],
+        "Level6PointsRequired": 30,
+        "Level7PointsRequired": 15
     }
 }
