@@ -29,6 +29,7 @@ const requiredCourseOwners = new Map();
 const requiredCourseSubstitutions = [];
 
 const chooseNSubstitutions = [];
+const MAX_UNRESTRICTED_DOUBLE_MAJOR_SUBSTITUTION_POINTS = 30;
 
 /*
  * Course data and semester rules are static for the lifetime of the page, so
@@ -197,9 +198,13 @@ function tryChooseNRequirements(
             availableCourses,
             selectedCourses
         );
+    const overlappingCourses =
+        requirement.Courses.filter(
+            course =>
+                selectedCourses.has(course.code)
+        );
     const overlappingCourseCount =
-        requirement.Courses.length -
-        availableCourses.length;
+        overlappingCourses.length;
     const minimumSubstitutionCount =
         Math.max(
             0,
@@ -243,7 +248,14 @@ function tryChooseNRequirements(
             if (substitutionCount > 0) {
                 chooseNSubstitutions.push({
                     requirement,
-                    count: substitutionCount
+                    count: substitutionCount,
+                    points: overlappingCourses
+                        .slice(0, substitutionCount)
+                        .reduce(
+                            (total, course) =>
+                                total + course.points,
+                            0
+                        )
                 });
             }
 
@@ -912,13 +924,14 @@ function getChooseNReplacementGroups() {
         substitution => ({
             duplicatedCourse: null,
             requirement: substitution.requirement,
-            count: substitution.count
+            count: substitution.count,
+            points: substitution.points
         })
     );
 }
 
 // Determine candidate courses that can substitute for a duplicated required course.
-// - For double majors with <=2 total substitutes needed, electives are allowed
+// - For double majors with <=30 overlapping points, electives are allowed
 // - Otherwise only courses from the two overlapping options are considered
 // - Filters out courses already selected and, for safety, courses below the duplicated course's level
 function getAvailableReplacementCourses(
@@ -928,12 +941,13 @@ function getAvailableReplacementCourses(
     const isDoubleMajor =
         isDoubleMajorPathway();
 
-    const totalSubstitutes =
-        getNumberOfSubstitutesNeeded();
+    const requiredSubstitutionPoints =
+        getRequiredSubstitutionPoints();
 
     const canUseElectives =
         isDoubleMajor &&
-        totalSubstitutes <= 2;
+        requiredSubstitutionPoints <=
+            MAX_UNRESTRICTED_DOUBLE_MAJOR_SUBSTITUTION_POINTS;
 
     if (canUseElectives) {
         return getAvailableElectiveCourses(
@@ -977,27 +991,28 @@ function getAvailableChooseNReplacementCourses(
     const isDoubleMajor =
         isDoubleMajorPathway();
 
-    const totalSubstitutes =
-        getNumberOfSubstitutesNeeded();
+    const requiredSubstitutionPoints =
+        getRequiredSubstitutionPoints();
 
-    const totalChooseNSubstitutes =
+    const chooseNSubstitutionPoints =
         chooseNSubstitutions.reduce(
             (total, substitution) =>
-                total + substitution.count,
+                total + substitution.points,
             0
         );
 
-    const totalSubstitutions =
-        totalSubstitutes +
-        totalChooseNSubstitutes;
+    const totalSubstitutionPoints =
+        requiredSubstitutionPoints +
+        chooseNSubstitutionPoints;
 
     /*
-     * Double majors can use up to two unrestricted electives
-     * for substitutions.
+     * Double majors can use unrestricted electives for up to 30 points of
+     * overlapping requirements.
      */
     if (
         isDoubleMajor &&
-        totalSubstitutions <= 2
+        totalSubstitutionPoints <=
+            MAX_UNRESTRICTED_DOUBLE_MAJOR_SUBSTITUTION_POINTS
     ) {
         return getAvailableElectiveCourses(
             selectedCourses
@@ -1005,7 +1020,7 @@ function getAvailableChooseNReplacementCourses(
     }
 
     /*
-     * Once the two double-major elective slots are exhausted,
+     * Once the 30-point double-major allowance is exceeded,
      * replacements must come from courses offered by the
      * selected majors/minors.
      *
@@ -1041,9 +1056,13 @@ function getAvailableChooseNReplacementCourses(
         );
 }
 
-// Total number of required-course overlaps needing substitutes.
-function getNumberOfSubstitutesNeeded() {
-    return requiredCourseSubstitutions.length;
+// Total points represented by required-course overlaps.
+function getRequiredSubstitutionPoints() {
+    return requiredCourseSubstitutions.reduce(
+        (total, substitution) =>
+            total + substitution.duplicatedCourse.points,
+        0
+    );
 }
 
 function getAvailableElectiveCourses(selectedCourses) {

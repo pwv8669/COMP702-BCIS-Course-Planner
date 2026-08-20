@@ -10,6 +10,7 @@ const coursePlanCourses = new Set();
 const requiredCourseOverlaps = new Map();
 const chooseNSubstitutions = [];
 let selectedOptions = [];
+const MAX_UNRESTRICTED_DOUBLE_MAJOR_SUBSTITUTION_POINTS = 30;
 
 function isDoubleMajorPathway() {
     const pathway = state.selectedPathway;
@@ -216,7 +217,14 @@ function attributeChooseNCourses(majorOrMinor){
             chooseNSubstitutions.push({
                 majorOrMinor,
                 requirement,
-                count: numberOfSubstitutions
+                count: numberOfSubstitutions,
+                points: overlappingCourses
+                    .slice(0, numberOfSubstitutions)
+                    .reduce(
+                        (total, course) =>
+                            total + course.points,
+                        0
+                    )
             });
         }
     }
@@ -263,11 +271,11 @@ function attributeSubstitutions(substitutions = null) {
         return true;
     }
 
-    const totalSubstitutions =
-        requiredCourseOverlaps.size +
+    const totalSubstitutionPoints =
+        getRequiredSubstitutionPoints() +
         chooseNSubstitutions.reduce(
             (total, substitution) =>
-                total + substitution.count,
+                total + substitution.points,
             0
         );
     let selectedIndex = -1;
@@ -278,7 +286,7 @@ function attributeSubstitutions(substitutions = null) {
         const substitution = substitutions[index];
         const candidates = getSubstitutionCandidates(
             substitution,
-            totalSubstitutions
+            totalSubstitutionPoints
         );
 
         if (candidates.length < substitution.count) {
@@ -329,14 +337,17 @@ function attributeSubstitutions(substitutions = null) {
     return false;
 }
 
-function getSubstitutionCandidates(substitution, totalSubstitutions) {
+function getSubstitutionCandidates(
+    substitution,
+    totalSubstitutionPoints
+) {
     if (substitution.type === "Required") {
         return getRequiredSubstitutionCandidates(substitution);
     }
 
     return getChooseNSubstitutionCandidates(
         substitution,
-        totalSubstitutions
+        totalSubstitutionPoints
     );
 }
 
@@ -356,7 +367,8 @@ function getRequiredSubstitutionCandidates(substitution) {
     );
     const canUseUnrestrictedSubstitute =
         isDoubleMajorPathway() &&
-        requiredCourseOverlaps.size <= 2;
+        getRequiredSubstitutionPoints() <=
+            MAX_UNRESTRICTED_DOUBLE_MAJOR_SUBSTITUTION_POINTS;
     const possibleCourses = canUseUnrestrictedSubstitute
         ? getCourseObjectsFromPlan()
         : [
@@ -382,11 +394,12 @@ function getRequiredSubstitutionCandidates(substitution) {
 
 function getChooseNSubstitutionCandidates(
     substitution,
-    totalSubstitutions
+    totalSubstitutionPoints
 ) {
     const isUnrestrictedDoubleMajorSubstitution =
         isDoubleMajorPathway() &&
-        totalSubstitutions <= 2;
+        totalSubstitutionPoints <=
+            MAX_UNRESTRICTED_DOUBLE_MAJOR_SUBSTITUTION_POINTS;
     const minimumLevel = Math.min(
         ...substitution.requirement.Courses.map(
             course => course.level
@@ -478,6 +491,29 @@ function getCombinationCount(numberOfCourses, count) {
     }
 
     return result;
+}
+
+function getRequiredSubstitutionPoints() {
+    let totalPoints = 0;
+
+    for (const [courseCode, unfulfilledOptionCode] of
+        requiredCourseOverlaps) {
+        const unfulfilledOption = selectedOptions.find(option =>
+            option.Code === unfulfilledOptionCode
+        );
+        const overlappingCourse = findCourseInOption(
+            courseCode,
+            unfulfilledOption
+        );
+
+        if (!overlappingCourse) {
+            return Infinity;
+        }
+
+        totalPoints += overlappingCourse.points;
+    }
+
+    return totalPoints;
 }
 
 function getCourseUsefulness(courseCode, currentMajorOrMinor) {
