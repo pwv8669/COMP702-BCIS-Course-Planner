@@ -1,4 +1,3 @@
-import { getCoursesFromSelectedMajorsAndMinors } from './autopopulateStudyPlan.js';
 function parsePrereqs(node) {
     if (!node) return "No prerequisites";
 
@@ -47,8 +46,25 @@ function parsePrereqs(node) {
 
     return "Unknown prerequisite structure";
 }
+import { getCoursesFromSelectedMajorsAndMinors } from './autopopulateStudyPlan.js';
 
+async function TypeOfCell(coursecode){
+try{
+    let arrayofcourses = (getCoursesFromSelectedMajorsAndMinors());
+    console.log(arrayofcourses);
+    for (let requiredcourse = 0; requiredcourse < arrayofcourses.length; requiredcourse++) {
+        if( coursecode == arrayofcourses[requiredcourse].code){
+            return true;
+        }
+    }
 
+    return false;
+
+}
+catch{
+    return false;
+}
+}
 
 export async function renderCoursePlan(state) {
     for (let row = 0; row < state.coursePlan.length; row++) {
@@ -91,7 +107,7 @@ export async function renderCoursePlan(state) {
     }
 }
 
-document.addEventListener("DOMContentLoaded", () => {
+
     document.addEventListener("click", (e) => {
         if (!e.target.classList.contains("prereq-btn")) return;
 
@@ -101,7 +117,7 @@ document.addEventListener("DOMContentLoaded", () => {
         box.style.display = hidden ? "block" : "none";
         e.target.textContent = hidden ? "Hide reqs" : "Show reqs";
     });
-});
+
 
 
 
