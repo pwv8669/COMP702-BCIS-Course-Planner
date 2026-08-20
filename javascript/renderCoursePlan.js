@@ -1,3 +1,4 @@
+import { getCoursesFromSelectedMajorsAndMinors } from './autopopulateStudyPlan.js';
 function parsePrereqs(node) {
     if (!node) return "No prerequisites";
 
@@ -62,18 +63,26 @@ export async function renderCoursePlan(state) {
                 cell.textContent = "";
                 continue;
             }
-
             const prereqText = parsePrereqs(course.prerequisites);
+            
+             if(await TypeOfCell(course.code)){
+                
+                cell.innerHTML = `
+                <div class="course-cell"> Required`;
+            }
+            else{
+                cell.innerHTML = `<div class="course-cell">
+                `;
+            }
+            
 
-            cell.innerHTML = `
-                <div class="course-cell">
-                    <div class="course-name">${course.code}: ${course.name}</div>
+            cell.innerHTML +=`<div class="course-name">${course.code}: ${course.name}</div>
 
                     <button class="prereq-btn" data-html2canvas-ignore="true">
                         Show reqs
                     </button>
 
-                    <div class="prereq-list" style="display:none;">
+                    <div class="prereq-list" style="display:none;" data-html2canvas-ignore="true">
                         ${prereqText}
                     </div>
                 </div>
