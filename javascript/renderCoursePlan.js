@@ -48,28 +48,22 @@ function parsePrereqs(node) {
 }
 import { getCoursesFromSelectedMajorsAndMinors } from './autopopulateStudyPlan.js';
 import { loadMajorOptions } from "./objects/majorMinorOption.js";
+import { attributedCourses } from "./majorMinorRequirementsValidator.js";
 
 async function TypeOfCell(coursecode){
 try{
     const majorOptions = await loadMajorOptions();
+    //get the options from core
     let coreOptions = majorOptions["Core"];
-
-    let arrayofcourses = (getCoursesFromSelectedMajorsAndMinors());
-    console.log(arrayofcourses);
-    for (let requiredcourse = 0; requiredcourse < arrayofcourses.length; requiredcourse++) {
-        if( coursecode == arrayofcourses[requiredcourse].code){
-            return "Required";
-        }
+    // console.log("TORETURN");
+    // console.log(attributedCourses.get(coursecode));
+    let arrayofcourses = (getCoursesFromSelectedMajorsAndMinors());//we kind of need this to "break" the try loop
+    //when the website first loads so it defaults to core
+    //when i fixed this system it instead started returning "Elective" which we dont want 
+    if(!attributedCourses.has(coursecode)){
+        return "Elective";
     }
-    for (let requiredcore = 0; requiredcore < coreOptions.Requirements.length; requiredcore++) {
-        console.log("readthisc"+coreOptions.Requirements[requiredcore].Courses[0].code);
-        if( coursecode == coreOptions.Requirements[requiredcore].Courses[0].code){
-            return "Core";
-        }
-    }
-
-    return "Elective";
-
+        return attributedCourses.get(coursecode).replace(/([A-Z])/g, ' $1').trim();
 }
 catch{
     return "Core";
@@ -89,22 +83,26 @@ export async function renderCoursePlan(state) {
                 cell.textContent = "";
                 continue;
             }
-            const prereqText = parsePrereqs(course.prerequisites);
-            
-            cell.innerHTML = `<div class="course-cell">${await TypeOfCell(course.code)}:`;
+            const prereqText = parsePrereqs(course.prerequisites);//parse prereqs 
+            const typecell = await TypeOfCell(course.code);
+            cell.innerHTML = `<div class="course-cell">${typecell}:`;//set the requirement level e.g. Elective, Core or Major/Minor name
+            if(!(cell.classList.contains('cell-red-error') || cell.classList.contains('cell-yellow-warning'))){//we dont want to overwrite the error class, so we check if theres already a class
+                switch(typecell){//usually the error applied, if not, only then do we check for this
+                    case "Core"://keep core green
+                        break;
+                    case "Elective"://make electives their color
+                            cell.classList = 'cell-elective';
+                        break;
+                    default://make required courses eg major minor courses their own color
+                            cell.classList = 'cell-required';
+                        break;
+                            
+                }
+            }
             
 
-            cell.innerHTML +=`<div class="course-name">${course.code}: ${course.name}</div>
+            cell.innerHTML +=`<div class="course-name">${course.code}: ${course.name}</div>`
             const coreqText = parsePrereqs(course.corequisites);
-            console.log("text" + coreqText);
-            console.log(state.coursePlan)
-            cell.innerHTML = `
-                <div class="course-cell">
-                    <div class="course-name">${course.code}: ${course.name}</div>
-                    
-                  
-                
-            `;
 
             if(prereqText != "No prerequisites" || coreqText != "No prerequisites" ){
                   cell.innerHTML += `<button class="prereq-btn" data-html2canvas-ignore="true">
@@ -124,11 +122,10 @@ export async function renderCoursePlan(state) {
                     
             }
 
-                    <div class="prereq-list" style="display:none;" data-html2canvas-ignore="true">
+                    cell.innerHTML +=`<div class="prereq-list" style="display:none;" data-html2canvas-ignore="true">
                         ${prereqText}
                     </div>
-                </div>
-            `;
+                </div>`;
             cell.innerHTML += `</div>`;
         }
     }
