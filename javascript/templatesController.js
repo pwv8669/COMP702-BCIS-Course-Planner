@@ -130,14 +130,14 @@ function initTemplatesController() {
             btnContainer.innerHTML = ''; 
 
             if (files.length === 0) {
-                btnContainer.innerHTML = '<p style="color:#777; font-size:14px;">No templates found.</p>';
+                btnContainer.innerHTML = '<p style="color:#777; font-size:calc(1.4 * var(--scale));">No templates found.</p>';
                 return;
             }
 
             files.forEach(file => {
                 const btn = document.createElement('button');
                 btn.type = 'button';
-                btn.style.margin = '5px';
+                btn.style.margin = 'calc(.5 * var(--scale))';
                 btn.textContent = file.display_name; 
 
                 btn.addEventListener('click', async () => {
@@ -158,7 +158,7 @@ function initTemplatesController() {
             });
         } catch (error) {
             console.error("Error communicating with template scanner:", error);
-            btnContainer.innerHTML = '<p style="color:red; font-size:14px;">Error connecting to templates folder.</p>';
+            btnContainer.innerHTML = '<p style="color:red; font-size:calc(1.4 * var(--scale));">Error connecting to templates folder.</p>';
         }
     }
 
