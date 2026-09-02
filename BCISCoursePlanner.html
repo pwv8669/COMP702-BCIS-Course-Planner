@@ -13,29 +13,23 @@
         --scale: 1vmin;
     }
 
-    .page-grid {
-        display: grid;
-        grid-template-columns: 1fr 0.8fr; /* main content | sidebar */
-        grid-template-rows: auto 1fr auto; /* top | main table | bottom */
-        gap: calc(2 * var(--scale));
-        width: 100vw;
-        height: 100vh;
-        padding: calc(2 * var(--scale));
-        box-sizing: border-box;
-    }
     body {
         /* set default font */
-        font-size: calc(2 * var(--scale));
+        font-size: calc(1.5 * var(--scale));
         color: #ffffff;
         font-family: 'Trebuchet MS';
         font-weight: bolder;
         background-color: #373537;
     }
+
 .top-selector-row {
-    display: flex;
-    align-items: flex-start;
-    gap: calc(2 * var(--scale));
-    margin-bottom: calc(1 * var(--scale));
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-start;
+  gap: calc(2 * var(--scale));
+  flex-wrap: nowrap; /* prevents stacking */
+  width: 100%;
 }
 
 th {
@@ -45,8 +39,8 @@ th {
 }
 .main-layout-container {
     display: block;
-    width: 100vw;
-    margin: 0;
+    width: 100%;
+    margin: calc(.3 * var(--scale));
     padding: 0;
 }
 .hidden-element {
@@ -66,7 +60,7 @@ td:hover .hidden-element {
   opacity: 1;
 }
 td{
-  height: 10vh;
+  height: calc(10 * var(--scale));
   font-size: 80%;
 
   font-weight: bolder;
@@ -77,6 +71,7 @@ td{
 
 .schedule-table {
     border-collapse: collapse;
+    width: 100%;
     table-layout: fixed; /* Forces all 6 columns to stay exactly the same width */
     font-family: Arial, sans-serif;
 }
@@ -85,7 +80,7 @@ td{
     color: white;
     padding: calc(1.2 * var(--scale)) calc(.8 * var(--scale));
     vertical-align: top;
-    font-size: calc(1.2 * var(--scale));;
+    font-size: calc(1.6 * var(--scale));;
     border: calc(.1 * var(--scale)) solid #6e7475;
     word-wrap: break-word;
 }
@@ -148,11 +143,9 @@ td{
     overflow-x: hidden;
     padding: calc(1 * var(--scale));
     background-color: #6e7475;
-    border: calc(1 * var(--scale)) solid #ccc;
+    border: calc(.1 * var(--scale)) solid #ccc;
     border-radius: calc(.6 * var(--scale));
-    margin-top: calc(1 * var(--scale));
-    float: left;
-    width: 25%;
+    margin-top: calc(.1 * var(--scale));
 }
 #yellow-error-list-container {
     min-height: calc(12 * var(--scale));
@@ -161,19 +154,17 @@ td{
     overflow-x: hidden;
     padding: calc(1 * var(--scale));
     background-color: #6e7475;
-    border: calc(1 * var(--scale)) solid #ccc;
+    border: calc(.1 * var(--scale)) solid #ccc;
     border-radius: calc(.6 * var(--scale));
-    margin-top: calc(1 * var(--scale));
+    margin-top: calc(.1 * var(--scale));
     margin-left: calc(1 * var(--scale));
-    float: left;
-    width: 40%;
 }
 .success-msg {
     color: #3abd3a;
     font-weight: bold;
 }
 .course-picker-sidebar {
-    width: calc(25 * var(--scale));
+    width: 100%;
     margin-right: calc(.2 * var(--scale));
     font-family: Arial, sans-serif;
 }
@@ -202,7 +193,7 @@ td{
 
 .table-grid {
   display: grid;
-  width: 100vw;
+  width: 100%;
   grid-template-columns: 5fr 1fr;
   align-items: stretch;
   clear: both;
@@ -214,6 +205,7 @@ td{
   grid-row: 1;
   grid-column: 2;
   position: relative;
+  width: 100%;
 }
 
 #dynamic-course-sidebar {
@@ -322,13 +314,28 @@ button {
     display: grid;
     grid-template-columns: repeat(3, 1fr); 
     gap: calc(1 * var(--scale)); 
-    width: 28%;  
-    padding: calc(1 * var(--scale));
+    height: 100%;  
+    padding: 0;
+    margin-left: calc(1 * var(--scale));
+    margin-top: calc(.1 * var(--scale));
 }
 .button-grid button {
     width: 100%;
 }
-select,label {
+.button-grid form {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+}
+
+.button-grid form button {
+  width: 100%;
+  height: 100%;
+}
+
+
+
+select {
   color: #ffffff;
   font-family: 'Trebuchet MS'; 
   font-weight: bolder;
@@ -348,18 +355,11 @@ select,button{
   margin: 0.165%;
 }
 
-label{
-  background-color: #822787;
-  margin-right: calc(1 * var(--scale));
-  width: calc(40 * var(--scale));
-  display: inline-block;
-}
 
 select{
   background-color: #bd6fc1;
   width: calc(35 * var(--scale));
 }
-
 select:hover,button:hover{
    transform: scale(1.025);
 
@@ -396,24 +396,19 @@ select:hover,button:hover{
     border-radius: calc(.4 * var(--scale));
     cursor: pointer;
 }
-
 .ignore-error-btn:hover {
     background-color: #bbb;
 }
-
 #ignored-errors-container {
     margin-top: calc(1 * var(--scale));
     padding: calc(1 * var(--scale));
     background-color: #6e7475; 
     border: calc(.1 * var(--scale)) solid #ccc;
-    border-radius: calc(.6 * var(--scale));
-    width: 60%; 
-    float: left;
+    border-radius: calc(.6 * var(--scale)); 
     color: white;
     font-family: Arial, sans-serif;
+     grid-column: 1 / 3; /* spans col 1 and 2 */
 }
-
-
 #ignored-errors-container h3 {
     margin: 0 0 calc(1 * var(--scale)) 0;
     font-size: calc(1.6 * var(--scale));
@@ -424,8 +419,6 @@ select:hover,button:hover{
     border-radius: calc(.4 * var(--scale));
     width: calc(13 * var(--scale));
 }
-
-
 .ignored-error-item {
     padding: calc(1 * var(--scale)) calc(1.4 * var(--scale));
     margin-bottom: calc(.6 * var(--scale));
@@ -435,7 +428,6 @@ select:hover,button:hover{
     color: #8a6d1c;            
     border-left: calc(.5 * var(--scale)) solid #e3b022; 
 }
-
 .delete-ignored-btn {
     font-size: calc(1.2 * var(--scale));
     padding: calc(.2 * var(--scale)) calc(.6 * var(--scale));
@@ -445,32 +437,45 @@ select:hover,button:hover{
     border-radius: calc(.4 * var(--scale));
     cursor: pointer;
 }
-
 .delete-ignored-btn:hover {
     background-color: #6eacc4;
 }
 
-.page-grid {
+.bottom-section-grid {
   display: grid;
-  grid-template-columns: 1fr; /* single column for row 1 */
-  grid-template-rows: auto auto auto auto; /* 4 rows */
-  gap: calc(2 * var(--scale));
-  width: 100vw;
-  min-height: 100vh;
-  padding: calc(2 * var(--scale));
+  grid-template-columns: 1fr 1fr 1fr; /* 60% errors, 40% buttons */
+  grid-template-rows: auto auto;
+  gap: calc(.1 * var(--scale));
+  width: 100%;
+  margin-top: calc(2 * var(--scale));
+}
+.buttons-column {
+  grid-column: 3;
+  grid-row: 1 / 3; /* spans both rows */
+  display: flex;
+  flex-direction: column;
+}
+
+#pathwayOptionContainer {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: calc(.2 * var(--scale));
+  flex-wrap: nowrap;
+}
+#pathwayOptionContainer label,
+label[for="pathwaySelect"] {
+  display: flex;
+  flex-direction: column;
+  font-size: calc(2 * var(--scale));
+  justify-content: center;
+  gap: calc(1 * var(--scale));
+  background-color: #822787;
+  padding: calc(1 * var(--scale));
+  min-width: calc(20 * var(--scale));
+  width: auto;
   box-sizing: border-box;
-}
-
-.row-schedule {
-  display: grid;
-  grid-template-columns: 4fr 1fr; /* 80% table, 20% sidebar */
-  gap: calc(2 * var(--scale));
-}
-
-.row-errors-buttons {
-  display: grid;
-  grid-template-columns: 3fr 2fr; /* 60% errors, 40% buttons */
-  gap: calc(2 * var(--scale));
+  margin-right: calc(0 * var(--scale));
 }
 
 </style>
@@ -485,9 +490,8 @@ select:hover,button:hover{
                 <form id="pathwayForm">
                     <div style="background-color: #dd6e46;"></div>
                     <div>
-                        <label class=pathwayselector style="margin-right: calc(.6 * var(--scale));" for="pathwaySelect">
+                        <label class=pathwayselector for="pathwaySelect">
                             Course Pathway:
-                            <div style="height: calc(1* var(--scale));"></div>
                             <select id="pathwaySelect" name="pathwaySelect">
                                 <option value="doubleMajors" selected>
                                     Double Majors
@@ -504,7 +508,6 @@ select:hover,button:hover{
                 </form>
             </div>
 
-            <div style="margin-top: calc(.5 * var(--scale));"></div>
             <form id="pathwayOptionContainer"></form>
 
         </div>
@@ -572,53 +575,55 @@ select:hover,button:hover{
         </div>
     </div>
 
-    <div>
-        <div id="red-error-list-container">
+    <div class="bottom-section-grid">
 
-        </div>
+        
+            <div id="red-error-list-container">
 
-        <div id="yellow-error-list-container">
+            </div>
 
-        </div>
+            <div id="yellow-error-list-container">
 
-        <div id="ignored-errors-container">
-            <h3>Schedule Notes</h3>
-            <div id="ignored-errors-list"></div>
-        </div>
-    </div>
+            </div>
+
+            <div id="ignored-errors-container">
+                <h3>Schedule Notes</h3>
+                <div id="ignored-errors-list"></div>
+            </div>
+        
+
+        <div class="buttons-column">
+            <div class="button-grid">
+
+                <button title="View and use pre-made templates" id="openTemplates">Pre-made study plans</button>
+                <button title="Save course plan as a pre-made template" id="saveTemplateBtn" type="button">Save Current Plan</button>
+
+                <button title="Download course plan as importable file" id="SaveFileButton">Save Schedule as File</button>
+                <button title="Download course plan as PDF document" onclick="getPDF()">Save as PDF</button>
+
+                <button title="Autopopulate course plan according to selected majors/minors" id="AutocompletePlanButton">Autopopulate Plan</button>
+
+                <form action="https://www.aut.ac.nz/__data/assets/pdf_file/0011/952796/BCIS-Programme-Structure-2026.pdf" method="get" target="_blank">
+                    <button title="Open BCIS Programme Structure PDF in new tab" id="pdf">Programme Stucture PDF</button>
+                </form>
 
 
-    <div class="button-grid">
-
-        <button title="View and use pre-made templates" id="openTemplates">Pre-made study plans</button>
-        <button title="Save course plan as a pre-made template" id="saveTemplateBtn" type="button">Save Current Plan</button>
-
-        <button title="Download course plan as importable file" id="SaveFileButton">Save Schedule as File</button>
-        <button title="Download course plan as PDF document" onclick="getPDF()">Save as PDF</button>
-
-        <button title="Autopopulate course plan according to selected majors/minors" id="AutocompletePlanButton">Autopopulate Plan</button>
-
-        <form action="https://www.aut.ac.nz/__data/assets/pdf_file/0011/952796/BCIS-Programme-Structure-2026.pdf" method="get" target="_blank">
-            <button title="Open BCIS Programme Structure PDF in new tab" id="pdf">Programme Stucture PDF</button>
-        </form>
-
-
-        <div id="ignoreModal" class="hidden">
-            <div class="modal-content">
-                <h3>Add a note to ignore</h3>
-                <textarea id="ignoreNoteInput" placeholder="Explain why this error is being ignored..."></textarea>
-                <div class="modal-buttons">
-                    <button id="saveIgnoreNoteBtn">Save</button>
-                    <button id="cancelIgnoreBtn">Cancel</button>
+                <div id="ignoreModal" class="hidden">
+                    <div class="modal-content">
+                        <h3>Add a note to ignore</h3>
+                        <textarea id="ignoreNoteInput" placeholder="Explain why this error is being ignored..."></textarea>
+                        <div class="modal-buttons">
+                            <button id="saveIgnoreNoteBtn">Save</button>
+                            <button id="cancelIgnoreBtn">Cancel</button>
+                        </div>
+                    </div>
                 </div>
+
             </div>
         </div>
-
     </div>
 
     
-
-    <br><br>
 
     <dialog id="templates">
         <form id="uploadTemplateForm">
