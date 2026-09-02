@@ -559,16 +559,23 @@ function addRequiredSubstitutionError(
     const unfulfilledOption = selectedOptions.find(option =>
         option.Code === unfulfilledMajorOrMinorCode
     );
+    const canUseElectiveSubstitute =
+        canUseUnrestrictedRequiredSubstitute();
     const substitutionGuidance =
-        canUseUnrestrictedRequiredSubstitute()
+        canUseElectiveSubstitute
             ? "This double-major pathway permits up to 30 points of elective substitutions for overlapping required courses."
             : "A different course within your major/minor must be taken instead.";
-
-    errors.push(new PlanError(
+    const overlapError = new PlanError(
         courseCode,
         `Course ${courseCode} is required for ${unfulfilledOption.Name} but is already attributed to ${possessingOption.Name}. ${substitutionGuidance}`,
         `TooManyOverLaps-${courseCode}-${unfulfilledOption.Name}-${possessingOption.Name}`
-    ));
+    );
+
+    overlapError.severity = canUseElectiveSubstitute
+        ? "warning"
+        : "error";
+
+    errors.push(overlapError);
 }
 
 function getCoursesOfferedBy(majorOrMinor) {

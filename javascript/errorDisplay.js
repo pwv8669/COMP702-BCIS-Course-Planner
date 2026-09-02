@@ -57,17 +57,20 @@ function renderErrors(errorList) {
     for (const error of errorList) {
 
         //Classifying error message type using string comparison. may change the error object struct to contain colour types instead. that way they could be more easily changed
-        const isPrereqOrDuplicate =
-            error.message.toLowerCase().includes('prerequisites') ||
-            error.message.toLowerCase().includes('corequisites') ||
-            error.message.toLowerCase().includes('appears') ||
-            error.message.toLowerCase().includes('major') ||
-            error.message.toLowerCase().includes('not offered');
+        const isError =
+            error.severity === 'error' ||
+            (error.severity !== 'warning' && (
+                error.message.toLowerCase().includes('prerequisites') ||
+                error.message.toLowerCase().includes('corequisites') ||
+                error.message.toLowerCase().includes('appears') ||
+                error.message.toLowerCase().includes('major') ||
+                error.message.toLowerCase().includes('not offered')
+            ));
 
         const div = document.createElement("div");
 
         //Colouring based on type of error message
-        div.className = isPrereqOrDuplicate
+        div.className = isError
             ? "error-text-item red-alert"
             : "error-text-item yellow-alert";
 
@@ -97,7 +100,7 @@ function renderErrors(errorList) {
                         const cell = document.getElementById(cellId);
 
                         if (cell) {
-                            if (isPrereqOrDuplicate) {
+                            if (isError) {
                                 cell.classList.add('cell-red-error');
                             } else {
                                 cell.classList.add('cell-yellow-warning');
