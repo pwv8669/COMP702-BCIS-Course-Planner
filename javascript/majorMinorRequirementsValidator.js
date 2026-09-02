@@ -366,9 +366,7 @@ function getRequiredSubstitutionCandidates(substitution) {
         unfulfilledOption
     );
     const canUseUnrestrictedSubstitute =
-        isDoubleMajorPathway() &&
-        getRequiredSubstitutionPoints() <=
-            MAX_UNRESTRICTED_DOUBLE_MAJOR_SUBSTITUTION_POINTS;
+        canUseUnrestrictedRequiredSubstitute();
     const possibleCourses = canUseUnrestrictedSubstitute
         ? getCourseObjectsFromPlan()
         : [
@@ -516,6 +514,14 @@ function getRequiredSubstitutionPoints() {
     return totalPoints;
 }
 
+function canUseUnrestrictedRequiredSubstitute() {
+    return (
+        isDoubleMajorPathway() &&
+        getRequiredSubstitutionPoints() <=
+            MAX_UNRESTRICTED_DOUBLE_MAJOR_SUBSTITUTION_POINTS
+    );
+}
+
 function getCourseUsefulness(courseCode, currentMajorOrMinor) {
     let usefulness = 0;
 
@@ -553,10 +559,14 @@ function addRequiredSubstitutionError(
     const unfulfilledOption = selectedOptions.find(option =>
         option.Code === unfulfilledMajorOrMinorCode
     );
+    const substitutionGuidance =
+        canUseUnrestrictedRequiredSubstitute()
+            ? "This double-major pathway permits up to 30 points of elective substitutions for overlapping required courses."
+            : "A different course within your major/minor must be taken instead.";
 
     errors.push(new PlanError(
         courseCode,
-        `Course ${courseCode} is required for ${unfulfilledOption.Name} but is already attributed to ${possessingOption.Name}, and no suitable substitute course was found.`,
+        `Course ${courseCode} is required for ${unfulfilledOption.Name} but is already attributed to ${possessingOption.Name}. ${substitutionGuidance}`,
         `TooManyOverLaps-${courseCode}-${unfulfilledOption.Name}-${possessingOption.Name}`
     ));
 }
