@@ -118,16 +118,22 @@ export function validateMajorMinorRequirements(){
 
     // Allocate all substitutes together so one requirement cannot greedily
     // consume the only course that can satisfy another requirement.
-    if (!attributeSubstitutions()) {
-        for (const [courseCode, unfulfilledOptionCode] of
-            requiredCourseOverlaps) {
-            addRequiredSubstitutionError(
-                courseCode,
-                unfulfilledOptionCode
-            );
+    const substitutions = getSubstitutions();
+    const fulfilledSubstitutions = attributeSubstitutions(substitutions)
+        ? new Set(substitutions)
+        : attributeLargestSatisfiableSubset(substitutions);
+
+    for (const substitution of substitutions) {
+        if (fulfilledSubstitutions.has(substitution)) {
+            continue;
         }
 
-        for (const substitution of chooseNSubstitutions) {
+        if (substitution.type === "Required") {
+            addRequiredSubstitutionError(
+                substitution.courseCode,
+                substitution.unfulfilledOptionCode
+            );
+        } else {
             addChooseNError(
                 substitution.majorOrMinor,
                 substitution.requirement
@@ -248,24 +254,44 @@ function addChooseNError(majorOrMinor, requirement) {
     errors.push(new PlanError(null, message, id));
 }
 
-function attributeSubstitutions(substitutions = null) {
-    if (substitutions === null) {
-        substitutions = [
-            ...Array.from(
-                requiredCourseOverlaps,
-                ([courseCode, unfulfilledOptionCode]) => ({
-                    type: "Required",
-                    courseCode,
-                    unfulfilledOptionCode,
-                    count: 1
-                })
-            ),
-            ...chooseNSubstitutions.map(substitution => ({
-                ...substitution,
-                type: "ChooseN"
-            }))
-        ];
+function getSubstitutions() {
+    return [
+        ...Array.from(
+            requiredCourseOverlaps,
+            ([courseCode, unfulfilledOptionCode]) => ({
+                type: "Required",
+                courseCode,
+                unfulfilledOptionCode,
+                count: 1
+            })
+        ),
+        ...chooseNSubstitutions.map(substitution => ({
+            ...substitution,
+            type: "ChooseN"
+        }))
+    ];
+}
+
+function attributeLargestSatisfiableSubset(substitutions) {
+    for (
+        let subsetSize = substitutions.length - 1;
+        subsetSize >= 0;
+        subsetSize--
+    ) {
+        for (const subset of getCombinations(
+            substitutions,
+            subsetSize
+        )) {
+            if (attributeSubstitutions(subset)) {
+                return new Set(subset);
+            }
+        }
     }
+
+    return new Set();
+}
+
+function attributeSubstitutions(substitutions) {
 
     if (substitutions.length === 0) {
         return true;
