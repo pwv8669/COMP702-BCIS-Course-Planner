@@ -35,6 +35,10 @@ function initTemplatesController() {
     const openTemplates = document.getElementById('openTemplates');
     const closeTemplates = document.getElementById('closeTemplates');
     const btnContainer = document.getElementById('templateBtnContainer');
+
+    const saveModal = document.getElementById('saveModal');
+    const openSave = document.getElementById('openSave');
+    const closeSaveModal = document.getElementById('closeSaveModal');
     
     const templateInput = document.getElementById('localJsonFileInput');
     const uploadForm = document.getElementById('uploadTemplateForm');
@@ -48,8 +52,20 @@ function initTemplatesController() {
         });
     }
 
+    if (openSave && saveModal) {
+        openSave.addEventListener('click', () => {
+            saveModal.showModal();
+        });
+    }
+
     if (closeTemplates && panel) {
         closeTemplates.addEventListener('click', () => panel.close());
+    }
+
+    if (closeSaveModal && saveModal) {
+        closeSaveModal.addEventListener('click', () => {
+            saveModal.close();
+        });
     }
 
     if (uploadForm) {
