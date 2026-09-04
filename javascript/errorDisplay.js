@@ -1,4 +1,5 @@
 import { validateStudyPlan } from './planValidator.js';
+import { ErrorSeverity } from './objects/planError.js';
 import { state } from './state.js';
 
 //Gets the error list container from the html and the error list from validateStudyPlan() populates it with error messages by calling renderErrors()
@@ -57,15 +58,7 @@ function renderErrors(errorList) {
     for (const error of errorList) {
 
         //Classifying error message type using string comparison. may change the error object struct to contain colour types instead. that way they could be more easily changed
-        const isError =
-            error.severity === 'error' ||
-            (error.severity !== 'warning' && (
-                error.message.toLowerCase().includes('prerequisites') ||
-                error.message.toLowerCase().includes('corequisites') ||
-                error.message.toLowerCase().includes('appears') ||
-                error.message.toLowerCase().includes('major') ||
-                error.message.toLowerCase().includes('not offered')
-            ));
+        const isError = error.severity === ErrorSeverity.ERROR;
 
         const div = document.createElement("div");
 
@@ -94,19 +87,16 @@ function renderErrors(errorList) {
         //Schedule table highlighting of errors
         if (error.positions) {
             error.positions.forEach((row, semIndex) => {
-                row.forEach((isError, slotIndex) => {
-                    if (isError) {
-                        const cellId = `cell-${semIndex}-${slotIndex}`;
-                        const cell = document.getElementById(cellId);
+                row.forEach((hasErrorAtPosition, slotIndex) => {
+                    if (!hasErrorAtPosition) return;
 
-                        if (cell) {
-                            if (isError) {
-                                cell.classList.add('cell-red-error');
-                            } else {
-                                cell.classList.add('cell-yellow-warning');
-                            }
-                        }
-                    }
+                    const cell = document.getElementById(`cell-${semIndex}-${slotIndex}`);
+                    if (!cell) return;
+
+                    cell.classList.remove('cell-red-error', 'cell-yellow-warning');
+                    cell.classList.add(
+                        isError ? 'cell-red-error' : 'cell-yellow-warning'
+                    );
                 });
             });
         }

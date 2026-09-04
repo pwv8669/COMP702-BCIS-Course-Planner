@@ -1,6 +1,6 @@
 import { state } from "./state.js";
 import { loadMajorOptions } from "./objects/majorMinorOption.js";
-import { PlanError } from './objects/planError.js';
+import { PlanError, ErrorSeverity } from './objects/planError.js';
 
 const majorOptions = await loadMajorOptions();
 
@@ -52,7 +52,7 @@ export function validateMajorMinorRequirements(){
         if(!state.selectedMajors[i]){
             let message = `Major ${i+1} is missing!`;
             let id = `MissingMajor-${i+1}`;
-            let errorMsg = new PlanError(null, message, id);
+            let errorMsg = new PlanError(null, message, id, ErrorSeverity.ERROR);
             errors.push(errorMsg);
         }
     }
@@ -60,7 +60,7 @@ export function validateMajorMinorRequirements(){
         if(!state.selectedMinors[i]){
             let message = `Minor ${i+1} is missing!`;
             let id = `MissingMinor-${i+1}`;
-            let errorMsg = new PlanError(null, message, id);
+            let errorMsg = new PlanError(null, message, idErrorSeverity.ERROR);
             errors.push(errorMsg);
         }
     }
