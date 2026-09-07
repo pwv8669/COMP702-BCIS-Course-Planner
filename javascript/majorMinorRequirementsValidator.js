@@ -1,6 +1,6 @@
 import { state } from "./state.js";
 import { loadMajorOptions } from "./objects/majorMinorOption.js";
-import { PlanError } from './objects/planError.js';
+import { PlanError, ErrorSeverity } from './objects/planError.js';
 
 const majorOptions = await loadMajorOptions();
 
@@ -52,7 +52,7 @@ export function validateMajorMinorRequirements(){
         if(!state.selectedMajors[i]){
             let message = `Major ${i+1} is missing!`;
             let id = `MissingMajor-${i+1}`;
-            let errorMsg = new PlanError(null, message, id);
+            let errorMsg = new PlanError(null, message, id, ErrorSeverity.ERROR);
             errors.push(errorMsg);
         }
     }
@@ -60,7 +60,7 @@ export function validateMajorMinorRequirements(){
         if(!state.selectedMinors[i]){
             let message = `Minor ${i+1} is missing!`;
             let id = `MissingMinor-${i+1}`;
-            let errorMsg = new PlanError(null, message, id);
+            let errorMsg = new PlanError(null, message, idErrorSeverity.ERROR);
             errors.push(errorMsg);
         }
     }
@@ -118,16 +118,22 @@ export function validateMajorMinorRequirements(){
 
     // Allocate all substitutes together so one requirement cannot greedily
     // consume the only course that can satisfy another requirement.
-    if (!attributeSubstitutions()) {
-        for (const [courseCode, unfulfilledOptionCode] of
-            requiredCourseOverlaps) {
-            addRequiredSubstitutionError(
-                courseCode,
-                unfulfilledOptionCode
-            );
+    const substitutions = getSubstitutions();
+    const fulfilledSubstitutions = attributeSubstitutions(substitutions)
+        ? new Set(substitutions)
+        : attributeLargestSatisfiableSubset(substitutions);
+
+    for (const substitution of substitutions) {
+        if (fulfilledSubstitutions.has(substitution)) {
+            continue;
         }
 
-        for (const substitution of chooseNSubstitutions) {
+        if (substitution.type === "Required") {
+            addRequiredSubstitutionError(
+                substitution.courseCode,
+                substitution.unfulfilledOptionCode
+            );
+        } else {
             addChooseNError(
                 substitution.majorOrMinor,
                 substitution.requirement
@@ -248,24 +254,44 @@ function addChooseNError(majorOrMinor, requirement) {
     errors.push(new PlanError(null, message, id));
 }
 
-function attributeSubstitutions(substitutions = null) {
-    if (substitutions === null) {
-        substitutions = [
-            ...Array.from(
-                requiredCourseOverlaps,
-                ([courseCode, unfulfilledOptionCode]) => ({
-                    type: "Required",
-                    courseCode,
-                    unfulfilledOptionCode,
-                    count: 1
-                })
-            ),
-            ...chooseNSubstitutions.map(substitution => ({
-                ...substitution,
-                type: "ChooseN"
-            }))
-        ];
+function getSubstitutions() {
+    return [
+        ...Array.from(
+            requiredCourseOverlaps,
+            ([courseCode, unfulfilledOptionCode]) => ({
+                type: "Required",
+                courseCode,
+                unfulfilledOptionCode,
+                count: 1
+            })
+        ),
+        ...chooseNSubstitutions.map(substitution => ({
+            ...substitution,
+            type: "ChooseN"
+        }))
+    ];
+}
+
+function attributeLargestSatisfiableSubset(substitutions) {
+    for (
+        let subsetSize = substitutions.length - 1;
+        subsetSize >= 0;
+        subsetSize--
+    ) {
+        for (const subset of getCombinations(
+            substitutions,
+            subsetSize
+        )) {
+            if (attributeSubstitutions(subset)) {
+                return new Set(subset);
+            }
+        }
     }
+
+    return new Set();
+}
+
+function attributeSubstitutions(substitutions) {
 
     if (substitutions.length === 0) {
         return true;
@@ -366,9 +392,7 @@ function getRequiredSubstitutionCandidates(substitution) {
         unfulfilledOption
     );
     const canUseUnrestrictedSubstitute =
-        isDoubleMajorPathway() &&
-        getRequiredSubstitutionPoints() <=
-            MAX_UNRESTRICTED_DOUBLE_MAJOR_SUBSTITUTION_POINTS;
+        canUseUnrestrictedRequiredSubstitute();
     const possibleCourses = canUseUnrestrictedSubstitute
         ? getCourseObjectsFromPlan()
         : [
@@ -516,6 +540,14 @@ function getRequiredSubstitutionPoints() {
     return totalPoints;
 }
 
+function canUseUnrestrictedRequiredSubstitute() {
+    return (
+        isDoubleMajorPathway() &&
+        getRequiredSubstitutionPoints() <=
+            MAX_UNRESTRICTED_DOUBLE_MAJOR_SUBSTITUTION_POINTS
+    );
+}
+
 function getCourseUsefulness(courseCode, currentMajorOrMinor) {
     let usefulness = 0;
 
@@ -553,12 +585,23 @@ function addRequiredSubstitutionError(
     const unfulfilledOption = selectedOptions.find(option =>
         option.Code === unfulfilledMajorOrMinorCode
     );
-
-    errors.push(new PlanError(
+    const canUseElectiveSubstitute =
+        canUseUnrestrictedRequiredSubstitute();
+    const substitutionGuidance =
+        canUseElectiveSubstitute
+            ? "This double-major pathway permits up to 30 points of elective substitutions for overlapping required courses."
+            : "A different course within your major/minor must be taken instead.";
+    const overlapError = new PlanError(
         courseCode,
-        `Course ${courseCode} is required for ${unfulfilledOption.Name} but is already attributed to ${possessingOption.Name}, and no suitable substitute course was found.`,
+        `Course ${courseCode} is required for ${unfulfilledOption.Name} but is already attributed to ${possessingOption.Name}. ${substitutionGuidance}`,
         `TooManyOverLaps-${courseCode}-${unfulfilledOption.Name}-${possessingOption.Name}`
-    ));
+    );
+
+    overlapError.severity = canUseElectiveSubstitute
+        ? "warning"
+        : "error";
+
+    errors.push(overlapError);
 }
 
 function getCoursesOfferedBy(majorOrMinor) {

@@ -1,6 +1,6 @@
 import { state } from './state.js';
 import { NodeType } from './courseObjectConverter.js';
-import { PlanError } from './objects/planError.js';
+import { ErrorSeverity, PlanError } from './objects/planError.js';
 import { loadMajorOptions } from './objects/majorMinorOption.js';
 
 const majorOptions = await loadMajorOptions();
@@ -115,7 +115,7 @@ export function validatePrerequisites(){
             if (!valid){
                 let message = `The prerequisites for ${currentCourse.code} are not met by semester ${semester+1}.`; 
                 let id = `MissingPreq-${currentCourse.code}`;
-                let errorMsg = new PlanError(currentCourse.code, message, id);
+                let errorMsg = new PlanError(currentCourse.code, message, id, ErrorSeverity.ERROR);
                 errorMsg.positions[semester][slot] = true;
                 errors.push(errorMsg);
                 continue;
@@ -143,7 +143,8 @@ export function validatePrerequisites(){
                 const errorMsg = new PlanError(
                     currentCourse.code,
                     message,
-                    id
+                    id,
+                    ErrorSeverity.ERROR
                 );
                 errorMsg.positions[semester][slot] = true;
                 errors.push(errorMsg);
@@ -164,7 +165,8 @@ export function validatePrerequisites(){
                 const errorMsg = new PlanError(
                     currentCourse.code,
                     message,
-                    id
+                    id,
+                    ErrorSeverity.ERROR
                 );
                 errorMsg.positions[semester][slot] = true;
                 errors.push(errorMsg);
@@ -192,7 +194,7 @@ export function validateCorequisites(){
             if (!valid){
                 let message = `The corequisites for ${currentCourse.code} are not met by semester ${semester+1}.`;
                 let id = `MissingCoreq-${currentCourse.code}`;
-                let errorMsg = new PlanError(currentCourse.code, message, id);
+                let errorMsg = new PlanError(currentCourse.code, message, id, ErrorSeverity.ERROR);
                 errorMsg.positions[semester][slot] = true;
                 errors.push(errorMsg);
             }
