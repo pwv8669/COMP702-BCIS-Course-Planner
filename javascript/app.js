@@ -10,6 +10,7 @@ import './autopopulateStudyPlan.js';
 import { errorDisplay } from './errorDisplay.js';
 import { generateDynamicCourseList } from './courseListBuilder.js';
 import { initDragAndDrop, initGlobalDeleteZone } from './dragAndDropController.js';
+import { initPartTime } from './partTimeScheduleHandler.js';
 
 export let courses = {};
 async function init() {
@@ -39,6 +40,7 @@ async function init() {
 	
 	await refreshStudyPlan();
 	await initPathwayOptions();
+	initPartTime();
 }
 
 
