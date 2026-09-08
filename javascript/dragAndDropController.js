@@ -136,4 +136,11 @@ export function initGlobalDeleteZone(onDeleteCallback) {
     });
 }
 
+function mapCellToCoursePlan(row, col) {
+    const semesterIndex = col + (row >= 2 ? 6 : 0); // bottom rows map to semesters 6–11
+    const slotIndex = row % 2; // row 0 stays 0, row 1 stays 1, row 2 becomes 0, row 3 becomes 1
+
+    return { semesterIndex, slotIndex };
+    }
+
 

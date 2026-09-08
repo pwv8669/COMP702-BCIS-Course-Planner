@@ -1,4 +1,4 @@
-import { state } from './state.js';
+import { state, scheduleConfig } from './state.js';
 import { NodeType } from './courseObjectConverter.js';
 import { ErrorSeverity, PlanError } from './objects/planError.js';
 import { loadMajorOptions } from './objects/majorMinorOption.js';
@@ -11,7 +11,8 @@ export function getCompletedCourses(currentSemester){
     const completed = new Set()
     // Iterates through the previously completed courses and adds them to the set.
     for (let i = 0; i<currentSemester; i++){
-        for (const course of state.coursePlan[i]){
+        for (let j = 0; j < scheduleConfig.slotsPerSemester; j++){
+            const course = state.coursePlan[i][j];
             if (course){
                 completed.add(course.code);
             }
@@ -24,7 +25,7 @@ export function getCompletedCourses(currentSemester){
 function getCoursesInSemester(semester) {
     const courses = new Set();
 
-    if (semester < 0 || semester >= state.coursePlan.length) {
+    if (semester < 0 || semester >= scheduleConfig.semesters) {
         return courses;
     }
 
@@ -99,10 +100,10 @@ export function evaluateCoreAndMajorRequirements(
 
 export function validatePrerequisites(){
     const errors = [];
-    for (let semester = 0; semester < state.coursePlan.length; semester++){
+    for (let semester = 0; semester < scheduleConfig.semesters; semester++){
         const completedCourses = getCompletedCourses(semester);
 
-        for (let slot = 0; slot < state.coursePlan[semester].length; slot++){
+        for (let slot = 0; slot < scheduleConfig.slotsPerSemester; slot++){
             const currentCourse = state.coursePlan[semester][slot];
             // If the position in the course plan is empty, continue.
             if (!currentCourse) continue;
@@ -178,10 +179,10 @@ export function validatePrerequisites(){
 
 export function validateCorequisites(){
     const errors = [];
-    for (let semester = 0; semester < state.coursePlan.length; semester++){
+    for (let semester = 0; semester < scheduleConfig.semesters; semester++){
         const completedCourses = getCompletedCourses(semester + 1);
 
-        for (let slot = 0; slot < state.coursePlan[semester].length; slot++){
+        for (let slot = 0; slot < scheduleConfig.slotsPerSemester; slot++){
             const currentCourse = state.coursePlan[semester][slot];
             // If the position in the course plan is empty, continue.
             if (!currentCourse) continue;

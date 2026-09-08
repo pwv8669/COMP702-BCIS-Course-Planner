@@ -1,10 +1,10 @@
-import { state } from './state.js'
+import { state, scheduleConfig } from './state.js';
 import { PlanError, ErrorSeverity } from './objects/planError.js';
 
 function getCourseCounts(){
     const appearances = new Map();
-    for (let i = 0; i<state.coursePlan.length; i++){
-        for (let j = 0; j<state.coursePlan[i].length; j++){
+    for (let i = 0; i<scheduleConfig.semesters; i++){
+        for (let j = 0; j<scheduleConfig.slotsPerSemester; j++){
             const course = state.coursePlan[i][j];
             if (!course) continue;
             const code = course.code;
@@ -30,8 +30,8 @@ export function validateCourseAppearances() {
             let errorMsg = new PlanError(code, message, id, ErrorSeverity.ERROR);
             errorMsg.occurences = count
 
-            for (let semester = 0; semester < state.coursePlan.length; semester++){
-                for (let slot = 0; slot < state.coursePlan[semester].length; slot++){
+            for (let semester = 0; semester < scheduleConfig.semesters; semester++){
+                for (let slot = 0; slot < scheduleConfig.slotsPerSemester; slot++){
                     const course = state.coursePlan[semester][slot]
                     if (!course) continue;
                     if (course.code === code) {

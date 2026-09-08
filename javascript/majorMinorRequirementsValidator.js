@@ -1,4 +1,4 @@
-import { state } from "./state.js";
+import { state, scheduleConfig } from "./state.js";
 import { loadMajorOptions } from "./objects/majorMinorOption.js";
 import { PlanError, ErrorSeverity } from './objects/planError.js';
 
@@ -29,12 +29,13 @@ export function validateMajorMinorRequirements(){
     requiredCourseOverlaps.clear();
     chooseNSubstitutions.length = 0;
     // Fill the course plan courses set with all courses in the course plan for easy lookup.
-    for (let semester = 0; semester < state.coursePlan.length; semester++){
-		for (let slot = 0; slot < state.coursePlan[semester].length; slot++){
-            if (!state.coursePlan[semester][slot]) continue;
-            coursePlanCourses.add(state.coursePlan[semester][slot].code);
-		}
-	}
+    for (let semester = 0; semester < scheduleConfig.semesters; semester++){
+        for (let slot = 0; slot < scheduleConfig.slotsPerSemester; slot++){
+            const course = state.coursePlan[semester][slot];
+            if (!course) continue;
+            coursePlanCourses.add(course.code);
+        }
+    }
 
     // Derive the json data for the selected pathway in order to determine the number of majors and minors required.
     const pathway = state.selectedPathway;
