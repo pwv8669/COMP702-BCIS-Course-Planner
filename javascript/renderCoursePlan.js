@@ -68,6 +68,9 @@ try{
     if(attributedCourses.get(coursecode).replace(/([A-Z])/g, ' $1').trim() != "Core"){
         cell.classList = 'cell-required';
     }
+    else{
+        cell.classList = '';
+    }
         
         return attributedCourses.get(coursecode).replace(/([A-Z])/g, ' $1').trim();
 }

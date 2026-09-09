@@ -54,6 +54,6 @@ export function validateStudyPlan(){
         errors.push(error);
     }
 
-    console.log(errors);
+    //console.log(errors);
     return errors;
 }
