@@ -20,7 +20,7 @@ function isDoubleMajorPathway() {
     );
 }
 
-export async function validateMajorMinorRequirements(){
+export function validateMajorMinorRequirements(){
     // Clear the errors course sets before validating.
     errors = [];
     attributedCourses.clear();
@@ -132,7 +132,7 @@ export async function validateMajorMinorRequirements(){
     }
     
     // Uncomment below to see which courses correspond to which major/minor.
-    console.log(attributedCourses);
+   // console.log(attributedCourses);
     return errors;
 }
 
