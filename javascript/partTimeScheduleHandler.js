@@ -1,3 +1,6 @@
+import { scheduleConfig, setScheduleMode } from './state.js'
+import { refreshStudyPlan } from './app.js';
+
 export async function initPartTime()
 {
     const partTimeButton = document.getElementById('partTimeButton');
@@ -15,9 +18,9 @@ function switchSchedule()
     const cellIDs = [];
 
 
-
     if (partTimeHeader.style.display == "none")
     {
+        setScheduleMode('part-time');
         partTimeHeader.style.display = "table-row";
         cellIDs.push(document.getElementById('cell-0-2'));
         cellIDs.push(document.getElementById('cell-1-2'));
@@ -52,7 +55,7 @@ function switchSchedule()
 else
 {
     partTimeHeader.style.display = "none";
-
+    setScheduleMode('full-time');
     cellIDs.push(document.getElementById('cell-6-0'));
     cellIDs.push(document.getElementById('cell-7-0'));
     cellIDs.push(document.getElementById('cell-8-0'));
@@ -80,5 +83,7 @@ else
     cellIDs[9].id = "cell-3-3";
     cellIDs[10].id = "cell-4-3";
     cellIDs[11].id = "cell-5-3";
-}
+    }
+
+    refreshStudyPlan();
 }
