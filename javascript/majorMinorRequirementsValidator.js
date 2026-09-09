@@ -5,7 +5,7 @@ import { PlanError, ErrorSeverity } from './objects/planError.js';
 const majorOptions = await loadMajorOptions();
 
 var errors = [];
-const attributedCourses = new Map();
+export const attributedCourses = new Map();
 const coursePlanCourses = new Set();
 const requiredCourseOverlaps = new Map();
 const chooseNSubstitutions = [];
