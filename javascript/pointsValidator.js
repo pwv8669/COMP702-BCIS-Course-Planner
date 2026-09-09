@@ -271,7 +271,7 @@ function assignOneMinor()
     let minor1Remaining = 60;
 
 
-    //let minorFilterBucket = [];
+    let minorFilterBucket = [];
 
     const major = state.selectedMajors[0];
     const minor = state.selectedMinors[0];
@@ -280,18 +280,60 @@ function assignOneMinor()
     let minor1Level7 = minor.Level7PointsRequired;
     // steps:
     
-    // step 1: course that is part of the major, subtract
-    // step 2: exclusive to minors, go from there. level 6 and 7 requirements
+    // step 1: exclusive to minors, subtract.
+    // step 2: exclusive to majors, subtract.
+    // step 3: hard required by major, prio bucket -> filter
+    // step 4: soft required by major, prio bucket -> filter
 
     for (const course of coursePlanCourses)
     {
         // Step 1
-        if (courseCodeInRequirement(course, major.Requirements))
+        if (courseCodeFirstOnly(course, minor.Requirements, major.Requirements))
+        {
+            console.log("minor exclusive "+course);
+            minor1Remaining -= courses[course].points;
+            if (courses[course].level == 6)
+            {
+                minor1Level6 -= courses[course].points;
+            }
+            else if (courses[course].level == 7)
+            {
+                minor1Level7 -= courses[course].points;
+            }
+        }
+        // Step 2
+        else if (courseCodeFirstOnly(course, major.Requirements, minor.Requirements))
         {
             majorRemaining -= courses[course].points;
-            //console.log(`first only for `+course+` (`+major1Remaining+`)`);
         }
-        else if (courseCodeFirstOnly(course, minor.Requirements, major.Requirements))
+        // Step 3
+        else if (courseCodeFirstReqSecondChN(course, major.Requirements, minor.Requirements))
+        {
+            minorFilterBucket.push(course);
+        }
+        // Step 4
+        else if (courseCodeFirstReqSecondChN(course, minor.Requirements, major.Requirements))
+        {
+            minorFilterBucket.push(course);
+        }
+        else if (courseCodeDoubleChoose(course, major.Requirements, minor.Requirements))
+        {
+            minorFilterBucket.push(course);
+        }
+        else if (courseCodeDoubleRequired(course, major.Requirements, minor.Requirements))
+        {
+            minorFilterBucket.push(course);
+        }
+    }
+
+    for (let i = 0; i < minorFilterBucket.length; i++)
+    {
+        let course = minorFilterBucket[i];
+        if (majorRemaining > 0)
+        {
+            majorRemaining -= courses[course].points;
+        }
+        else
         {
             minor1Remaining -= courses[course].points;
             if (courses[course].level == 6)
@@ -304,7 +346,6 @@ function assignOneMinor()
             }
         }
     }
-
     if (majorRemaining > 0)
     {
         errors.push(new PlanError(
@@ -337,6 +378,8 @@ function assignOneMinor()
             `Minor1Points7Remaining`
         ));
     }
+    console.log("REMAINING "+majorRemaining);
+    console.log("REMAINING "+minor1Remaining);
 }
 
 function assignTwoMinor()
@@ -350,6 +393,7 @@ function assignTwoMinor()
     let minor1PrioBucket = [];
     let minor2PrioBucket = [];
     let minorNoPrioBucket = [];
+    let majorFilterMinorBucket = [];
 
     const major = state.selectedMajors[0];
     const minor1 = state.selectedMinors[0];
@@ -360,18 +404,23 @@ function assignTwoMinor()
 
     let minor2Level6 = minor2.Level6PointsRequired;
     let minor2Level7 = minor2.Level7PointsRequired;
-    console.log('aaaaa');
     // steps:
     
-    // step 1: course that is part of the major, subtract
+    // step 1: course that exclusive to major, subtract
     // step 2: exclusive to minors, subtract. level 6 and 7 requirements
     // step 3: prio buckets like double major
     // step 4: no prio bucket for double choose
 
     for (const course of coursePlanCourses)
     {
-        // Step 1
-        if (courseCodeInRequirement(course, major.Requirements))
+        // 1a
+        if (courseCodeFirstOnly(course, major.Requirements, minor1.Requirements))
+        {
+            majorRemaining -= courses[course].points;
+            // part of major = not involved
+        }
+        // 1b
+        else if (courseCodeFirstOnly(course, major.Requirements, minor2.Requirements))
         {
             majorRemaining -= courses[course].points;
             // part of major = not involved
@@ -400,9 +449,35 @@ function assignTwoMinor()
                 minor2Level7 -= courses[course].points;
             }
         }
+        else if (courseCodeFirstReqSecondChN(course, major.Requirements, minor1.Requirements))
+        {
+            majorFilterMinorBucket.push(course);
+        }
+        else if (courseCodeFirstReqSecondChN(course, major.Requirements, minor2.Requirements))
+        {
+            majorFilterMinorBucket.push(course);
+        }
+        else if (courseCodeDoubleRequired(course, major.Requirements, minor1.Requirements))
+        {
+            majorFilterMinorBucket.push(course);
+        }
+        else if (courseCodeDoubleRequired(course, major.Requirements, minor2.Requirements))
+        {
+            majorFilterMinorBucket.push(course);
+        }
+        else if (courseCodeDoubleChoose(course, major.Requirements, minor1.Requirements))
+        {
+            majorFilterMinorBucket.push(course);
+        }
+        else if (courseCodeDoubleChoose(course, major.Requirements, minor2.Requirements))
+        {
+            majorFilterMinorBucket.push(course);
+        }
+        // courses not in major
         else if (courseCodeDoubleRequired(course, minor1.Requirements, minor2.Requirements))
         {
             // required in both ??
+            minorNoPrioBucket.push(course);
         }
         // Step 3
         else if (courseCodeFirstReqSecondChN(course, minor1.Requirements, minor2.Requirements))
@@ -420,7 +495,68 @@ function assignTwoMinor()
         }
     }
 
+    for (let i = 0; i < majorFilterMinorBucket.length; i++)
+    {
+        let course = majorFilterMinorBucket[i];
+        if (majorRemaining > 0)
+        {
+            majorRemaining -= courses[course].points;
+        }
+        else
+        {
+            // have to do this bit again
+            if (courseCodeDoubleRequired(course, minor1.Requirements, minor2.Requirements))
+            {
+                // required in both ??
+                minorNoPrioBucket.push(course);
+            }
+            else if (courseCodeFirstReqSecondChN(course, minor1.Requirements, minor2.Requirements))
+            {
+                minor1PrioBucket.push(course);
+            }
+            else if (courseCodeFirstReqSecondChN(course, minor2.Requirements, minor1.Requirements))
+            {
+                minor2PrioBucket.push(course);
+            }
+            else if (courseCodeDoubleChoose(course, minor1.Requirements, minor2.Requirements))
+            {
+                minorNoPrioBucket.push(course);
+            }
+        }
+    }
+
+    // else
+    for (let i = 0; i < minorNoPrioBucket.length; i++)
+    {
+        let course = minorNoPrioBucket[i];
+        if (minor1Remaining > minor2Remaining)
+        {
+            minor1Remaining -= courses[course].points;
+            if (courses[course].level == 6)
+            {
+                minor1Level6 -= courses[course].points;
+            }
+            else if (courses[course].level == 7)
+            {
+                minor1Level7 -= courses[course].points;
+            }
+        }
+        else
+        {
+            minor2Remaining -= courses[course].points;
+            if (courses[course].level == 6)
+            {
+                minor2Level6 -= courses[course].points;
+            }
+            else if (courses[course].level == 7)
+            {
+                minor2Level7 -= courses[course].points;
+            }
+        }
+    }
+
     // prio 1 first
+    
     for (let i = 0; i < minor1PrioBucket.length; i++)
     {
         let course = minor1PrioBucket[i];
@@ -479,37 +615,6 @@ function assignTwoMinor()
             }
         }
     }
-
-    // else
-    for (let i = 0; i < minorNoPrioBucket.length; i++)
-    {
-        let course = minorNoPrioBucket[i];
-        if (minor1Remaining > minor2Remaining)
-        {
-            minor1Remaining -= courses[course].points;
-            if (courses[course].level == 6)
-            {
-                minor1Level6 -= courses[course].points;
-            }
-            else if (courses[course].level == 7)
-            {
-                minor1Level7 -= courses[course].points;
-            }
-        }
-        else
-        {
-            minor2Remaining -= courses[course].points;
-            if (courses[course].level == 6)
-            {
-                minor2Level6 -= courses[course].points;
-            }
-            else if (courses[course].level == 7)
-            {
-                minor2Level7 -= courses[course].points;
-            }
-        }
-    }
-    
 
     if (majorRemaining > 0)
     {
