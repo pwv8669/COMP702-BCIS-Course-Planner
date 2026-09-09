@@ -290,7 +290,6 @@ function assignOneMinor()
         // Step 1
         if (courseCodeFirstOnly(course, minor.Requirements, major.Requirements))
         {
-            console.log("minor exclusive "+course);
             minor1Remaining -= courses[course].points;
             if (courses[course].level == 6)
             {
@@ -378,8 +377,6 @@ function assignOneMinor()
             `Minor1Points7Remaining`
         ));
     }
-    console.log("REMAINING "+majorRemaining);
-    console.log("REMAINING "+minor1Remaining);
 }
 
 function assignTwoMinor()
@@ -393,7 +390,9 @@ function assignTwoMinor()
     let minor1PrioBucket = [];
     let minor2PrioBucket = [];
     let minorNoPrioBucket = [];
-    let majorFilterMinorBucket = [];
+    let majorMinor1Bucket = [];
+    let majorMinor2Bucket = [];
+    let majorAnyMinorBucket = [];
 
     const major = state.selectedMajors[0];
     const minor1 = state.selectedMinors[0];
@@ -414,18 +413,12 @@ function assignTwoMinor()
     for (const course of coursePlanCourses)
     {
         // 1a
-        if (courseCodeFirstOnly(course, major.Requirements, minor1.Requirements))
+        if (courseCodeFirstOfThree(course, major.Requirements, minor1.Requirements, minor2.Requirements))
         {
             majorRemaining -= courses[course].points;
             // part of major = not involved
         }
-        // 1b
-        else if (courseCodeFirstOnly(course, major.Requirements, minor2.Requirements))
-        {
-            majorRemaining -= courses[course].points;
-            // part of major = not involved
-        }
-        else if (courseCodeFirstOnly(course, minor1.Requirements, minor2.Requirements))
+        else if (courseCodeFirstOfThree(course, minor1.Requirements, major.Requirements, minor2.Requirements))
         {
             minor1Remaining -= courses[course].points;
             if (courses[course].level == 6)
@@ -437,7 +430,7 @@ function assignTwoMinor()
                 minor1Level7 -= courses[course].points;
             }
         }
-        else if (courseCodeFirstOnly(course, minor2.Requirements, minor1.Requirements))
+        else if (courseCodeFirstOfThree(course, minor2.Requirements, major.Requirements, minor1.Requirements))
         {
             minor2Remaining -= courses[course].points;
             if (courses[course].level == 6)
@@ -449,79 +442,76 @@ function assignTwoMinor()
                 minor2Level7 -= courses[course].points;
             }
         }
-        else if (courseCodeFirstReqSecondChN(course, major.Requirements, minor1.Requirements))
+        else if (courseCodeTwoOfThree(course, major.Requirements, minor1.Requirements, minor2.Requirements))
         {
-            majorFilterMinorBucket.push(course);
+            majorMinor1Bucket.push(course);
         }
-        else if (courseCodeFirstReqSecondChN(course, major.Requirements, minor2.Requirements))
+        else if (courseCodeTwoOfThree(course, major.Requirements, minor2.Requirements, minor1.Requirements))
         {
-            majorFilterMinorBucket.push(course);
+            majorMinor2Bucket.push(course);
         }
-        else if (courseCodeDoubleRequired(course, major.Requirements, minor1.Requirements))
+        else if (courseCodeTwoOfThree(course, minor1.Requirements, minor2.Requirements, major.Requirements))
         {
-            majorFilterMinorBucket.push(course);
-        }
-        else if (courseCodeDoubleRequired(course, major.Requirements, minor2.Requirements))
-        {
-            majorFilterMinorBucket.push(course);
-        }
-        else if (courseCodeDoubleChoose(course, major.Requirements, minor1.Requirements))
-        {
-            majorFilterMinorBucket.push(course);
-        }
-        else if (courseCodeDoubleChoose(course, major.Requirements, minor2.Requirements))
-        {
-            majorFilterMinorBucket.push(course);
-        }
-        // courses not in major
-        else if (courseCodeDoubleRequired(course, minor1.Requirements, minor2.Requirements))
-        {
-            // required in both ??
             minorNoPrioBucket.push(course);
         }
-        // Step 3
-        else if (courseCodeFirstReqSecondChN(course, minor1.Requirements, minor2.Requirements))
+        else if (courseCodeThreeOfThree(course, major.Requirements, minor1.Requirements, minor2.Requirements))
         {
-            minor1PrioBucket.push(course);
-        }
-        else if (courseCodeFirstReqSecondChN(course, minor2.Requirements, minor1.Requirements))
-        {
-            minor2PrioBucket.push(course);
-        }
-        // Step 4
-        else if (courseCodeDoubleChoose(course, minor1.Requirements, minor2.Requirements))
-        {
-            minorNoPrioBucket.push(course);
+            majorAnyMinorBucket.push(course);
         }
     }
 
-    for (let i = 0; i < majorFilterMinorBucket.length; i++)
+    for (let i = 0; i < majorMinor1Bucket.length; i++)
     {
-        let course = majorFilterMinorBucket[i];
+        let course = majorMinor1Bucket[i];
         if (majorRemaining > 0)
         {
             majorRemaining -= courses[course].points;
         }
         else
         {
-            // have to do this bit again
-            if (courseCodeDoubleRequired(course, minor1.Requirements, minor2.Requirements))
+            minor1Remaining -= courses[course].points;
+            if (courses[course].level == 6)
             {
-                // required in both ??
-                minorNoPrioBucket.push(course);
+                minor1Level6 -= courses[course].points;
             }
-            else if (courseCodeFirstReqSecondChN(course, minor1.Requirements, minor2.Requirements))
+            else if (courses[course].level == 7)
             {
-                minor1PrioBucket.push(course);
+                minor1Level7 -= courses[course].points;
             }
-            else if (courseCodeFirstReqSecondChN(course, minor2.Requirements, minor1.Requirements))
+        }
+    }
+
+    for (let i = 0; i < majorMinor2Bucket.length; i++)
+    {
+        let course = majorMinor2Bucket[i];
+        if (majorRemaining > 0)
+        {
+            majorRemaining -= courses[course].points;
+        }
+        else
+        {
+            minor2Remaining -= courses[course].points;
+            if (courses[course].level == 6)
             {
-                minor2PrioBucket.push(course);
+                minor2Level6 -= courses[course].points;
             }
-            else if (courseCodeDoubleChoose(course, minor1.Requirements, minor2.Requirements))
+            else if (courses[course].level == 7)
             {
-                minorNoPrioBucket.push(course);
+                minor2Level7 -= courses[course].points;
             }
+        }
+    }
+
+    for (let i = 0; i < majorAnyMinorBucket.length; i++)
+    {
+        let course = majorAnyMinorBucket[i];
+        if (majorRemaining > 0)
+        {
+            majorRemaining -= courses[course].points;
+        }
+        else
+        {
+            minorNoPrioBucket.push(course);
         }
     }
 
@@ -715,6 +705,93 @@ function courseCodeFirstOnly(courseCode, requirements1, requirements2)
         }
     }
     return flag;
+}
+
+function courseCodeFirstOfThree(courseCode, requirements1, requirements2, requirements3)
+{
+    // return flag. flag true in requirements 1, flag false in requirement 2 or 3
+    let flag = false;
+    for (const requirement of requirements1)
+    {
+        for (const course of requirement.Courses)
+        {
+            if(course.code == courseCode) flag = true;
+        }
+    }
+    for (const requirement of requirements2)
+    {
+        for (const course of requirement.Courses)
+        {
+            if(course.code == courseCode) flag = false;
+        }
+    }
+    for (const requirement of requirements3)
+    {
+        for (const course of requirement.Courses)
+        {
+            if(course.code == courseCode) flag = false;
+        }
+    }
+    return flag;
+}
+
+function courseCodeTwoOfThree(courseCode, requirements1, requirements2, requirements3)
+{
+    // return flag. flag true in requirements 1 and 2, flag false in requirement 2
+    let flag1 = false;
+    let flag2 = false;
+    for (const requirement of requirements1)
+    {
+        for (const course of requirement.Courses)
+        {
+            if(course.code == courseCode) flag1 = true;
+        }
+    }
+    for (const requirement of requirements2)
+    {
+        for (const course of requirement.Courses)
+        {
+            if(course.code == courseCode) flag2 = true;
+        }
+    }
+    for (const requirement of requirements3)
+    {
+        for (const course of requirement.Courses)
+        {
+            if(course.code == courseCode) return false;
+        }
+    }
+    return flag1 && flag2;
+}
+
+function courseCodeThreeOfThree(courseCode, requirements1, requirements2, requirements3)
+{
+    // return flag. flag true in requirements 1 and 2, flag false in requirement 2
+    let flag1 = false;
+    let flag2 = false;
+    let flag3 = false;
+    for (const requirement of requirements1)
+    {
+        for (const course of requirement.Courses)
+        {
+            if(course.code == courseCode) flag1 = true;
+        }
+    }
+    for (const requirement of requirements2)
+    {
+        for (const course of requirement.Courses)
+        {
+            if(course.code == courseCode) flag2 = true;
+        }
+    }
+    for (const requirement of requirements3)
+    {
+        for (const course of requirement.Courses)
+        {
+            if(course.code == courseCode) flag3 = true;
+        }
+    }
+    return flag1 && flag2 && flag3;
 }
 
 // Looking for if a course code appears as a hard requirement in both
