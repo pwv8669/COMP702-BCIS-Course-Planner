@@ -20,7 +20,7 @@ function isDoubleMajorPathway() {
     );
 }
 
-export function validateMajorMinorRequirements(){
+export async function validateMajorMinorRequirements(){
     // Clear the errors course sets before validating.
     errors = [];
     attributedCourses.clear();
