@@ -480,5 +480,15 @@
         "Semester2Offered": true,
         "Prerequisites": "MATH503",
         "Corequisites": ""
+    },
+    "john503": {
+        "Code": "john503",
+        "Name": "john class",
+        "Points": 15,
+        "Level": 5,
+        "Semester1Offered": true,
+        "Semester2Offered": true,
+        "Prerequisites": "",
+        "Corequisites": ""
     }
 }

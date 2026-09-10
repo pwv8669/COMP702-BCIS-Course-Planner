@@ -21,6 +21,8 @@ async function init() {
 	courses = await loadCourses();
 	console.log(courses);
 
+	document.getElementById('factoryResetButton')?.addEventListener('click', factoryReset);
+
 	// Example usage of the placeCourse function.
 	placeCourse(0, 0, 'COMP500');
 	placeCourse(0, 1, 'COMP501');
@@ -39,6 +41,28 @@ async function init() {
 	
 	await refreshStudyPlan();
 	await initPathwayOptions();
+}
+
+async function factoryReset() {
+	if (!window.confirm('Restore all course-planner data to the factory defaults?')) {
+		return;
+	}
+
+	try {
+		const response = await fetch('./php/factory_reset.php', {
+			method: 'POST'
+		});
+		const result = await response.json();
+
+		if (!response.ok || !result.success) {
+			throw new Error(result.error || 'Factory reset failed.');
+		}
+
+		window.alert(result.message);
+		window.location.reload();
+	} catch (error) {
+		window.alert(error.message);
+	}
 }
 
 
