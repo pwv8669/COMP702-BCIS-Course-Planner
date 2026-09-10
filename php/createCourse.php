@@ -30,6 +30,21 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
         "Corequisites" => $_POST["Corequisites"] ?? ""
     ];
 
+    $maximumRequirementLevel =
+        trim($_POST["RequiresAllCoreAndMajorRequirementsUpToLevel"] ?? "");
+    if ($maximumRequirementLevel !== "") {
+        $maximumRequirementLevel = intval($maximumRequirementLevel);
+        if ($maximumRequirementLevel < 5 || $maximumRequirementLevel > 7) {
+            die("The core and major requirement level must be between 5 and 7.");
+        }
+        $course["RequiresAllCoreAndMajorRequirementsUpToLevel"] =
+            $maximumRequirementLevel;
+    }
+
+    if (isset($_POST["MustBeTakenConsequtively"])) {
+        $course["MustBeTakenConsequtively"] = true;
+    }
+
     // Add/overwrite the course.
     $courses[$code] = $course;
     // Sort the courses alphabetically by course code.

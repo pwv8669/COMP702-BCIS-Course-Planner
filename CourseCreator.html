@@ -165,6 +165,11 @@ select {
                 Prerequisites:<br> <input name="Prerequisites" type="text" placeholder="e.g. MATH503 AND (COMP603 OR COMP610)" style="margin-bottom: 10px"><br>
                 Corequisites:<br> <input name="Corequisites" type="text" placeholder="e.g. COMP500"><br>
                 <br>
+                Require all core and major courses through level:<br>
+                <input name="RequiresAllCoreAndMajorRequirementsUpToLevel" type="number" min="5" max="7" step="1" placeholder="Leave blank if not required" style="margin-bottom: 10px"><br>
+                Prerequisites must be taken in the immediately preceding semester:
+                <input id="mustBeTakenConsecutively" name="MustBeTakenConsequtively" type="checkbox"><label for="mustBeTakenConsecutively"></label><br>
+                <br>
                 <input class="submit" type="submit" value="Add Course" style="width: 130px">
             </form>
 
@@ -211,6 +216,8 @@ const courseobjectsstore = [];//this is the array that will hold the objects for
         document.getElementsByName("Level7PointsRequired")[0].value = courseobjectsstore[x].Level7PointsRequired ?? 0;
         document.getElementsByName("Prerequisites")[0].value = courseobjectsstore[x].Prerequisites;
         document.getElementsByName("Corequisites")[0].value = courseobjectsstore[x].Corequisites;
+        document.getElementsByName("RequiresAllCoreAndMajorRequirementsUpToLevel")[0].value = courseobjectsstore[x].RequiresAllCoreAndMajorRequirementsUpToLevel ?? "";
+        document.getElementsByName("MustBeTakenConsequtively")[0].checked = courseobjectsstore[x].MustBeTakenConsequtively === true;
       }
       else{//if its the null selection
          document.getElementsByName("Code")[0].value = "";//reset
@@ -223,6 +230,8 @@ const courseobjectsstore = [];//this is the array that will hold the objects for
       document.getElementsByName("Level7PointsRequired")[0].value = 0;
      document.getElementsByName("Prerequisites")[0].value = "";
       document.getElementsByName("Corequisites")[0].value = "";
+      document.getElementsByName("RequiresAllCoreAndMajorRequirementsUpToLevel")[0].value = "";
+      document.getElementsByName("MustBeTakenConsequtively")[0].checked = false;
       }
      
     }
