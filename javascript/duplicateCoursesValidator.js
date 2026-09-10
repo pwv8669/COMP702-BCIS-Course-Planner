@@ -1,5 +1,5 @@
 import { state } from './state.js'
-import { PlanError } from './objects/planError.js';
+import { PlanError, ErrorSeverity } from './objects/planError.js';
 
 function getCourseCounts(){
     const appearances = new Map();
@@ -27,7 +27,7 @@ export function validateCourseAppearances() {
         if (count > 1) {
             let message = `${code} appears in the study plan ${count} times. You can only take each class once.`
             let id = `DuplicateClass-${code}-${count}-Times`;
-            let errorMsg = new PlanError(code, message, id);
+            let errorMsg = new PlanError(code, message, id, ErrorSeverity.ERROR);
             errorMsg.occurences = count
 
             for (let semester = 0; semester < state.coursePlan.length; semester++){

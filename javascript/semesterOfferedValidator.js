@@ -1,5 +1,5 @@
 import { state } from "./state.js";
-import { PlanError } from './objects/planError.js';
+import { PlanError, ErrorSeverity } from './objects/planError.js';
 
 export function validateSemestersOffered() {
     const errors = [];
@@ -15,7 +15,7 @@ export function validateSemestersOffered() {
                 const semesterOrdinal = semester % 2 === 0 ? "1st" : "2nd";
                 let message = `The course ${currentCourse.code} is not offered in the ${semesterOrdinal} semester of a year.`;
                 let id = `SemesterNotOffered-${currentCourse.code}-${semester}`;
-                let errorMsg = new PlanError(currentCourse.code, message, id);
+                let errorMsg = new PlanError(currentCourse.code, message, id, ErrorSeverity.ERROR);
                 errorMsg.positions[semester][slot] = true;
                 errors.push(errorMsg);
             }
