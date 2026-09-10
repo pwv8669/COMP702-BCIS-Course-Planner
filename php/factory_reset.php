@@ -1,21 +1,11 @@
 <?php
 header('Content-Type: application/json');
 
-if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-    http_response_code(405);
-    echo json_encode(['success' => false, 'error' => 'Method Not Allowed']);
-    exit;
-}
-
+// JSON directory paths
 $jsonDirectory = realpath(__DIR__ . '/../json');
 $factoryDirectory = realpath(__DIR__ . '/../json/factory');
 
-if ($jsonDirectory === false || $factoryDirectory === false) {
-    http_response_code(500);
-    echo json_encode(['success' => false, 'error' => 'JSON directories are unavailable.']);
-    exit;
-}
-
+// Recursively delete JSON files and directories without removing the factory directory
 function deleteContents(string $directory, string $preservedDirectory): void
 {
     $items = new DirectoryIterator($directory);
@@ -34,6 +24,7 @@ function deleteContents(string $directory, string $preservedDirectory): void
     }
 }
 
+// Recursively copy files and directories from factory back to original JSON directory
 function copyDirectory(string $source, string $destination): void
 {
     if (!is_dir($destination)) {
@@ -42,28 +33,37 @@ function copyDirectory(string $source, string $destination): void
 
     $items = new DirectoryIterator($source);
 
-    foreach ($items as $item) {
-        if ($item->isDot()) {
+    foreach ($items as $item) 
+    {
+        if ($item->isDot()) 
+        {
             continue;
         }
 
         $sourcePath = $item->getPathname();
         $destinationPath = $destination . DIRECTORY_SEPARATOR . $item->getFilename();
 
-        if ($item->isDir()) {
+        if ($item->isDir()) 
+        {
             copyDirectory($sourcePath, $destinationPath);
-        } else if (!copy($sourcePath, $destinationPath)) {
+        } 
+        else if (!copy($sourcePath, $destinationPath)) 
+        {
             throw new RuntimeException("Could not copy {$item->getFilename()}.");
         }
     }
 }
 
-try {
+// Delete the current JSON files and directories, then restore from the factory directory
+try 
+{
     deleteContents($jsonDirectory, $factoryDirectory);
     copyDirectory($factoryDirectory, $jsonDirectory);
 
     echo json_encode(['success' => true, 'message' => 'Factory reset completed.']);
-} catch (Throwable $error) {
+}
+catch (Throwable $error) 
+{
     http_response_code(500);
     echo json_encode(['success' => false, 'error' => 'Factory reset failed.']);
 }

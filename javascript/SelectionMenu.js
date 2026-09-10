@@ -69,5 +69,39 @@ export async function SetupMajorMinorSelections()
 
 }
 
+async function initFactoryResetButton() 
+{
+    const button = document.getElementById('factoryResetButton');
+
+    button.addEventListener('click', async () => {
+        if (!window.confirm('Reset all course and major/minor data to default values? This action cannot be undone.')) 
+        {
+            return;
+        }
+    
+        try
+        {
+            const response = await fetch('./php/factory_reset.php', {
+                method: 'POST'
+            });
+            const result = await response.json();
+    
+			// Throw error if response is bad
+            if (!response.ok || !result.success) {
+                throw new Error(result.error || 'Factory reset failed.');
+            }
+			// Alert the user of success and reload the page
+            window.alert(result.message);
+            window.location.reload();
+        }
+        catch (error)
+        {
+            window.alert(error.message);
+        }
+    })
+
+}
+
 await SetupSelections();
 await SetupMajorMinorSelections();
+await initFactoryResetButton();
