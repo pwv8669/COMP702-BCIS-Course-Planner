@@ -312,8 +312,8 @@ async function applyOptionChange(slot, target)
             console.log('Invalid slot type');
             break;
     }   
-    console.log('Selected Majors: ' + state.selectedMajors);
-    console.log('Selected Minors: ' + state.selectedMinors);
+   // console.log('Selected Majors: ' + state.selectedMajors);
+    //console.log('Selected Minors: ' + state.selectedMinors);
 }
 
 import { errorDisplay } from './errorDisplay.js';
@@ -329,7 +329,8 @@ document.getElementById('pathwayOptionContainer')?.addEventListener('change', ()
 const originalUpdatePathwayOptions = updatePathwayOptions;
 updatePathwayOptions = async function(pathway) {
     await originalUpdatePathwayOptions(pathway);
-    errorDisplay();
+
+    refreshStudyPlan();
 };
 
 function addPlaceholderOption(selectElement) {
