@@ -28,6 +28,9 @@ export const state = {
     selectedElectives: [null, null, null, null],
     //Ignored errors and corresponding notes storage
     ignoredErrors: {}
+
+    attributedCourses: new Map(),
+    totalPoints: null
 };
 
 export function setScheduleMode(mode) {
