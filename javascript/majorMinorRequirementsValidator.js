@@ -173,6 +173,7 @@ export function validateMajorMinorRequirements(){
 
     // Uncomment below to see which courses correspond to which major/minor.
     console.log(attributedCourses);
+    state.attributedCourses = attributedCourses;
     return errors;
 }
 

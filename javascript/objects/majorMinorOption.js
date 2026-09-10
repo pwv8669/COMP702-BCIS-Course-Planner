@@ -19,6 +19,8 @@ export class MinorOption {
         this.Requirements = resolveRequirements(data.Requirements, courses);
         this.IncompatibleMajors = data.IncompatibleMajors ?? [];
         this.IncompatibleMinors = data.IncompatibleMinors ?? [];
+        this.Level6PointsRequired = Number(data.Level6PointsRequired) ?? 30;
+        this.Level7PointsRequired = Number(data.Level7PointsRequired) ?? 15;
     }
 }
 
