@@ -92,12 +92,17 @@ td{
 .schedule-table th{
     border: 1px solid #373537 !important; 
 }
+
+
+.schedule-table td.cell-required:nth-child(even){background-color: #71a1dc;}  /* Alternate between light and dark cells */
+.schedule-table td.cell-required:nth-child(odd) {background-color: #5286c5;}
 .schedule-table td.cell-required {
-    background-color: #71a1dc !important;
     border: 2px solid #2133f8;
 }
+
+.schedule-table td.cell-elective:nth-child(even){background-color: #636870;}  /* Alternate between light and dark cells */
+.schedule-table td.cell-elective:nth-child(odd) {background-color: #4e5359;}
 .schedule-table td.cell-elective {
-    background-color: #5a5e64 !important;
     border: 2px solid #0b0b0e;
 }
 
