@@ -64,7 +64,7 @@ export function validateMajorMinorRequirements(){
         if(!state.selectedMinors[i]){
             let message = `Minor ${i+1} is missing!`;
             let id = `MissingMinor-${i+1}`;
-            let errorMsg = new PlanError(null, message, idErrorSeverity.ERROR);
+            let errorMsg = new PlanError(null, message, id, ErrorSeverity.ERROR);
             errors.push(errorMsg);
         }
     }
