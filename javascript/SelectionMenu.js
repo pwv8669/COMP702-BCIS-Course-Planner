@@ -103,5 +103,5 @@ async function initFactoryResetButton()
 }
 
 await SetupSelections();
-await SetupMajorMinorSelections();
 await initFactoryResetButton();
+await SetupMajorMinorSelections();
