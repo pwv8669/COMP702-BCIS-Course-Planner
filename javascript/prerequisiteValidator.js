@@ -98,6 +98,85 @@ export function evaluateCoreAndMajorRequirements(
     );
 }
 
+export function validatePointPrerequisites(){
+    const errors = [];
+
+    for (let semester = 0; semester < state.coursePlan.length; semester++) {
+        const completedPointsByLevel = new Map([
+            [5, 0],
+            [6, 0],
+            [7, 0]
+        ]);
+        const countedCourseCodes = new Set();
+
+        // Point prerequisites only count courses completed before the
+        // semester containing the course being validated.
+        for (let completedSemester = 0;
+            completedSemester < semester;
+            completedSemester++) {
+            for (const course of state.coursePlan[completedSemester]) {
+                if (!course || countedCourseCodes.has(course.code)) {
+                    continue;
+                }
+
+                countedCourseCodes.add(course.code);
+                const level = Number(course.level);
+                const points = Number(course.points);
+                if (
+                    !completedPointsByLevel.has(level) ||
+                    !Number.isFinite(points)
+                ) {
+                    continue;
+                }
+
+                completedPointsByLevel.set(
+                    level,
+                    completedPointsByLevel.get(level) + points
+                );
+            }
+        }
+
+        for (let slot = 0;
+            slot < state.coursePlan[semester].length;
+            slot++) {
+            const currentCourse = state.coursePlan[semester][slot];
+            if (!currentCourse) continue;
+
+            const requirements = [
+                [5, Number(currentCourse.level5PointsRequired ?? 0)],
+                [6, Number(currentCourse.level6PointsRequired ?? 0)],
+                [7, Number(currentCourse.level7PointsRequired ?? 0)]
+            ];
+            const unmetRequirements = requirements.filter(
+                ([level, requiredPoints]) =>
+                    requiredPoints > completedPointsByLevel.get(level)
+            );
+
+            if (unmetRequirements.length === 0) continue;
+
+            const requirementDetails = unmetRequirements.map(
+                ([level, requiredPoints]) =>
+                    `level ${level} requires ${requiredPoints} points but ` +
+                    `${completedPointsByLevel.get(level)} have been completed`
+            ).join("; ");
+            const message =
+                `The point prerequisites for ${currentCourse.code} are not ` +
+                `met by semester ${semester + 1}: ${requirementDetails}.`;
+            const id = `MissingPointPreq-${currentCourse.code}`;
+            const errorMsg = new PlanError(
+                currentCourse.code,
+                message,
+                id,
+                ErrorSeverity.ERROR
+            );
+            errorMsg.positions[semester][slot] = true;
+            errors.push(errorMsg);
+        }
+    }
+
+    return errors;
+}
+
 export function validatePrerequisites(){
     const errors = [];
     for (let semester = 0; semester < scheduleConfig.semesters; semester++){
@@ -174,6 +253,7 @@ export function validatePrerequisites(){
             }
         }
     }
+    errors.push(...validatePointPrerequisites());
     return errors;
 }
 

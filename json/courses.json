@@ -308,6 +308,9 @@
         "Level": 7,
         "Semester1Offered": true,
         "Semester2Offered": false,
+        "Level5PointsRequired": 0,
+        "Level6PointsRequired": 60,
+        "Level7PointsRequired": 0,
         "Prerequisites": "COMP500",
         "Corequisites": ""
     },

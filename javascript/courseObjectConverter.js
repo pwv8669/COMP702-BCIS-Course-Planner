@@ -7,6 +7,9 @@ class Course {
         this.level = Number(data.Level);
         this.semester1Offered = data.Semester1Offered;
         this.semester2Offered = data.Semester2Offered;
+        this.level5PointsRequired = Number(data.Level5PointsRequired ?? 0);
+        this.level6PointsRequired = Number(data.Level6PointsRequired ?? 0);
+        this.level7PointsRequired = Number(data.Level7PointsRequired ?? 0);
         this.prerequisites = data.Prerequisites
             ? flattenTree(parse(tokenize(data.Prerequisites)))
             : null;
