@@ -9,6 +9,7 @@ export const attributedCourses = new Map();
 const coursePlanCourses = new Set();
 const requiredCourseOverlaps = new Map();
 const chooseNSubstitutions = [];
+const partialChooseNAttributions = new Map();
 let selectedOptions = [];
 const MAX_UNRESTRICTED_DOUBLE_MAJOR_SUBSTITUTION_POINTS = 30;
 
@@ -28,6 +29,7 @@ export function validateMajorMinorRequirements(){
     coursePlanCourses.clear();
     requiredCourseOverlaps.clear();
     chooseNSubstitutions.length = 0;
+    partialChooseNAttributions.clear();
     // Fill the course plan courses set with all courses in the course plan for easy lookup.
     for (let semester = 0; semester < state.coursePlan.length; semester++){
 		for (let slot = 0; slot < state.coursePlan[semester].length; slot++){
@@ -140,6 +142,18 @@ export function validateMajorMinorRequirements(){
             );
         }
     }
+
+    // Incomplete ChooseN requirements should still be visible in the plan,
+    // but must not reserve courses that a satisfiable requirement or
+    // substitution can use. Apply their provisional attributions only after
+    // all requirement allocation has finished, and never overwrite an actual
+    // allocation.
+    for (const [courseCode, optionCode] of partialChooseNAttributions) {
+        if (!attributedCourses.has(courseCode)) {
+            attributedCourses.set(courseCode, optionCode);
+        }
+    }
+
     for (const courseCode of coursePlanCourses) {
         if (!attributedCourses.has(courseCode)) {
             attributedCourses.set(courseCode, "Unallocated");
@@ -203,6 +217,17 @@ function attributeChooseNCourses(majorOrMinor){
             availableCourses.length + overlappingCourses.length <
             requirement.Count
         ) {
+            for (const course of availableCourses) {
+                // Preserve the normal Core-major-minor processing priority
+                // when a course appears in multiple incomplete requirements.
+                if (!partialChooseNAttributions.has(course.code)) {
+                    partialChooseNAttributions.set(
+                        course.code,
+                        majorOrMinor.Code
+                    );
+                }
+            }
+
             addChooseNError(majorOrMinor, requirement);
             continue;
         }
