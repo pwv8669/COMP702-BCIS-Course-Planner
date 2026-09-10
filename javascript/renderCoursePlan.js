@@ -61,21 +61,23 @@ try{
     //when the website first loads so it defaults to core
     //when i fixed this system it instead started returning "Elective" which we dont want 
 
-    if(!attributedCourses.has(coursecode)){
-        cell.classList = 'cell-elective';
+    if(!attributedCourses.has(coursecode)){//if the courses has an attributed major/minor/core, we can assume its not an elective
+        cell.classList = 'cell-elective';//else give it an elective color and label
         return "Elective";
     }
-    if(attributedCourses.get(coursecode).replace(/([A-Z])/g, ' $1').trim() != "Core"){
-        cell.classList = 'cell-required';
+    if(attributedCourses.get(coursecode).replace(/([A-Z])/g, ' $1').trim() != "Core"){//if the attributed course isnt core
+        cell.classList = 'cell-required';//make it required class color
     }
     else{
-        cell.classList = '';
+        cell.classList = ''; //else make it the default color (core uses default green as of this time)
     }
         
-        return attributedCourses.get(coursecode).replace(/([A-Z])/g, ' $1').trim();
+        return attributedCourses.get(coursecode).replace(/([A-Z])/g, ' $1').trim();//return the attributed course name e.g. the major/minor/core
 }
 catch{
-    return "Core";
+    return "Core";//return core as a "just in case"
+    //this should only be the case when the site is just starting and the core placements are in without
+    //validatemajorminorrequirements working in time
 }
 }
 import { validateMajorMinorRequirements } from "./majorMinorRequirementsValidator.js";
