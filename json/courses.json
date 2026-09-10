@@ -308,6 +308,9 @@
         "Level": 7,
         "Semester1Offered": true,
         "Semester2Offered": false,
+        "Level5PointsRequired": 0,
+        "Level6PointsRequired": 60,
+        "Level7PointsRequired": 0,
         "Prerequisites": "COMP500",
         "Corequisites": ""
     },
@@ -478,19 +481,6 @@
         "Level": 6,
         "Semester1Offered": false,
         "Semester2Offered": true,
-        "Prerequisites": "MATH503",
-        "Corequisites": ""
-    },
-    "TEST500": {
-        "Code": "TEST500",
-        "Name": "Theory of Blake-utation",
-        "Points": 15,
-        "Level": 5,
-        "Semester1Offered": true,
-        "Semester2Offered": false,
-        "Level5PointsRequired": 0,
-        "Level6PointsRequired": 0,
-        "Level7PointsRequired": 15,
         "Prerequisites": "MATH503",
         "Corequisites": ""
     }
