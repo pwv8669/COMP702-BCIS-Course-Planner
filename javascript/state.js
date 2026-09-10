@@ -5,7 +5,7 @@ export const scheduleConfig = {
     slotsPerSemester: 4
 };
 
-function buildCoursePlan() {
+export function buildCoursePlan() {
     const plan = Array.from(
         { length: scheduleConfig.semesters },
         () => Array(scheduleConfig.slotsPerSemester).fill(null)
