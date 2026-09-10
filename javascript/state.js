@@ -27,7 +27,7 @@ export const state = {
     selectedMinors: [null, null],
     selectedElectives: [null, null, null, null],
     //Ignored errors and corresponding notes storage
-    ignoredErrors: {}
+    ignoredErrors: {},
 
     attributedCourses: new Map(),
     totalPoints: null
