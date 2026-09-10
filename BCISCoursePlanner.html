@@ -9,41 +9,49 @@
 <script type="module" src="./javascript/app.js" ></script>
 <style>
   /* Styling here */
+    :root {
+        --scale: 1vmin;
+    }
+
     body {
         /* set default font */
-        font-size: 20px;
+        font-size: calc(1.5 * var(--scale));
         color: #ffffff;
         font-family: 'Trebuchet MS';
         font-weight: bolder;
         background-color: #373537;
     }
+
 .top-selector-row {
-    display: flex;
-    align-items: flex-start;
-    gap: 20px;
-    margin-bottom: 10px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-start;
+  gap: calc(2 * var(--scale));
+  flex-wrap: nowrap; 
+  width: 100%;
 }
 
 th {
   background-color: #6eacc4;
-  font-size: 20px;
+  font-size: calc(2 * var(--scale));
   text-align: center;
 }
 .main-layout-container {
     display: block;
-    width: 100vw;
-    margin: 0;
+    width: 100%;
+    margin: calc(.3 * var(--scale));
     padding: 0;
 }
 .hidden-element {
-  display: none; /*temporarily removing hidden elements*/
+  display: none;
   opacity: 0;
   transition: opacity 0.3s ease;
 }
 tr{
   scale: 1;
   transition: transform .9s;
-  min-height: 120px;
+  min-height: calc(12 * var(--scale));
 }
 tr:hover {
  scale:(1.025);
@@ -52,7 +60,7 @@ td:hover .hidden-element {
   opacity: 1;
 }
 td{
-  height: 100px;
+  height: calc(10 * var(--scale));
   font-size: 80%;
 
   font-weight: bolder;
@@ -63,121 +71,120 @@ td{
 
 .schedule-table {
     border-collapse: collapse;
+    width: 100%;
     table-layout: fixed; /* Forces all 6 columns to stay exactly the same width */
     font-family: Arial, sans-serif;
 }
 .schedule-table td {
     background-color: #9c9c9c;
     color: white;
-    padding: 12px 8px;
+    padding: calc(1.2 * var(--scale)) calc(.8 * var(--scale));
     vertical-align: top;
-    font-size: 12px;
-    border: 1px solid #6e7475;
+    font-size: calc(1.6 * var(--scale));;
+    border: calc(.1 * var(--scale)) solid #6e7475;
     word-wrap: break-word;
 }
 .year-headers th {
     background-color: #822787;
     color: white;
-    padding: 8px;
-    border: 1px solid #6e7475;
+    padding: calc(.8 * var(--scale));
+    border: calc(.1 * var(--scale)) solid #6e7475;
 }
 .semester-headers th {
     background-color: #bd6fc1;
     color: white;
-    padding: 10px 4px;
-    font-size: 14px;
-    border: 1px solid #6e7475;
+    padding: calc(1 * var(--scale)) calc(.4 * var(--scale));
+    font-size: calc(1.4 * var(--scale));
+    border: calc(.1 * var(--scale)) solid #6e7475;
 }
 .schedule-table,
 .schedule-table th{
-    border: 1px solid #373537 !important; 
+    border: calc(.1 * var(--scale)) solid #373537 !important; 
 }
 
 
 .schedule-table td.cell-required:nth-child(even){background-color: #71a1dc;}  /* Alternate between light and dark cells */
 .schedule-table td.cell-required:nth-child(odd) {background-color: #5286c5;}
 .schedule-table td.cell-required {
-    border: 2px solid #2133f8;
+    background-color: #71a1dc !important;
+    border: calc(.3 * var(--scale)) solid #2133f8;
 }
 
 .schedule-table td.cell-elective:nth-child(even){background-color: #636870;}  /* Alternate between light and dark cells */
 .schedule-table td.cell-elective:nth-child(odd) {background-color: #4e5359;}
 .schedule-table td.cell-elective {
-    border: 2px solid #0b0b0e;
+    background-color: #5a5e64 !important;
+    border: calc(.3 * var(--scale)) solid #0b0b0e;
 }
 
 .schedule-table td.cell-red-error {
     background-color: #b23b3b !important;
-    border: 2px solid #ff4d4d;
+    border: calc(.3 * var(--scale)) solid #ff4d4d;
 }
 .schedule-table td.cell-yellow-warning {
     background-color: #d1a119 !important; 
-    border: 2px solid #ffdb4d;
+    border: calc(.3 * var(--scale)) solid #ffdb4d;
 }
 .error-text-item {
-    padding: 10px 14px;
-    margin-bottom: 6px;
+    padding: calc(1 * var(--scale)) calc(1.4 * var(--scale));
+    margin-bottom: calc(.6 * var(--scale));
     font-family: Arial, sans-serif;
-    font-size: 13px;
-    border-radius: 4px;
+    font-size: calc(1.3 * var(--scale));
+    border-radius: calc(.4 * var(--scale));
     font-weight: 500;
 }
 .error-text-item.red-alert {
     background-color: #fdf2f2;
     color: #b81d1d;
-    border-left: 5px solid #de2a2a;
+    border-left: calc(.5 * var(--scale)) solid #de2a2a;
 }
 .error-text-item.yellow-alert {
     background-color: #fefaf0;
     color: #8a6d1c;
-    border-left: 5px solid #e3b022;
+    border-left: calc(.5 * var(--scale)) solid #e3b022;
 }
 #red-error-list-container {
-    min-height: 120px;
-    max-height: 120px;
+    min-height: calc(11.5 * var(--scale));
+    max-height: calc(11.5 * var(--scale));
     overflow-y: auto;
     overflow-x: hidden;
-    padding: 10px;
+    padding: calc(1 * var(--scale));
     background-color: #6e7475;
-    border: 1px solid #ccc;
-    border-radius: 6px;
-    margin-top: 10px;
-    float: left;
-    width: 25%;
+    border: calc(.1 * var(--scale)) solid #ccc;
+    border-radius: calc(.6 * var(--scale));
+    margin-top: calc(.1 * var(--scale));
 }
 #yellow-error-list-container {
-    min-height: 120px;
-    max-height: 120px;
+    min-height: calc(11.5 * var(--scale));
+    max-height: calc(11.5 * var(--scale));
     overflow-y: auto;
     overflow-x: hidden;
-    padding: 10px;
+    padding: calc(1 * var(--scale));
     background-color: #6e7475;
-    border: 1px solid #ccc;
-    border-radius: 6px;
-    margin-top: 10px;
-    margin-left: 10px;
-    float: left;
-    width: 40%;
+    border: calc(.1 * var(--scale)) solid #ccc;
+    border-radius: calc(.6 * var(--scale));
+    margin-top: calc(.1 * var(--scale));
+    margin-left: calc(1 * var(--scale));
 }
 .success-msg {
     color: #3abd3a;
     font-weight: bold;
 }
 .course-picker-sidebar {
-    width: 250px;
-    margin-right: 20px;
+    width: 100%;
+    margin-right: calc(.2 * var(--scale));
     font-family: Arial, sans-serif;
 }
 .course-category summary {
     background-color: #bd6fc1;
     color: white;
-    padding: 12px;
-    margin-bottom: 6px;
+    padding: calc(1.2 * var(--scale));
+    margin-bottom: calc(.6 * var(--scale));
     cursor: pointer;
     font-weight: bold;
-    font-size: 14px;
+    font-size: calc(1.4 * var(--scale));
     list-style: none;
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    border: calc(1 * var(--scale)) solid rgba(255, 255, 255, 0.2);
     transition: background 0.2s ease;
 }
 .course-category summary:hover 
@@ -187,13 +194,13 @@ td{
 .course-list {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
-    gap: 8px;
-    padding: 10px 0;
+    gap: calc(.8 * var(--scale));
+    padding: calc(1 * var(--scale)) 0;
 }
 
 .table-grid {
   display: grid;
-  width: 100vw;
+  width: 100%;
   grid-template-columns: 5fr 1fr;
   align-items: stretch;
   clear: both;
@@ -205,6 +212,7 @@ td{
   grid-row: 1;
   grid-column: 2;
   position: relative;
+  width: 100%;
 }
 
 #dynamic-course-sidebar {
@@ -216,34 +224,39 @@ td{
 
   overflow-y: auto;
   overflow-x: hidden;
-
-  padding-right: 4px;
-  border: 1px solid #373537;
-  border-radius: 6px;
+  padding-left: calc(1.2 * var(--scale));
+  padding-right: calc(1.2 * var(--scale));
+  border: calc(.1 * var(--scale)) solid #373537;
+  border-radius: calc(.6 * var(--scale));
   background: #822787;
   box-sizing: border-box;
   color: white;
 }
 
+#dynamic-course-sidebar h3 {
+    text-align: center;
+
+}
+
 
     /* Draggable Items */
-.course-card {
+    .course-card {
         background-color: #bd6fc1;
         color: white;
-        padding: 10px 6px;
-        border-radius: 4px;
+        padding: calc(1 * var(--scale)) calc(.6 * var(--scale));
+        border-radius: calc(.4 * var(--scale));
         cursor: grab;
-        font-size: 11px;
+        font-size: calc(1.1 * var(--scale));
         font-weight: bold;
         user-select: none;
         display: flex;
         align-items: center;
         justify-content: center;
         text-align: center;
-        min-height: 85px;
+        min-height: calc(8.5 * var(--scale));
         box-sizing: border-box;
         word-break: break-word;
-}
+    }
 .course-card:active {
         cursor: grabbing;
 }
@@ -256,7 +269,7 @@ td{
 }
     /* Visual cue when dragging over a table cell slot */
 .schedule-table td.drag-over-cell {
-    border: 2px dashed #333 !important;
+    border: calc(.2 * var(--scale)) dashed #333 !important;
     background-color: #eaeaea !important;
     color: #333 !important;
 }
@@ -276,13 +289,13 @@ table{
     color: white;
     border: none;
     cursor: pointer;
-    bottom:4px;
+    bottom:calc(.4 * var(--scale));
     width: 7%;
 
 }
 .prereq-list {
-    margin-bottom: 30px; 
-    padding: 6px;
+    margin-bottom: calc(3 * var(--scale)); 
+    padding: calc(.6 * var(--scale));
     border-radius: 0px;
 }
 .major{
@@ -301,31 +314,47 @@ button {
   color: #ffffff;
   font-family: 'Trebuchet MS'; 
   font-weight: bolder;
-  border-radius: 6px;
+  border-radius: calc(.6 * var(--scale));
   border: 0px;
   background-color: #822787;
-  font-size: 20px;
-  padding: 10px;
+  font-size: calc(2 * var(--scale));
+  padding: calc(1 * var(--scale));
   text-align: center;   
+  
 }
 .button-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr); 
-    gap: 10px; 
-    width: 28%;  
-    padding: 10px;
+    gap: calc(1 * var(--scale)); 
+    height: 100%;  
+    padding: 0;
+    margin-left: calc(1 * var(--scale));
+    margin-top: calc(.1 * var(--scale));
 }
 .button-grid button {
     width: 100%;
 }
-select,label {
+.button-grid form {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+}
+
+.button-grid form button {
+  width: 100%;
+  height: 100%;
+}
+
+
+
+select {
   color: #ffffff;
   font-family: 'Trebuchet MS'; 
   font-weight: bolder;
   outline:0px;
   border:0px;
-  font-size: 20px;
-  padding:12px; 
+  font-size: calc(2 * var(--scale));
+  padding: calc(1.2 * var(--scale)); 
 }
 select,button{
   cursor:pointer;
@@ -338,19 +367,11 @@ select,button{
   margin: 0.165%;
 }
 
-label{
-  background-color: #822787;
-  padding: 12.85px;
-  margin-right: 10px;
-  width: 400px;
-  display: inline-block;
-}
 
 select{
-   
   background-color: #bd6fc1;
+  width: calc(35 * var(--scale));
 }
-
 select:hover,button:hover{
    transform: scale(1.025);
 
@@ -368,84 +389,138 @@ select:hover,button:hover{
 .modal-content {
   background: #822787;
   color: white;
-  padding: 20px;
-  border-radius: 8px;
-  width: 300px;
+  padding: calc(2 * var(--scale));
+  border-radius: calc(.8 * var(--scale));
+  width: calc(30 * var(--scale));
 }
 .modal-buttons {
   display: flex;
   justify-content: space-between;
-  margin-top: 10px;
+  margin-top: calc(1 * var(--scale));
 }
 
 .ignore-error-btn {
-    font-size: 12px;
-    padding: 2px 6px;
-    margin-left: 10px;
+    font-size: calc(1.2 * var(--scale));
+    padding: calc(.2 * var(--scale)) calc(.6 * var(--scale));
+    margin-left: calc(.1 * var(--scale));
     background-color: #373537;
-    border: 1px solid #999;
-    border-radius: 4px;
+    border: calc(.1 * var(--scale)) solid #999;
+    border-radius: calc(.4 * var(--scale));
     cursor: pointer;
 }
-
 .ignore-error-btn:hover {
     background-color: #bbb;
 }
-
 #ignored-errors-container {
-    margin-top: 10px;
-    padding: 10px;
+    margin-top: calc(1 * var(--scale));
+    padding: calc(1 * var(--scale));
     background-color: #6e7475; 
-    border: 1px solid #ccc;
-    border-radius: 6px;
-    width: 60%; 
-    float: left;
+    border: calc(.1 * var(--scale)) solid #ccc;
+    border-radius: calc(.6 * var(--scale)); 
     color: white;
     font-family: Arial, sans-serif;
+    grid-column: 1 / 3; /* spans col 1 and 2 */
+    min-height: calc(11.5 * var(--scale));
+    max-height: calc(11.5 * var(--scale));
+    overflow-y: auto;
+    overflow-x: hidden;
 }
 
-
 #ignored-errors-container h3 {
-    margin: 0 0 10px 0;
-    font-size: 16px;
+    margin: 0 0 calc(1 * var(--scale)) 0;
+    font-size: calc(1.6 * var(--scale));
     font-weight: bold;
     color: #ffffff;
     background-color: #373537;
-    padding: 6px 10px;
-    border-radius: 4px;
-    width: 130px;
+    padding: calc(.6 * var(--scale)) calc(1 * var(--scale));
+    border-radius: calc(.4 * var(--scale));
+    width: calc(13 * var(--scale));
 }
-
-
 .ignored-error-item {
-    padding: 10px 14px;
-    margin-bottom: 6px;
-    font-size: 13px;
-    border-radius: 4px;
+    padding: calc(1 * var(--scale)) calc(1.4 * var(--scale));
+    margin-bottom: calc(.6 * var(--scale));
+    font-size: calc(1.3 * var(--scale));
+    border-radius: calc(.4 * var(--scale));
     background-color: #fefaf0; 
     color: #8a6d1c;            
-    border-left: 5px solid #e3b022; 
+    border-left: calc(.5 * var(--scale)) solid #e3b022; 
 }
-
 .delete-ignored-btn {
-    font-size: 12px;
-    padding: 2px 6px;
-    margin-left: 10px;
+    font-size: calc(1.2 * var(--scale));
+    padding: calc(.2 * var(--scale)) calc(.6 * var(--scale));
+    margin-left: calc(1 * var(--scale));
     background-color: #373537;
-    border: 1px solid #999;
-    border-radius: 4px;
+    border: calc(.1 * var(--scale)) solid #999;
+    border-radius: calc(.4 * var(--scale));
     cursor: pointer;
 }
-
 .delete-ignored-btn:hover {
     background-color: #6eacc4;
+}
+
+.bottom-section-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr; 
+  grid-template-rows: auto auto;
+  gap: calc(.1 * var(--scale));
+  width: 100%;
+  margin-top: calc(1 * var(--scale));
+}
+.buttons-column {
+  grid-column: 3;
+  grid-row: 1 / 3; /* spans both rows */
+  display: flex;
+  flex-direction: column;
+}
+
+.icon {
+    width: calc(4 * var(--scale));
+    stroke: #ffffff;
+    fill: #ffffff;
+    height: auto;
+    stroke-width: calc(.06 * var(--scale));
+}
+
+.save-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 1fr 1fr;
+    gap: calc(1 * var(--scale)); 
+
+}
+
+.save-grid button{
+    aspect-ratio: 3/2; 
+
+}
+
+#pathwayOptionContainer {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: calc(.2 * var(--scale));
+  flex-wrap: nowrap;
+}
+#pathwayOptionContainer label,
+label[for="pathwaySelect"] {
+  display: flex;
+  flex-direction: column;
+  font-size: calc(2 * var(--scale));
+  justify-content: center;
+  gap: calc(1 * var(--scale));
+  background-color: #822787;
+  padding: calc(1 * var(--scale));
+  min-width: calc(20 * var(--scale));
+  width: auto;
+  box-sizing: border-box;
+  margin-right: calc(0 * var(--scale));
 }
 
 </style>
 </head>
 <title>BCIS Course Planner</title>
 <body>
-
+    
     <div class="main-layout-container">
         <!-- Form for selecting course pathway. -->
         <div class="top-selector-row">
@@ -453,9 +528,8 @@ select:hover,button:hover{
                 <form id="pathwayForm">
                     <div style="background-color: #dd6e46;"></div>
                     <div>
-                        <label class=pathwayselector style="margin-right: -6px;" for="pathwaySelect">
+                        <label class=pathwayselector for="pathwaySelect">
                             Course Pathway:
-                            <div style="height: 10px;"></div>
                             <select id="pathwaySelect" name="pathwaySelect">
                                 <option value="doubleMajors" selected>
                                     Double Majors
@@ -472,7 +546,6 @@ select:hover,button:hover{
                 </form>
             </div>
 
-            <div style="margin-top: 5px;"></div>
             <form id="pathwayOptionContainer"></form>
 
         </div>
@@ -539,48 +612,115 @@ select:hover,button:hover{
             </div>
         </div>
     </div>
-    <div>
-        <div id="red-error-list-container">
 
-        </div>
+    <div class="bottom-section-grid">
 
-        <div id="yellow-error-list-container">
+        
+            <div id="red-error-list-container">
 
-        </div>
+            </div>
 
-        <div id="ignored-errors-container">
-            <h3>Schedule Notes</h3>
-            <div id="ignored-errors-list"></div>
-        </div>
-    </div>
+            <div id="yellow-error-list-container">
+
+            </div>
+
+            <div id="ignored-errors-container">
+                <h3>Schedule Notes</h3>
+                <div id="ignored-errors-list"></div>
+            </div>
+        
+
+        <div class="buttons-column">
+            <div class="button-grid">
+
+                <button title="Save Course Plan" id="openSave">
+
+                    <svg alt="Save Course Plan" class="icon" xmlns="http://www.w3.org/2000/svg" id="Outline" viewBox="0 0 24 24" width="512" height="512">
+                        <path d="M9.878,18.122a3,3,0,0,0,4.244,0l3.211-3.211A1,1,0,0,0,15.919,13.5l-2.926,2.927L13,1a1,1,0,0,0-1-1h0a1,1,0,0,0-1,1l-.009,15.408L8.081,13.5a1,1,0,0,0-1.414,1.415Z" />
+                        <path d="M23,16h0a1,1,0,0,0-1,1v4a1,1,0,0,1-1,1H3a1,1,0,0,1-1-1V17a1,1,0,0,0-1-1H1a1,1,0,0,0-1,1v4a3,3,0,0,0,3,3H21a3,3,0,0,0,3-3V17A1,1,0,0,0,23,16Z" />
+                    </svg>
+
+                </button>
+
+                <dialog id="saveModal">
+                    <h2>Save as...</h2>
+                    <div class="save-grid">
+                        <button title="a template to the server" id="saveTemplateBtn" type="button">
+
+                            <svg alt="Upload Icon" class="icon" xmlns="http://www.w3.org/2000/svg" id="Outline" viewBox="0 0 24 24" width="512" height="512">
+                                <path d="M11.007,2.578,11,18.016a1,1,0,0,0,1,1h0a1,1,0,0,0,1-1l.007-15.421,2.912,2.913a1,1,0,0,0,1.414,0h0a1,1,0,0,0,0-1.414L14.122.879a3,3,0,0,0-4.244,0L6.667,4.091a1,1,0,0,0,0,1.414h0a1,1,0,0,0,1.414,0Z" />
+                                <path d="M22,17v4a1,1,0,0,1-1,1H3a1,1,0,0,1-1-1V17a1,1,0,0,0-1-1H1a1,1,0,0,0-1,1v4a3,3,0,0,0,3,3H21a3,3,0,0,0,3-3V17a1,1,0,0,0-1-1h0A1,1,0,0,0,22,17Z" />
+                            </svg>
+
+                        </button>
+
+                        <button title=" a . Json" id="SaveFileButton">
+
+                            <svg alt=".Json Icon" class="icon" id="Layer_1" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" data-name="Layer 1">
+                                <path d="m16.582 12c-1.148 0-2.082.933-2.082 2.082v3.837c0 1.148.933 2.082 2.082 2.082s2.082-.933 2.082-2.082v-3.837c0-1.148-.933-2.082-2.082-2.082zm.482 5.918c0 .266-.216.482-.482.482s-.482-.216-.482-.482v-3.837c0-.266.216-.482.482-.482s.482.216.482.482zm6.937-5.118v6.264c0 .517-.419.936-.936.936-.398 0-.752-.251-.883-.627l-1.081-3.085v2.912c0 .442-.358.8-.8.8s-.8-.358-.8-.8v-6.257c0-.52.423-.941.943-.938.394.002.745.251.878.622l1.078 3.008v-2.835c0-.442.358-.8.8-.8s.8.358.8.8zm-16.3-.8c.442 0 .8.358.8.8v4.9c0 1.269-1.031 2.3-2.3 2.3-1.246 0-2.257-.996-2.293-2.233.018-.425.363-.767.793-.767.442 0 .8.358.8.8 0 0 .058.601.7.601.386 0 .7-.314.7-.7v-4.9c0-.442.358-.8.8-.8zm12.082-3.248c-.311-1.217-.945-2.329-1.833-3.217l-3.485-3.485c-1.322-1.322-3.08-2.05-4.95-2.05h-4.515c-2.757 0-5 2.243-5 5v14c0 2.757 2.243 5 5 5h10c.649 0 1.28-.123 1.876-.364.512-.208.758-.791.551-1.303-.208-.511-.791-.759-1.303-.551-.356.145-.734.218-1.124.218h-10c-1.654 0-3-1.346-3-3v-14c0-1.654 1.346-3 3-3h4.515c.163 0 .325.008.485.023v4.977c0 1.654 1.346 3 3 3h5.813c.309 0 .601-.143.79-.387s.255-.562.179-.861zm-6.782-.752c-.551 0-1-.449-1-1v-4.341c.379.218.732.488 1.05.806l3.485 3.485c.314.314.583.668.803 1.05zm-.759 9.619c0-.5-.194-.688-1.091-1.056-.501-.206-2.026-.833-2.026-2.372 0-1.249.958-2.191 2.228-2.191.416 0 .787.106 1.093.245.506.229.615.901.222 1.293-.238.237-.593.29-.901.157-.127-.055-.27-.095-.413-.095-.382 0-.628.232-.628.591 0 .14 0 .467 1.035.892.779.32 2.082.855 2.082 2.536 0 1.533-1.357 2.381-2.296 2.381-.684 0-1.248-.218-1.667-.463-.476-.279-.523-.947-.1-1.3.254-.212.612-.25.896-.083.218.128.514.246.87.246.082-.002.696-.181.696-.781z" />
+                            </svg>  
+                            
+                        </button>
+
+                        <button title="a PDF" onclick="getPDF()">
+
+                            <svg alt="PDF Icon" class="icon" xmlns="http://www.w3.org/2000/svg" id="Layer_1" data-name="Layer 1" viewBox="0 0 24 24" width="512" height="512">
+                                <path d="M19.95,5.54l-3.49-3.49c-1.32-1.32-3.08-2.05-4.95-2.05H7C4.24,0,2,2.24,2,5v14c0,2.76,2.24,5,5,5h10c2.76,0,5-2.24,5-5V10.49c0-1.87-.73-3.63-2.05-4.95Zm-1.41,1.41c.32,.32,.59,.67,.81,1.05h-4.34c-.55,0-1-.45-1-1V2.66c.38,.22,.73,.49,1.05,.81l3.49,3.49Zm1.46,12.05c0,1.65-1.35,3-3,3H7c-1.65,0-3-1.35-3-3V5c0-1.65,1.35-3,3-3h4.51c.16,0,.33,0,.49,.02V7c0,1.65,1.35,3,3,3h4.98c.02,.16,.02,.32,.02,.49v8.51ZM7.09,13h-1.09c-.55,0-1,.45-1,1v4.44c0,.35,.28,.62,.62,.62s.62-.28,.62-.62v-1.22h.84c1.18,0,2.14-.95,2.14-2.11s-.96-2.11-2.14-2.11Zm0,2.97h-.83s0-1.72,0-1.72h.84c.48,0,.89,.39,.89,.86s-.41,.86-.89,.86Zm11.93-2.34c0,.35-.28,.62-.62,.62h-1.69v1.14h1.24c.35,0,.62,.28,.62,.62s-.28,.62-.62,.62h-1.24v1.8c0,.35-.28,.62-.62,.62s-.62-.28-.62-.62v-4.81c0-.35,.28-.62,.62-.62h2.31c.35,0,.62,.28,.62,.62Zm-6.93-.62h-1.09c-.55,0-1,.45-1,1v4.44c0,.35,.28,.56,.62,.56s1.46,0,1.46,0c1.18,0,2.14-.95,2.14-2.11v-1.78c0-1.16-.96-2.11-2.14-2.11Zm.89,3.89c0,.47-.41,.86-.89,.86h-.83s0-3.5,0-3.5h.84c.48,0,.89,.39,.89,.86v1.78Z" />
+                            </svg>
+
+                        </button>
+
+                        <button id="closeSaveModal">Cancel</button>
+
+                    </div>
+                </dialog>
+
+                <button title="View pre-made schedule templates" id="openTemplates">
+
+                    <svg alt="Pre-made Study Plans" class="icon" xmlns="http://www.w3.org/2000/svg" id="Layer_1" data-name="Layer 1" viewBox="0 0 24 24">
+                        <path d="M22.992,21.067c-.005-.042-.5-4.269-1.606-9.675-1.115-5.452-2.31-9.489-2.321-9.529-.046-.155-.165-.278-.317-.331-.063-.021-1.558-.524-3.148-.2-.839,.171-1.565,.546-2.07,.868-.018-.156-.107-.295-.243-.374-.057-.034-1.423-.826-3.044-.826-1.229,0-2.315,.458-2.791,.692-.475-.235-1.56-.692-2.792-.692-1.617,0-2.986,.792-3.044,.826-.14,.082-.231,.227-.245,.388-.004,.042-.365,4.283-.365,9.8,0,5.564,.361,9.759,.365,9.801,.014,.164,.108,.311,.252,.392,.057,.033,1.421,.793,3.037,.793,1.232,0,2.32-.443,2.792-.667,.47,.224,1.557,.667,2.791,.667,1.613,0,2.979-.76,3.037-.792,.144-.081,.238-.228,.252-.393,.004-.042,.365-4.283,.365-9.8,0-.286,0-.568-.003-.846,.104,.547,.215,1.11,.333,1.687,1.115,5.452,2.31,9.489,2.321,9.529,.047,.158,.169,.282,.325,.333,.047,.015,1.336,.499,3.135,.169,1.586-.291,2.766-1.341,2.816-1.384,.125-.108,.188-.271,.169-.435ZM15.798,2.312c.976-.199,1.945-.012,2.383,.099,.132,.461,.426,1.507,.798,2.969l-4.901,1.001c-.231-1.488-.373-2.568-.433-3.044,.358-.273,1.171-.824,2.153-1.024Zm-3.242,.261c.037,.478,.115,1.561,.186,3.069H7.909V2.58c.396-.194,1.316-.581,2.333-.581,.998,0,1.908,.377,2.315,.573Zm.339,9.441c0,1.997-.048,3.825-.108,5.343H7.909V6.641h4.878c.061,1.518,.109,3.354,.109,5.373Zm-10.89,0c0-2.01,.048-3.849,.11-5.373H6.909v10.716H2.112c-.06-1.513-.107-3.338-.107-5.343ZM4.659,1.999c.947,0,1.817,.34,2.25,.542v3.1H2.158c.072-1.504,.149-2.59,.186-3.069,.407-.196,1.319-.573,2.314-.573ZM2.343,21.45c-.037-.484-.116-1.576-.187-3.093H6.909v3.123c-.435,.195-1.3,.519-2.25,.519-.996,0-1.905-.359-2.315-.549Zm7.898,.549c-1.009,0-1.93-.37-2.333-.557v-3.085h4.834c-.072,1.514-.15,2.609-.187,3.093-.409,.19-1.315,.549-2.315,.549Zm3.994-14.631l4.987-1.018c.364,1.476,.779,3.265,1.183,5.242,.4,1.957,.72,3.758,.965,5.257l-4.989,1.019c-.362-1.47-.774-3.249-1.176-5.214-.403-1.97-.724-3.781-.969-5.286Zm5.571,14.539c-.975,.199-1.938,.029-2.378-.076-.134-.466-.429-1.52-.804-2.992l4.904-1.001c.233,1.497,.376,2.584,.436,3.067-.365,.269-1.185,.803-2.158,1.002Z" />
+                    </svg>
+
+                </button>
+
+                <button title="Autopopulate course plan according to selected majors/minors" id="AutocompletePlanButton">
+
+                    <svg alt="Autopopulate plan" class="icon" xmlns="http://www.w3.org/2000/svg" id="Layer_1" data-name="Layer 1" viewBox="0 0 24 24">
+                        <path d="m23.447,22.74l-2.43-7.17c-.316-.917-1.107-1.509-2.018-1.509s-1.702.593-2.018,1.513l-2.429,7.166c-.177.523.103,1.091.626,1.269.524.178,1.09-.104,1.268-.626l.469-1.383h4.168l.469,1.383c.142.416.53.679.947.679.106,0,.215-.017.321-.053.523-.178.804-.745.626-1.269Zm-5.854-2.74l1.281-3.779c.075-.221.177-.217.25-.004l1.282,3.783h-2.813Zm-1.935-10.449c-.506-.954-1.49-1.547-2.569-1.547l-3.833-.003,1.205-5.227c.309-1.078-.139-2.172-1.064-2.6-.88-.407-1.865-.086-2.473.826L.505,11.461c-.606.894-.668,2.042-.163,2.996.505.954,1.49,1.547,2.57,1.547h3.83l-1.204,5.226c-.309,1.079.139,2.172,1.064,2.6.253.117.515.174.773.174.642,0,1.267-.35,1.699-1l6.42-10.457c.606-.894.668-2.042.163-2.995Zm-1.843,1.91l-6.364,10.365c.005-.029,1.522-6.598,1.522-6.598.068-.297-.002-.608-.192-.848-.19-.238-.478-.377-.783-.377H2.912c-.494,0-.726-.338-.803-.483-.077-.146-.227-.528.075-.975L8.548,2.177c-.005.029-1.522,6.599-1.522,6.599-.068.297.002.608.192.847s.478.378.782.378l5.088.004h0c.494,0,.726.338.803.483.077.145.226.527-.076.974Z" />
+                    </svg>
 
 
-    <div class="button-grid">
+                </button>
 
-        <button id="openTemplates">Pre-made study plans</button>
-        <button id="saveTemplateBtn" type="button">Save Current Plan</button>
+                <form action="https://www.aut.ac.nz/__data/assets/pdf_file/0011/952796/BCIS-Programme-Structure-2026.pdf" method="get" target="_blank">
+                    <button title="Open BCIS Programme Structure PDF in new tab" id="pdf">
 
-        <button id="SaveFileButton">Save Schedule as File</button>
-        <button onclick="getPDF()">Save as PDF</button>
+                        <svg alt="BCIS Programme Structure" class="icon" xmlns="http://www.w3.org/2000/svg" id="Layer_1" data-name="Layer 1" viewBox="0 0 24 24">
+                            <path d="m17,10c-3.86,0-7,3.14-7,7s3.14,7,7,7,7-3.14,7-7-3.14-7-7-7Zm0,12c-2.757,0-5-2.243-5-5s2.243-5,5-5,5,2.243,5,5-2.243,5-5,5Zm1-4v2c0,.552-.448,1-1,1s-1-.448-1-1v-2c0-.552.448-1,1-1s1,.448,1,1Zm.5-3.5c0,.828-.672,1.5-1.5,1.5s-1.5-.672-1.5-1.5.672-1.5,1.5-1.5,1.5.672,1.5,1.5Zm-9.5,7.5h-5c-1.103,0-2-.897-2-2s.897-2,2-2h3c.552,0,1-.448,1-1s-.448-1-1-1h-1V2h9c1.654,0,3,1.346,3,3v2c0,.552.448,1,1,1s1-.448,1-1v-2c0-2.757-2.243-5-5-5H5C2.244,0,0,2.243,0,5v15C0,22.206,1.795,24,4,24h5c.552,0,1-.448,1-1s-.448-1-1-1ZM2,5c0-1.302.839-2.402,2-2.816v13.816c-.732,0-1.409.212-2,.556V5Z" />
+                        </svg>
 
-        <button id="AutocompletePlanButton">Autopopulate Plan</button>
+                    </button>
+                </form>
 
-        <div id="ignoreModal" class="hidden">
-            <div class="modal-content">
-                <h3>Add a note to ignore</h3>
-                <textarea id="ignoreNoteInput" placeholder="Explain why this error is being ignored..."></textarea>
-                <div class="modal-buttons">
-                    <button id="saveIgnoreNoteBtn">Save</button>
-                    <button id="cancelIgnoreBtn">Cancel</button>
+                <div id="saveModal" class="hidden">
+
                 </div>
+                
+
             </div>
         </div>
-
     </div>
 
-    
-
-    <br><br>
+    <div id="ignoreModal" class="hidden">
+        <div class="modal-content">
+            <h3>Add a note to ignore</h3>
+            <textarea id="ignoreNoteInput" placeholder="Explain why this error is being ignored..."></textarea>
+            <div class="modal-buttons">
+                <button id="saveIgnoreNoteBtn">Save</button>
+                <button id="cancelIgnoreBtn">Cancel</button>
+            </div>
+        </div>
+    </div>
 
     <dialog id="templates">
         <form id="uploadTemplateForm">
@@ -589,9 +729,8 @@ select:hover,button:hover{
             <button type="button" id="closeTemplates">Close</button>
         </form>
 
-        <div id="templateBtnContainer" style="margin-top: 15px; display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; "></div>
+        <div id="templateBtnContainer" style="margin-top: calc(1.5 * var(--scale)); display: grid; grid-template-columns: repeat(5, 1fr); gap: calc(1* var(--scale)); "></div>
     </dialog>
-
 
 
 

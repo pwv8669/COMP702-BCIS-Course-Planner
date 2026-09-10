@@ -35,6 +35,10 @@ function initTemplatesController() {
     const openTemplates = document.getElementById('openTemplates');
     const closeTemplates = document.getElementById('closeTemplates');
     const btnContainer = document.getElementById('templateBtnContainer');
+
+    const saveModal = document.getElementById('saveModal');
+    const openSave = document.getElementById('openSave');
+    const closeSaveModal = document.getElementById('closeSaveModal');
     
     const templateInput = document.getElementById('localJsonFileInput');
     const uploadForm = document.getElementById('uploadTemplateForm');
@@ -48,8 +52,20 @@ function initTemplatesController() {
         });
     }
 
+    if (openSave && saveModal) {
+        openSave.addEventListener('click', () => {
+            saveModal.showModal();
+        });
+    }
+
     if (closeTemplates && panel) {
         closeTemplates.addEventListener('click', () => panel.close());
+    }
+
+    if (closeSaveModal && saveModal) {
+        closeSaveModal.addEventListener('click', () => {
+            saveModal.close();
+        });
     }
 
     if (uploadForm) {
@@ -130,14 +146,14 @@ function initTemplatesController() {
             btnContainer.innerHTML = ''; 
 
             if (files.length === 0) {
-                btnContainer.innerHTML = '<p style="color:#777; font-size:14px;">No templates found.</p>';
+                btnContainer.innerHTML = '<p style="color:#777; font-size:calc(1.4 * var(--scale));">No templates found.</p>';
                 return;
             }
 
             files.forEach(file => {
                 const btn = document.createElement('button');
                 btn.type = 'button';
-                btn.style.margin = '5px';
+                btn.style.margin = 'calc(.5 * var(--scale))';
                 btn.textContent = file.display_name; 
 
                 btn.addEventListener('click', async () => {
@@ -158,7 +174,7 @@ function initTemplatesController() {
             });
         } catch (error) {
             console.error("Error communicating with template scanner:", error);
-            btnContainer.innerHTML = '<p style="color:red; font-size:14px;">Error connecting to templates folder.</p>';
+            btnContainer.innerHTML = '<p style="color:red; font-size:calc(1.4 * var(--scale));">Error connecting to templates folder.</p>';
         }
     }
 

@@ -1,6 +1,9 @@
 import { state } from './state.js';
 import { NodeType } from './courseObjectConverter.js';
-import { PlanError } from './objects/planError.js';
+import { ErrorSeverity, PlanError } from './objects/planError.js';
+import { loadMajorOptions } from './objects/majorMinorOption.js';
+
+const majorOptions = await loadMajorOptions();
 
 // Returns all codes for courses completed prior to a given semester.
 export function getCompletedCourses(currentSemester){
@@ -15,6 +18,23 @@ export function getCompletedCourses(currentSemester){
         }
     }
     return completed;
+}
+
+// Returns all codes for courses taken in one specific semester.
+function getCoursesInSemester(semester) {
+    const courses = new Set();
+
+    if (semester < 0 || semester >= state.coursePlan.length) {
+        return courses;
+    }
+
+    for (const course of state.coursePlan[semester]) {
+        if (course) {
+            courses.add(course.code);
+        }
+    }
+
+    return courses;
 }
 
 export function evaluatePrerequisiteTree(node, completedCourses) {
@@ -37,6 +57,46 @@ export function evaluatePrerequisiteTree(node, completedCourses) {
     return false;
 }
 
+export function evaluateCoreAndMajorRequirements(
+    maximumLevel,
+    completedCourses
+) {
+    const options = [
+        majorOptions.Core,
+        ...state.selectedMajors.filter(major => major)
+    ].filter(option => option);
+
+    return options.every(option =>
+        option.Requirements.every(requirement => {
+            const applicableCourses = requirement.Courses.filter(
+                course => course.level <= maximumLevel
+            );
+
+            // This requirement only contains courses above the configured
+            // level, so it is outside the scope of this prerequisite rule.
+            if (applicableCourses.length === 0) {
+                return true;
+            }
+
+            if (requirement.Type === "Required") {
+                return applicableCourses.every(course =>
+                    completedCourses.has(course.code)
+                );
+            }
+
+            if (requirement.Type === "ChooseN") {
+                const completedCount = applicableCourses.filter(course =>
+                    completedCourses.has(course.code)
+                ).length;
+
+                return completedCount >= requirement.Count;
+            }
+
+            return false;
+        })
+    );
+}
+
 export function validatePrerequisites(){
     const errors = [];
     for (let semester = 0; semester < state.coursePlan.length; semester++){
@@ -55,7 +115,59 @@ export function validatePrerequisites(){
             if (!valid){
                 let message = `The prerequisites for ${currentCourse.code} are not met by semester ${semester+1}.`; 
                 let id = `MissingPreq-${currentCourse.code}`;
-                let errorMsg = new PlanError(currentCourse.code, message, id);
+                let errorMsg = new PlanError(currentCourse.code, message, id, ErrorSeverity.ERROR);
+                errorMsg.positions[semester][slot] = true;
+                errors.push(errorMsg);
+                continue;
+            }
+
+            const maximumRequirementLevel =
+                currentCourse
+                    .requiresAllCoreAndMajorRequirementsUpToLevel;
+
+            if (
+                maximumRequirementLevel !== null &&
+                maximumRequirementLevel !== undefined &&
+                !evaluateCoreAndMajorRequirements(
+                    maximumRequirementLevel,
+                    completedCourses
+                )
+            ) {
+                const message =
+                    `The core and selected major requirements up to level ` +
+                    `${maximumRequirementLevel} for ${currentCourse.code} ` +
+                    `are not met by semester ${semester + 1}.`;
+                const id =
+                    `MissingCoreAndMajorReqsUpToLevel-` +
+                    `${currentCourse.code}-${maximumRequirementLevel}`;
+                const errorMsg = new PlanError(
+                    currentCourse.code,
+                    message,
+                    id,
+                    ErrorSeverity.ERROR
+                );
+                errorMsg.positions[semester][slot] = true;
+                errors.push(errorMsg);
+                continue;
+            }
+
+            if (
+                currentCourse.mustBeTakenConsequtively &&
+                !evaluatePrerequisiteTree(
+                    currentCourse.prerequisites,
+                    getCoursesInSemester(semester - 1)
+                )
+            ) {
+                const message =
+                    `The prerequisites for ${currentCourse.code} must be ` +
+                    `taken in the immediately preceding semester.`;
+                const id = `NonConsecutivePreq-${currentCourse.code}`;
+                const errorMsg = new PlanError(
+                    currentCourse.code,
+                    message,
+                    id,
+                    ErrorSeverity.ERROR
+                );
                 errorMsg.positions[semester][slot] = true;
                 errors.push(errorMsg);
             }
@@ -82,7 +194,7 @@ export function validateCorequisites(){
             if (!valid){
                 let message = `The corequisites for ${currentCourse.code} are not met by semester ${semester+1}.`;
                 let id = `MissingCoreq-${currentCourse.code}`;
-                let errorMsg = new PlanError(currentCourse.code, message, id);
+                let errorMsg = new PlanError(currentCourse.code, message, id, ErrorSeverity.ERROR);
                 errorMsg.positions[semester][slot] = true;
                 errors.push(errorMsg);
             }

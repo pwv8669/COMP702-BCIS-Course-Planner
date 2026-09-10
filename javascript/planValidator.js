@@ -4,6 +4,7 @@ import { validateCourseAppearances } from "./duplicateCoursesValidator.js";
 import { validatePrerequisites, validateCorequisites } from "./prerequisiteValidator.js";
 import { validateMajorMinorRequirements } from "./majorMinorRequirementsValidator.js";
 import { validateSemestersOffered } from "./semesterOfferedValidator.js";
+import { validatePoints } from "./pointsValidator.js";
 
 //Import state for error notes
 import { state } from "./state.js";
@@ -50,6 +51,11 @@ export function validateStudyPlan(){
     const semestersOfferedErrors = validateSemestersOffered();
     for (let i = 0; i < semestersOfferedErrors.length; i++) {
         const error = semestersOfferedErrors[i];
+    }
+    
+    const pointErrors = validatePoints();
+    for (let i = 0; i < pointErrors.length; i++) {
+        const error = pointErrors[i];
         if (state.ignoredErrors[error.id]) continue;
         errors.push(error);
     }
