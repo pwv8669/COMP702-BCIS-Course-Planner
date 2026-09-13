@@ -108,7 +108,7 @@ export async function renderCoursePlan(state) {
                 continue;
             }
             const prereqText = parsePrereqs(course.prerequisites);//parse prereqs 
-            const typecell = await TypeOfCell(course.code);
+            const typecell = await TypeOfCell(course.code, cell);
             cell.innerHTML = `<div class="course-cell">${typecell}:`;//set the requirement level e.g. Elective, Core or Major/Minor name
             if(!(cell.classList.contains('cell-red-error') || cell.classList.contains('cell-yellow-warning'))){//we dont want to overwrite the error class, so we check if theres already a class
                 cell.classList.remove("cell-required", "cell-elective");
@@ -125,7 +125,7 @@ export async function renderCoursePlan(state) {
                             
                 }
             }
-            const typecell = await TypeOfCell(course.code, cell);
+            
             
             cell.innerHTML = `<div class="course-cell">${typecell}:<div class="course-name">${course.code}: ${course.name}</div>`;//set the requirement level e.g. Elective, Core or Major/Minor name
             
