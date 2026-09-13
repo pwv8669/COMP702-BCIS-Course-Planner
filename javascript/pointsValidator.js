@@ -1,6 +1,6 @@
 import { loadPathways } from "./objects/pathway.js";
 import { loadMajorOptions, loadMinorOptions } from "./objects/majorMinorOption.js";
-import { state } from "./state.js";
+import { state, scheduleConfig } from "./state.js";
 import { PlanError } from './objects/planError.js';
 import { courses } from "./app.js";
 
@@ -19,8 +19,8 @@ export function validatePoints()
     sources = [];
     duplicateSources = [];
     coursePlanCourses.clear();
-    for (let semester = 0; semester < state.coursePlan.length; semester++){
-        for (let slot = 0; slot < state.coursePlan[semester].length; slot++){
+    for (let semester = 0; semester < scheduleConfig.semesters; semester++){
+        for (let slot = 0; slot < scheduleConfig.slotsPerSemester; slot++){
             if (!state.coursePlan[semester][slot]) continue;
             coursePlanCourses.add(state.coursePlan[semester][slot].code);
         }

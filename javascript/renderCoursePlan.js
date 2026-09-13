@@ -49,6 +49,8 @@ function parsePrereqs(node) {
 import { getCoursesFromSelectedMajorsAndMinors } from './autopopulateStudyPlan.js';
 import { loadMajorOptions } from "./objects/majorMinorOption.js";
 import { attributedCourses } from "./majorMinorRequirementsValidator.js";
+import { scheduleConfig } from "./state.js";
+import { mapCoursePlanToDom } from "./dragAndDropController.js";
 
 async function TypeOfCell(coursecode, cell){
 try{
@@ -84,19 +86,45 @@ import { validateMajorMinorRequirements } from "./majorMinorRequirementsValidato
 
 export async function renderCoursePlan(state) {
     await validateMajorMinorRequirements();
-    for (let row = 0; row < state.coursePlan.length; row++) {
-        for (let col = 0; col < state.coursePlan[row].length; col++) {
+    for (let row = 0; row < scheduleConfig.semesters; row++) {
+        for (let col = 0; col < scheduleConfig.slotsPerSemester; col++) {
 
-            const cell = document.getElementById(`cell-${row}-${col}`);
+        const { UIRow, UICol } = mapCoursePlanToDom( row, col );
+            const cell = document.getElementById(`cell-${UIRow}-${UICol}`);
             if (!cell) continue;
 
             const course = state.coursePlan[row][col];
 
             if (!course) {
                 cell.textContent = "";
+                cell.classList.remove(
+                    "cell-required",
+                    "cell-elective",
+                    "cell-red-error",
+                    "cell-yellow-warning"
+                    );
+
+                cell.classList.add("cell-yellow-warning");
                 continue;
             }
             const prereqText = parsePrereqs(course.prerequisites);//parse prereqs 
+            const typecell = await TypeOfCell(course.code);
+            cell.innerHTML = `<div class="course-cell">${typecell}:`;//set the requirement level e.g. Elective, Core or Major/Minor name
+            if(!(cell.classList.contains('cell-red-error') || cell.classList.contains('cell-yellow-warning'))){//we dont want to overwrite the error class, so we check if theres already a class
+                cell.classList.remove("cell-required", "cell-elective");
+
+                switch(typecell){//usually the error applied, if not, only then do we check for this
+                    case "Core"://keep core green
+                        break;
+                    case "Elective"://make electives their color
+                            cell.classList.add('cell-elective');
+                        break;
+                    default://make required courses eg major minor courses their own color
+                            cell.classList.add('cell-required');
+                        break;
+                            
+                }
+            }
             const typecell = await TypeOfCell(course.code, cell);
             
             cell.innerHTML = `<div class="course-cell">${typecell}:<div class="course-name">${course.code}: ${course.name}</div>`;//set the requirement level e.g. Elective, Core or Major/Minor name
