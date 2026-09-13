@@ -52,7 +52,7 @@ import { attributedCourses } from "./majorMinorRequirementsValidator.js";
 import { scheduleConfig } from "./state.js";
 import { mapCoursePlanToDom } from "./dragAndDropController.js";
 
-async function TypeOfCell(coursecode){
+async function TypeOfCell(coursecode, cell){
 try{
     const majorOptions = await loadMajorOptions();
     //get the options from core
@@ -62,17 +62,30 @@ try{
     let arrayofcourses = (getCoursesFromSelectedMajorsAndMinors());//we kind of need this to "break" the try loop
     //when the website first loads so it defaults to core
     //when i fixed this system it instead started returning "Elective" which we dont want 
-    if(!attributedCourses.has(coursecode)){
+
+    if(!attributedCourses.has(coursecode)){//if the courses has an attributed major/minor/core, we can assume its not an elective
+        cell.classList = 'cell-elective';//else give it an elective color and label
         return "Elective";
     }
-        return attributedCourses.get(coursecode).replace(/([A-Z])/g, ' $1').trim();
+    if(attributedCourses.get(coursecode).replace(/([A-Z])/g, ' $1').trim() != "Core"){//if the attributed course isnt core
+        cell.classList = 'cell-required';//make it required class color
+    }
+    else{
+        cell.classList = ''; //else make it the default color (core uses default green as of this time)
+    }
+        
+        return attributedCourses.get(coursecode).replace(/([A-Z])/g, ' $1').trim();//return the attributed course name e.g. the major/minor/core
 }
 catch{
-    return "Core";
+    return "Core";//return core as a "just in case"
+    //this should only be the case when the site is just starting and the core placements are in without
+    //validatemajorminorrequirements working in time
 }
 }
+import { validateMajorMinorRequirements } from "./majorMinorRequirementsValidator.js";
 
 export async function renderCoursePlan(state) {
+    await validateMajorMinorRequirements();
     for (let row = 0; row < scheduleConfig.semesters; row++) {
         for (let col = 0; col < scheduleConfig.slotsPerSemester; col++) {
 
@@ -112,9 +125,10 @@ export async function renderCoursePlan(state) {
                             
                 }
             }
+            const typecell = await TypeOfCell(course.code, cell);
             
-
-            cell.innerHTML +=`<div class="course-name">${course.code}: ${course.name}</div>`
+            cell.innerHTML = `<div class="course-cell">${typecell}:<div class="course-name">${course.code}: ${course.name}</div>`;//set the requirement level e.g. Elective, Core or Major/Minor name
+            
             const coreqText = parsePrereqs(course.corequisites);
 
             if(prereqText != "No prerequisites" || coreqText != "No prerequisites" ){

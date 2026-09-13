@@ -61,11 +61,11 @@ export function PathwayRefresh(pathway){
 }
 
 export async function refreshStudyPlan() {
-	
+	await renderCoursePlan(state);
     errorDisplay();
     generateDynamicCourseList(courses);
     initDragAndDrop(refreshStudyPlan);
-	await renderCoursePlan(state);
+
 }
 
 // This function fetches the available majors and minors from the json files and populates the majorsArray and minorsArray with the data. It then calls the updatePathwayOptions function to update the dropdown options in the HTML form based on the selected pathway.
