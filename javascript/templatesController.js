@@ -36,9 +36,15 @@ function initTemplatesController() {
     const closeTemplates = document.getElementById('closeTemplates');
     const btnContainer = document.getElementById('templateBtnContainer');
 
+    // Adding eventlisteners to the "Save" pop up window
     const saveModal = document.getElementById('saveModal');
     const openSave = document.getElementById('openSave');
     const closeSaveModal = document.getElementById('closeSaveModal');
+    
+    // Adding eventlisteners to the "Editor" pop up window
+    const editorModal = document.getElementById('editorModal');
+    const openEditor = document.getElementById('openEditor');
+    const closeEditorModal = document.getElementById('closeEditorModal');
     
     const templateInput = document.getElementById('localJsonFileInput');
     const uploadForm = document.getElementById('uploadTemplateForm');
@@ -58,6 +64,13 @@ function initTemplatesController() {
         });
     }
 
+    if (openEditor && editorModal) {
+        openEditor.addEventListener('click', () => {
+            editorModal.showModal();
+        });
+    }
+
+
     if (closeTemplates && panel) {
         closeTemplates.addEventListener('click', () => panel.close());
     }
@@ -65,6 +78,12 @@ function initTemplatesController() {
     if (closeSaveModal && saveModal) {
         closeSaveModal.addEventListener('click', () => {
             saveModal.close();
+        });
+    }
+
+    if (closeEditorModal && editorModal) {
+        closeEditorModal.addEventListener('click', () => {
+            editorModal.close();
         });
     }
 

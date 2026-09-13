@@ -650,6 +650,7 @@ label[for="pathwaySelect"] {
 
                 </button>
 
+
                 <dialog id="saveModal">
                     <h2>Save as...</h2>
                     <div class="save-grid">
@@ -714,10 +715,34 @@ label[for="pathwaySelect"] {
                     </button>
                 </form>
 
+                <button title="Editor Tools" id="openEditor">
+
+                   Editor Tools
+
+                </button>
+
+                <dialog id="editorModal">
+                    <div class="save-grid">
+                        <h2>Tools to edit the structure of majors or courses</h2><br>
+                    <button title="Course Editor" onclick="window.location.href = 'https://localhost/COMP702-BCIS-Course-Planner/CourseCreator.html';">
+                        Course Editor
+                    </button>
+
+                    <button title="Major/Minor Editor" onclick="window.location.href = 'https://localhost/COMP702-BCIS-Course-Planner/majoreditor.html';">
+                        Major/Minor Editor
+                    </button>
+
+                    <button id="closeEditorModal">Cancel</button>
+                   </div>
+                </dialog>
+
                 <div id="saveModal" class="hidden">
 
                 </div>
 
+                <div id="editorModal" class="hidden">
+
+                </div>
 
             </div>
         </div>
