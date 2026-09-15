@@ -1,3 +1,9 @@
+import { getCoursesFromSelectedMajorsAndMinors } from './autopopulateStudyPlan.js';
+import { loadMajorOptions } from "./objects/majorMinorOption.js";
+import { attributedCourses } from "./majorMinorRequirementsValidator.js";
+import { scheduleConfig, mapCoursePlanToDom } from "./state.js";
+import { validateMajorMinorRequirements } from "./majorMinorRequirementsValidator.js";
+
 function parsePrereqs(node) {
     if (!node) return "No prerequisites";
 
@@ -46,11 +52,7 @@ function parsePrereqs(node) {
 
     return "Unknown prerequisite structure";
 }
-import { getCoursesFromSelectedMajorsAndMinors } from './autopopulateStudyPlan.js';
-import { loadMajorOptions } from "./objects/majorMinorOption.js";
-import { attributedCourses } from "./majorMinorRequirementsValidator.js";
-import { scheduleConfig } from "./state.js";
-import { mapCoursePlanToDom } from "./dragAndDropController.js";
+
 
 async function TypeOfCell(coursecode, cell){
 try{
@@ -82,7 +84,6 @@ catch{
     //validatemajorminorrequirements working in time
 }
 }
-import { validateMajorMinorRequirements } from "./majorMinorRequirementsValidator.js";
 
 export async function renderCoursePlan(state) {
     await validateMajorMinorRequirements();
