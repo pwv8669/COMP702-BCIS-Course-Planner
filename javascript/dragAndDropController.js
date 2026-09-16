@@ -1,10 +1,62 @@
 import { state } from './state.js';
 import { courses } from './app.js';
+import { scheduleConfig } from './state.js'
 
 // Tracking for drag origin
 let sourceSemesterIndex = null;
 let sourceSlotIndex = null;
 let draggedCourseCode = null;
+
+export function mapDomToCoursePlan(domRow, domCol) {
+    // Full-time: 6 semesters and 4 slots so direct mapping is fine
+    if (scheduleConfig.mode !== 'part-time') {
+        return {
+            semesterIndex: domRow,
+            slotIndex: domCol
+        };
+    }
+
+    // Part-time: visually 6x4, logically 12x2
+    //so we convert the row and cloumn numbers from the cell id into
+    // cell-id rows 0-2 = coursePlan column 0, cell-id rows 1-3 = ccoursePlan column 1.
+     
+    let baseSemester;
+
+    if (domCol > 1) {
+        baseSemester  = domRow + 6;
+    } else {
+        baseSemester = domRow;
+    }
+    const semesterIndex = baseSemester;
+    const slotIndex = domCol % 2;
+
+    return { semesterIndex, slotIndex };
+    }
+
+    export function mapCoursePlanToDom(planRow, planCol) {
+    // Full-time: 6 semesters and 4 slots so direct mapping is fine
+    if (scheduleConfig.mode !== 'part-time') {
+        return {
+            UIRow: planRow,
+            UICol: planCol
+        };
+    }
+
+    let gridRow;
+    let gridCol;
+
+    if (planRow > 5) {
+        gridRow  = planRow - 6;
+        gridCol = planCol + 2;
+    } else {
+        gridRow = planRow;
+        gridCol = planCol;
+    }
+    const UIRow = gridRow;
+    const UICol = gridCol;
+
+    return { UIRow, UICol };
+    }
 
 export function initDragAndDrop(onPlanChange) {
 
@@ -30,16 +82,27 @@ export function initDragAndDrop(onPlanChange) {
     });
 
     // populated schedule table cells are made draggable here and unpopulated ones lose their draggable attribute.  
-    const tableCells = document.querySelectorAll('.schedule-table td');
+    const tableCells = document.querySelectorAll('.schedule-table td[id^="cell-"]');
 
     tableCells.forEach(cell => {
+        if (!cell.id) {
+            console.warn("Missing ID on cell:", cell);
+            return;
+        }
         const idParts = cell.id.split('-');
         if (idParts.length !== 3) return;
 
-        const row = parseInt(idParts[1], 10);
-        const col = parseInt(idParts[2], 10);
+        const domRow = parseInt(idParts[1], 10);
+        const domCol = parseInt(idParts[2], 10);
 
-        const currentCourse = state.coursePlan[row][col];
+        const { semesterIndex, slotIndex } = mapDomToCoursePlan(domRow, domCol);
+
+        if (!state.coursePlan[semesterIndex]) {
+            console.error("coursePlan missing row:", semesterIndex, "cell:", cell);
+            return;
+        }
+
+        const currentCourse = state.coursePlan[semesterIndex][slotIndex];
         //if cell is populated with a course make it draggable otherwise ensure it is not draggable
         if (currentCourse) {
             cell.setAttribute('draggable', 'true');
@@ -51,11 +114,17 @@ export function initDragAndDrop(onPlanChange) {
 
         //here event listeners are added to each cell
         cell.addEventListener('dragstart', (e) => {
-            const courseObj = state.coursePlan[row][col];
+            const { semesterIndex: sIdx, slotIndex: slIdx } =
+                mapDomToCoursePlan(
+                    parseInt(idParts[1], 10),
+                    parseInt(idParts[2], 10)
+                );
+
+            const courseObj = state.coursePlan[sIdx]?.[slIdx];
             if (!courseObj) return;
 
-            sourceSemesterIndex = row;
-            sourceSlotIndex = col;
+            sourceSemesterIndex = sIdx;
+            sourceSlotIndex = slIdx;
             draggedCourseCode = courseObj.code;
 
             e.dataTransfer.setData('text/plain', draggedCourseCode);
@@ -86,18 +155,23 @@ export function initDragAndDrop(onPlanChange) {
 
             if (!draggedCourseCode) return;
 
-            const targetSemesterIndex = row;
-            const targetSlotIndex = col;
+            const { semesterIndex: targetSemesterIndex, slotIndex: targetSlotIndex } =
+                mapDomToCoursePlan(
+                    parseInt(idParts[1], 10),
+                    parseInt(idParts[2], 10)
+                );
 
             const draggedCourse = courses[draggedCourseCode];
-            const existingDestinationCourse = state.coursePlan[targetSemesterIndex][targetSlotIndex];
+            const existingDestinationCourse =
+                state.coursePlan[targetSemesterIndex][targetSlotIndex];
 
-            // dragging from a populated cell to another populated cell swaps them
+            // If dragging from another cell, swap
             if (sourceSemesterIndex !== null && sourceSlotIndex !== null) {
-                state.coursePlan[sourceSemesterIndex][sourceSlotIndex] = existingDestinationCourse || null;
+                state.coursePlan[sourceSemesterIndex][sourceSlotIndex] =
+                    existingDestinationCourse || null;
             }
 
-            
+            // Place dragged course in target cell
             state.coursePlan[targetSemesterIndex][targetSlotIndex] = draggedCourse;
 
             // Reset drag state
@@ -105,7 +179,7 @@ export function initDragAndDrop(onPlanChange) {
             sourceSlotIndex = null;
             draggedCourseCode = null;
 
-            // Re-rendering via callback (refreshStudyPlan)
+            // Re-render via callback (refreshStudyPlan)
             if (typeof onPlanChange === 'function') {
                 await onPlanChange();
             }
@@ -135,5 +209,6 @@ export function initGlobalDeleteZone(onDeleteCallback) {
         }
     });
 }
+
 
 

@@ -49,6 +49,8 @@ function parsePrereqs(node) {
 import { getCoursesFromSelectedMajorsAndMinors } from './autopopulateStudyPlan.js';
 import { loadMajorOptions } from "./objects/majorMinorOption.js";
 import { attributedCourses } from "./majorMinorRequirementsValidator.js";
+import { scheduleConfig } from "./state.js";
+import { mapCoursePlanToDom } from "./dragAndDropController.js";
 
 async function TypeOfCell(coursecode, cell, state){
 try{
@@ -99,16 +101,25 @@ import { validateMajorMinorRequirements } from "./majorMinorRequirementsValidato
 
 export async function renderCoursePlan(state) {
     await validateMajorMinorRequirements();
-    for (let row = 0; row < state.coursePlan.length; row++) {
-        for (let col = 0; col < state.coursePlan[row].length; col++) {
+    for (let row = 0; row < scheduleConfig.semesters; row++) {
+        for (let col = 0; col < scheduleConfig.slotsPerSemester; col++) {
 
-            const cell = document.getElementById(`cell-${row}-${col}`);
+        const { UIRow, UICol } = mapCoursePlanToDom( row, col );
+            const cell = document.getElementById(`cell-${UIRow}-${UICol}`);
             if (!cell) continue;
 
             const course = state.coursePlan[row][col];
 
             if (!course) {
                 cell.textContent = "";
+                cell.classList.remove(
+                    "cell-required",
+                    "cell-elective",
+                    "cell-red-error",
+                    "cell-yellow-warning"
+                    );
+
+                cell.classList.add("cell-yellow-warning");
                 continue;
             }
             const prereqText = parsePrereqs(course.prerequisites);//parse prereqs 
