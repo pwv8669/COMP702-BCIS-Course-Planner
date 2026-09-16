@@ -11,7 +11,7 @@ export async function initPartTime()
 
 }
 
-function switchSchedule()
+export function switchSchedule()
 {
     //add a toggle that changes the icon/text so that the button displays "full-time schedule" if the study plan is set to parttime mode
     const partTimeHeader = document.getElementById('partTimeHeader');

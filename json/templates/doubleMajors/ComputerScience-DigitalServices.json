@@ -3,10 +3,14 @@
 "selectedMajors": ["ComputerScience","DigitalServices"],
 "selectedMinors": ["null","null"],
 "selectedElectives": ["null","null","null","null"],
-"schedule": [["COMP500","COMP501","COMP507","COMP508"],
-["DIGD507","MATH503","COMP503","INFS502"],
-["COMP610","COMP613","INFS603","INFS604"],
-["COMP611","COMP711","COMP603","INFS605"],
-["COMP702","COMP719","COMP612","COMP718"],
-["COMP703","COMP712","COMP728","COMP726"]]
+  "schedule": [
+    [ "COMP500", "COMP501", "COMP507", "COMP508" ],
+    [ "DIGD507", "MATH503", "COMP503", "INFS502" ],
+    [ "COMP610", "COMP613", "INFS603", "INFS604" ],
+    [ "COMP611", "COMP711", "COMP603", "INFS605" ],
+    [ "COMP702", "COMP719", "COMP612", "COMP718" ],
+    [ "COMP703", "COMP712", "COMP728", "COMP726" ]
+  ],
+    "mode": "full-time",
+    "ignoredErrors": []
 }

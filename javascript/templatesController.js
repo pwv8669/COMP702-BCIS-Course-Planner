@@ -1,33 +1,15 @@
 import { refreshStudyPlan } from './app.js';
 import { state } from './state.js';
-import { importschedule } from './filehandler.js';
+import { importschedule, getSelectedPathwayCode, getCode } from './filehandler.js';
 
 /*This code handles all the premade studyplan template buttons it dynamically generates
 buttons based on the stored files in the json templates folder of the web app.
 This means study plans can be saved to the web app itself so that other programme leads can easily 
 share their unique solutions to common circumstances for students*/
-function getCode(value) {
-    if (value === null || value === undefined) return null;
 
-    if (typeof value === 'object') {
-        return value.Code ?? value.code ?? null;
-    }
 
-    if (value === '' || value === 'null' || value === 'undefined') {
-        return null;
-    }
 
-    return String(value);
-}
 
-function getSelectedPathwayCode() {
-    const selectedValue = document.getElementById('pathwaySelect')?.value;
-    if (selectedValue) return selectedValue;
-
-    return typeof state.selectedPathway === 'string'
-        ? state.selectedPathway
-        : null;
-}
 
 function initTemplatesController() {
     //selecting the relevant html elements
@@ -126,6 +108,7 @@ function initTemplatesController() {
             schedule: state.coursePlan.map(semester =>
                 semester.map(course => getCode(course))
             ),
+            mode: state.mode,
             ignoredErrors: state.ignoredErrors ?? {}
         };
 
