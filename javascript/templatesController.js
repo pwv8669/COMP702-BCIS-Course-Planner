@@ -1,5 +1,5 @@
 import { refreshStudyPlan } from './app.js';
-import { state } from './state.js';
+import { state, scheduleConfig } from './state.js';
 import { importschedule, getSelectedPathwayCode, getCode } from './filehandler.js';
 
 /*This code handles all the premade studyplan template buttons it dynamically generates
@@ -108,7 +108,7 @@ function initTemplatesController() {
             schedule: state.coursePlan.map(semester =>
                 semester.map(course => getCode(course))
             ),
-            mode: state.mode,
+            mode: scheduleConfig.mode,
             ignoredErrors: state.ignoredErrors ?? {}
         };
 

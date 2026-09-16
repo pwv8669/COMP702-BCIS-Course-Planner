@@ -1,0 +1,69 @@
+{
+    "selectedPathway": "doubleMajors",
+    "selectedMajors": [
+        null,
+        null
+    ],
+    "selectedMinors": [
+        null,
+        null
+    ],
+    "selectedElectives": [
+        null,
+        null,
+        null,
+        null
+    ],
+    "schedule": [
+        [
+            null,
+            null
+        ],
+        [
+            null,
+            null
+        ],
+        [
+            null,
+            null
+        ],
+        [
+            null,
+            null
+        ],
+        [
+            null,
+            null
+        ],
+        [
+            null,
+            null
+        ],
+        [
+            null,
+            null
+        ],
+        [
+            null,
+            null
+        ],
+        [
+            null,
+            null
+        ],
+        [
+            null,
+            null
+        ],
+        [
+            null,
+            null
+        ],
+        [
+            null,
+            null
+        ]
+    ],
+    "mode": "part-time",
+    "ignoredErrors": []
+}

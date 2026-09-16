@@ -178,7 +178,7 @@ export function SaveFile() {
         schedule: state.coursePlan.map(semester =>
             semester.map(course => getCode(course))
         ),
-        mode: state.mode,
+        mode: scheduleConfig.mode,
         ignoredErrors: state.ignoredErrors ?? {}
     };
 
