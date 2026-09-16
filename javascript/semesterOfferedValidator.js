@@ -1,10 +1,11 @@
 import { state } from "./state.js";
-import { PlanError } from './objects/planError.js';
+import { PlanError, ErrorSeverity } from './objects/planError.js';
+import { scheduleConfig } from "./state.js";
 
 export function validateSemestersOffered() {
     const errors = [];
-    for (let semester = 0; semester < state.coursePlan.length; semester++){
-        for (let slot = 0; slot < state.coursePlan[semester].length; slot++){
+    for (let semester = 0; semester < scheduleConfig.semesters; semester++){
+        for (let slot = 0; slot < scheduleConfig.slotsPerSemester; slot++){
             const currentCourse = state.coursePlan[semester][slot];
             // If the position in the course plan is empty, continue.
             if (!currentCourse) continue;
@@ -15,7 +16,7 @@ export function validateSemestersOffered() {
                 const semesterOrdinal = semester % 2 === 0 ? "1st" : "2nd";
                 let message = `The course ${currentCourse.code} is not offered in the ${semesterOrdinal} semester of a year.`;
                 let id = `SemesterNotOffered-${currentCourse.code}-${semester}`;
-                let errorMsg = new PlanError(currentCourse.code, message, id);
+                let errorMsg = new PlanError(currentCourse.code, message, id, ErrorSeverity.ERROR);
                 errorMsg.positions[semester][slot] = true;
                 errors.push(errorMsg);
             }

@@ -1,6 +1,6 @@
-import { state } from './state.js';
+import { state, scheduleConfig } from './state.js';
 import { NodeType } from './courseObjectConverter.js';
-import { PlanError } from './objects/planError.js';
+import { ErrorSeverity, PlanError } from './objects/planError.js';
 import { loadMajorOptions } from './objects/majorMinorOption.js';
 
 const majorOptions = await loadMajorOptions();
@@ -11,7 +11,8 @@ export function getCompletedCourses(currentSemester){
     const completed = new Set()
     // Iterates through the previously completed courses and adds them to the set.
     for (let i = 0; i<currentSemester; i++){
-        for (const course of state.coursePlan[i]){
+        for (let j = 0; j < scheduleConfig.slotsPerSemester; j++){
+            const course = state.coursePlan[i][j];
             if (course){
                 completed.add(course.code);
             }
@@ -24,7 +25,7 @@ export function getCompletedCourses(currentSemester){
 function getCoursesInSemester(semester) {
     const courses = new Set();
 
-    if (semester < 0 || semester >= state.coursePlan.length) {
+    if (semester < 0 || semester >= scheduleConfig.semesters) {
         return courses;
     }
 
@@ -97,12 +98,91 @@ export function evaluateCoreAndMajorRequirements(
     );
 }
 
+export function validatePointPrerequisites(){
+    const errors = [];
+
+    for (let semester = 0; semester < state.coursePlan.length; semester++) {
+        const completedPointsByLevel = new Map([
+            [5, 0],
+            [6, 0],
+            [7, 0]
+        ]);
+        const countedCourseCodes = new Set();
+
+        // Point prerequisites only count courses completed before the
+        // semester containing the course being validated.
+        for (let completedSemester = 0;
+            completedSemester < semester;
+            completedSemester++) {
+            for (const course of state.coursePlan[completedSemester]) {
+                if (!course || countedCourseCodes.has(course.code)) {
+                    continue;
+                }
+
+                countedCourseCodes.add(course.code);
+                const level = Number(course.level);
+                const points = Number(course.points);
+                if (
+                    !completedPointsByLevel.has(level) ||
+                    !Number.isFinite(points)
+                ) {
+                    continue;
+                }
+
+                completedPointsByLevel.set(
+                    level,
+                    completedPointsByLevel.get(level) + points
+                );
+            }
+        }
+
+        for (let slot = 0;
+            slot < state.coursePlan[semester].length;
+            slot++) {
+            const currentCourse = state.coursePlan[semester][slot];
+            if (!currentCourse) continue;
+
+            const requirements = [
+                [5, Number(currentCourse.level5PointsRequired ?? 0)],
+                [6, Number(currentCourse.level6PointsRequired ?? 0)],
+                [7, Number(currentCourse.level7PointsRequired ?? 0)]
+            ];
+            const unmetRequirements = requirements.filter(
+                ([level, requiredPoints]) =>
+                    requiredPoints > completedPointsByLevel.get(level)
+            );
+
+            if (unmetRequirements.length === 0) continue;
+
+            const requirementDetails = unmetRequirements.map(
+                ([level, requiredPoints]) =>
+                    `level ${level} requires ${requiredPoints} points but ` +
+                    `${completedPointsByLevel.get(level)} have been completed`
+            ).join("; ");
+            const message =
+                `The point prerequisites for ${currentCourse.code} are not ` +
+                `met by semester ${semester + 1}: ${requirementDetails}.`;
+            const id = `MissingPointPreq-${currentCourse.code}`;
+            const errorMsg = new PlanError(
+                currentCourse.code,
+                message,
+                id,
+                ErrorSeverity.ERROR
+            );
+            errorMsg.positions[semester][slot] = true;
+            errors.push(errorMsg);
+        }
+    }
+
+    return errors;
+}
+
 export function validatePrerequisites(){
     const errors = [];
-    for (let semester = 0; semester < state.coursePlan.length; semester++){
+    for (let semester = 0; semester < scheduleConfig.semesters; semester++){
         const completedCourses = getCompletedCourses(semester);
 
-        for (let slot = 0; slot < state.coursePlan[semester].length; slot++){
+        for (let slot = 0; slot < scheduleConfig.slotsPerSemester; slot++){
             const currentCourse = state.coursePlan[semester][slot];
             // If the position in the course plan is empty, continue.
             if (!currentCourse) continue;
@@ -115,7 +195,7 @@ export function validatePrerequisites(){
             if (!valid){
                 let message = `The prerequisites for ${currentCourse.code} are not met by semester ${semester+1}.`; 
                 let id = `MissingPreq-${currentCourse.code}`;
-                let errorMsg = new PlanError(currentCourse.code, message, id);
+                let errorMsg = new PlanError(currentCourse.code, message, id, ErrorSeverity.ERROR);
                 errorMsg.positions[semester][slot] = true;
                 errors.push(errorMsg);
                 continue;
@@ -143,7 +223,8 @@ export function validatePrerequisites(){
                 const errorMsg = new PlanError(
                     currentCourse.code,
                     message,
-                    id
+                    id,
+                    ErrorSeverity.ERROR
                 );
                 errorMsg.positions[semester][slot] = true;
                 errors.push(errorMsg);
@@ -164,22 +245,24 @@ export function validatePrerequisites(){
                 const errorMsg = new PlanError(
                     currentCourse.code,
                     message,
-                    id
+                    id,
+                    ErrorSeverity.ERROR
                 );
                 errorMsg.positions[semester][slot] = true;
                 errors.push(errorMsg);
             }
         }
     }
+    errors.push(...validatePointPrerequisites());
     return errors;
 }
 
 export function validateCorequisites(){
     const errors = [];
-    for (let semester = 0; semester < state.coursePlan.length; semester++){
+    for (let semester = 0; semester < scheduleConfig.semesters; semester++){
         const completedCourses = getCompletedCourses(semester + 1);
 
-        for (let slot = 0; slot < state.coursePlan[semester].length; slot++){
+        for (let slot = 0; slot < scheduleConfig.slotsPerSemester; slot++){
             const currentCourse = state.coursePlan[semester][slot];
             // If the position in the course plan is empty, continue.
             if (!currentCourse) continue;
@@ -192,7 +275,7 @@ export function validateCorequisites(){
             if (!valid){
                 let message = `The corequisites for ${currentCourse.code} are not met by semester ${semester+1}.`;
                 let id = `MissingCoreq-${currentCourse.code}`;
-                let errorMsg = new PlanError(currentCourse.code, message, id);
+                let errorMsg = new PlanError(currentCourse.code, message, id, ErrorSeverity.ERROR);
                 errorMsg.positions[semester][slot] = true;
                 errors.push(errorMsg);
             }
