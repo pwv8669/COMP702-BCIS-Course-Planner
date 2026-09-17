@@ -1,33 +1,15 @@
 import { refreshStudyPlan } from './app.js';
-import { state } from './state.js';
-import { importschedule } from './filehandler.js';
+import { state, scheduleConfig } from './state.js';
+import { importschedule, getSelectedPathwayCode, getCode } from './filehandler.js';
 
 /*This code handles all the premade studyplan template buttons it dynamically generates
 buttons based on the stored files in the json templates folder of the web app.
 This means study plans can be saved to the web app itself so that other programme leads can easily 
 share their unique solutions to common circumstances for students*/
-function getCode(value) {
-    if (value === null || value === undefined) return null;
 
-    if (typeof value === 'object') {
-        return value.Code ?? value.code ?? null;
-    }
 
-    if (value === '' || value === 'null' || value === 'undefined') {
-        return null;
-    }
 
-    return String(value);
-}
 
-function getSelectedPathwayCode() {
-    const selectedValue = document.getElementById('pathwaySelect')?.value;
-    if (selectedValue) return selectedValue;
-
-    return typeof state.selectedPathway === 'string'
-        ? state.selectedPathway
-        : null;
-}
 
 function initTemplatesController() {
     //selecting the relevant html elements
@@ -36,9 +18,15 @@ function initTemplatesController() {
     const closeTemplates = document.getElementById('closeTemplates');
     const btnContainer = document.getElementById('templateBtnContainer');
 
+    // Adding eventlisteners to the "Save" pop up window
     const saveModal = document.getElementById('saveModal');
     const openSave = document.getElementById('openSave');
     const closeSaveModal = document.getElementById('closeSaveModal');
+    
+    // Adding eventlisteners to the "Editor" pop up window
+    const editorModal = document.getElementById('editorModal');
+    const openEditor = document.getElementById('openEditor');
+    const closeEditorModal = document.getElementById('closeEditorModal');
     
     const templateInput = document.getElementById('localJsonFileInput');
     const uploadForm = document.getElementById('uploadTemplateForm');
@@ -58,6 +46,13 @@ function initTemplatesController() {
         });
     }
 
+    if (openEditor && editorModal) {
+        openEditor.addEventListener('click', () => {
+            editorModal.showModal();
+        });
+    }
+
+
     if (closeTemplates && panel) {
         closeTemplates.addEventListener('click', () => panel.close());
     }
@@ -65,6 +60,12 @@ function initTemplatesController() {
     if (closeSaveModal && saveModal) {
         closeSaveModal.addEventListener('click', () => {
             saveModal.close();
+        });
+    }
+
+    if (closeEditorModal && editorModal) {
+        closeEditorModal.addEventListener('click', () => {
+            editorModal.close();
         });
     }
 
@@ -107,6 +108,7 @@ function initTemplatesController() {
             schedule: state.coursePlan.map(semester =>
                 semester.map(course => getCode(course))
             ),
+            mode: scheduleConfig.mode,
             ignoredErrors: state.ignoredErrors ?? {}
         };
 

@@ -2,15 +2,11 @@
 <html>
 <head>
 
-<script src="https://code.jquery.com/jquery-1.12.4.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.3.3/jspdf.min.js"></script>
-<script src="https://html2canvas.hertzen.com/dist/html2canvas.js"></script>
-
 <script type="module" src="./javascript/app.js" ></script>
 <style>
   /* Styling here */
     :root {
-        --scale: 1vmin;
+        --scale: .96vmin;
     }
 
     body {
@@ -109,10 +105,10 @@ td{
     border: calc(.3 * var(--scale)) solid #3842af;
 }
 
-.schedule-table td.cell-required-minor:nth-child(even){background-color: #7eb2a8 ;}  /* Alternate between light and dark cells */
-.schedule-table td.cell-required-minor:nth-child(odd) {background-color: #5f8587 ;}
+.schedule-table td.cell-required-minor:nth-child(even){background-color: #bc80dc ;}  /* Alternate between light and dark cells */
+.schedule-table td.cell-required-minor:nth-child(odd) {background-color: #9461af ;}
 .schedule-table td.cell-required-minor {
-    border: calc(.3 * var(--scale)) solid #435b5d;
+    border: calc(.3 * var(--scale)) solid #5d3672;
 }
 
 .schedule-table td.cell-elective:nth-child(even){background-color: #636870 ;}  /* Alternate between light and dark cells */
@@ -488,13 +484,29 @@ select:hover,button:hover{
 .save-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    grid-template-columns: 1fr 1fr;
     gap: calc(1 * var(--scale)); 
 
 }
 
 .save-grid button{
     aspect-ratio: 3/2; 
+}
+
+.edit-grid {
+    display: grid;
+    grid-gap: calc(1 * var(--scale)); 
+}
+
+.button-link {
+   color: #ffffff;
+  font-family: 'Trebuchet MS'; 
+  font-weight: bolder;
+  border-radius: calc(.6 * var(--scale));
+  background-color: #822787;
+  font-size: calc(2 * var(--scale));
+  padding: calc(1 * var(--scale));
+  text-align: center;   
+  text-decoration: none;
 
 }
 
@@ -524,7 +536,7 @@ label[for="pathwaySelect"] {
 </head>
 <title>BCIS Course Planner</title>
 <body>
-    
+
     <div class="main-layout-container">
         <!-- Form for selecting course pathway. -->
         <div class="top-selector-row">
@@ -627,20 +639,20 @@ label[for="pathwaySelect"] {
 
     <div class="bottom-section-grid">
 
-        
-            <div id="red-error-list-container">
 
-            </div>
+        <div id="red-error-list-container">
 
-            <div id="yellow-error-list-container">
+        </div>
 
-            </div>
+        <div id="yellow-error-list-container">
 
-            <div id="ignored-errors-container">
-                <h3>Schedule Notes</h3>
-                <div id="ignored-errors-list"></div>
-            </div>
-        
+        </div>
+
+        <div id="ignored-errors-container">
+            <h3>Schedule Notes</h3>
+            <div id="ignored-errors-list"></div>
+        </div>
+
 
         <div class="buttons-column">
             <div class="button-grid">
@@ -653,6 +665,7 @@ label[for="pathwaySelect"] {
                     </svg>
 
                 </button>
+
 
                 <dialog id="saveModal">
                     <h2>Save as...</h2>
@@ -718,13 +731,36 @@ label[for="pathwaySelect"] {
                     </button>
                 </form>
 
-                <div id="saveModal" class="hidden">
+                <button title="Editor Tools" id="openEditor">
 
-                </div>
+                    Editor Tools
+
+                </button>
+
+                <dialog id="editorModal">
+                    <div class="edit-grid">
+                        <h2>Tools to edit the structure of majors or courses</h2><br>
+
+                        <a title="Course Editor" href="https://localhost/COMP702-BCIS-Course-Planner/CourseCreator.html" target="_blank" class="button-link">Course Editor</a>
+
+                        <a title="Major/Minor Editor" href="https://localhost/COMP702-BCIS-Course-Planner/majoreditor.html" target="_blank" class="button-link">Major/Minor Editor</a>
+
+                        <button id="closeEditorModal">Cancel</button>
+                    </div>
+                </dialog>
+
 
 
             </div>
         </div>
+    </div>
+
+    <div id="saveModal" class="hidden">
+
+    </div>
+
+    <div id="editorModal" class="hidden">
+
     </div>
 
     <div id="ignoreModal" class="hidden">

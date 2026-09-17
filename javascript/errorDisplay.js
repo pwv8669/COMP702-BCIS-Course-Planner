@@ -1,6 +1,6 @@
 import { validateStudyPlan } from './planValidator.js';
 import { ErrorSeverity } from './objects/planError.js';
-import { state } from './state.js';
+import { state, mapCoursePlanToDom } from './state.js';
 
 //Gets the error list container from the html and the error list from validateStudyPlan() populates it with error messages by calling renderErrors()
 export function errorDisplay()
@@ -90,7 +90,9 @@ function renderErrors(errorList) {
                 row.forEach((hasErrorAtPosition, slotIndex) => {
                     if (!hasErrorAtPosition) return;
 
-                    const cell = document.getElementById(`cell-${semIndex}-${slotIndex}`);
+                    const {UIRow, UICol} = mapCoursePlanToDom(semIndex, slotIndex);
+
+                    const cell = document.getElementById(`cell-${UIRow}-${UICol}`);
                     if (!cell) return;
 
                     cell.classList.remove('cell-red-error', 'cell-yellow-warning');
