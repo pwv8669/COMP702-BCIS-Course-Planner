@@ -73,10 +73,16 @@ try{
     }
     if(attributedCourses.get(coursecode).replace(/([A-Z])/g, ' $1').trim() != "Core"){//if the attributed course isnt core
         if(state.selectedPathway.name != "Double Majors"){
+            if(state.selectedMajors[0].Code == attributedCourses.get(coursecode)){//if major is found
+                cell.classList = 'cell-required';//add class list
+                 return attributedCourses.get(coursecode).replace(/([A-Z])/g, ' $1').trim();
+            }
             for (let minor = 0; minor < state.selectedMinors.length; minor++) {//for loop for the extraordinarily unlikely futureproof of allowing 3 minors
-                if(state.selectedMinors[minor].Code == attributedCourses.get(coursecode)){//if minor is found
-                cell.classList = 'cell-required-minor';//add class list
-                break;//stop looking
+                if(state.selectedMinors[minor] != null){//if unselected minor, skip it
+                    if(state.selectedMinors[minor].Code == attributedCourses.get(coursecode)){//if minor is found
+                        cell.classList = 'cell-required-minor';//add class list
+                        break;//stop looking
+                    }
                 }
             }
             if(!cell.classList.contains('cell-required-minor')){//if the min
@@ -90,8 +96,7 @@ try{
     else{
         cell.classList = ''; //else make it the default color (core uses default green as of this time)
     }
-        
-        return attributedCourses.get(coursecode).replace(/([A-Z])/g, ' $1').trim();//return the attributed course name e.g. the major/minor/core
+    return attributedCourses.get(coursecode).replace(/([A-Z])/g, ' $1').trim();//return the attributed course name e.g. the major/minor/core
 }
 catch{
     return "Core";//return core as a "just in case"
