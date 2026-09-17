@@ -1340,6 +1340,89 @@ function offeredThisSemester(course, semester) {
     return course.semester2Offered;
 }
 
+const POINT_PREREQUISITE_LEVELS = [5, 6, 7];
+
+function getPointPrerequisites(course) {
+    return POINT_PREREQUISITE_LEVELS
+        .map(level => [
+            level,
+            Number(
+                course[
+                    `level${level}PointsRequired`
+                ] ?? 0
+            )
+        ])
+        .filter(
+            ([, requiredPoints]) =>
+                Number.isFinite(requiredPoints) &&
+                requiredPoints > 0
+        );
+}
+
+/*
+ * Point prerequisites only count courses completed in an earlier semester.
+ * During search, an unassigned course is counted as a potential contributor
+ * only when its current domain still contains an earlier semester. This is
+ * deliberately optimistic: it removes impossible placements without
+ * discarding a placement whose contributing courses can still be arranged.
+ */
+function pointPrerequisitesCanBeSatisfied(
+    course,
+    semester,
+    courses,
+    assignments,
+    domains = null
+) {
+    for (
+        const [level, requiredPoints]
+        of getPointPrerequisites(course)
+    ) {
+        let availablePoints = 0;
+
+        for (const candidate of courses.values()) {
+            if (
+                candidate.code === course.code ||
+                Number(candidate.level) !== level
+            ) {
+                continue;
+            }
+
+            const points = Number(candidate.points);
+            if (!Number.isFinite(points)) {
+                continue;
+            }
+
+            if (assignments.has(candidate.code)) {
+                if (
+                    assignments.get(candidate.code) <
+                    semester
+                ) {
+                    availablePoints += points;
+                }
+                continue;
+            }
+
+            const candidateDomain =
+                domains?.get(candidate.code);
+
+            if (
+                candidateDomain?.some(
+                    candidateSemester =>
+                        candidateSemester < semester
+                )
+            ) {
+                availablePoints += points;
+            }
+        }
+
+        if (availablePoints < requiredPoints) {
+            return false;
+        }
+    }
+
+    return true;
+}
+
 function buildInitialSemesterDomains(
     courses,
     semesterCount
@@ -1535,6 +1618,13 @@ function propagateSemesterDomains(
                         semester,
                         assignments,
                         propagatedDomains
+                    ) ||
+                    !pointPrerequisitesCanBeSatisfied(
+                        course,
+                        semester,
+                        courses,
+                        assignments,
+                        propagatedDomains
                     )
                 ) {
                     return null;
@@ -1555,6 +1645,13 @@ function propagateSemesterDomains(
                         prerequisiteTreeCanBeSatisfied(
                             getEffectivePrerequisiteTree(course),
                             semester,
+                            assignments,
+                            propagatedDomains
+                        ) &&
+                        pointPrerequisitesCanBeSatisfied(
+                            course,
+                            semester,
+                            courses,
                             assignments,
                             propagatedDomains
                         )
@@ -2178,6 +2275,12 @@ function assignmentsAreValid(
             !evaluatePrerequisiteTree(
                 getEffectivePrerequisiteTree(course),
                 completedCourses
+            ) ||
+            !pointPrerequisitesCanBeSatisfied(
+                course,
+                semester,
+                courses,
+                assignments
             )
         ) {
             return false;
