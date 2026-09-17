@@ -13,17 +13,29 @@ body{
   margin:0;
   height: 100%;
 }
+
+/* Factory Reset button */
 button {
-  color: #ffffff;
+  cursor:pointer;
+    color: #6d6767;
+    border-radius: 10px;
   font-family: 'Trebuchet MS'; 
   font-weight: bolder;
-  border-radius: 2px;
-  border: 5px;
+   outline:0px;
+  align-content: center;
+  border:0px; 
+  width:20%;
   background-color: #852b1f;
-  font-size: 18px;
-  padding: 10px;
-  text-align: center;   
-  width: 12%;
+  font-size: 20px;
+  padding:12px;
+ transform: scale(1);
+   transition: background-color .2s, transform .2s;
+}
+
+button:hover {
+  background-color: #ff2121;
+  color: #e4d8d7;
+  transform: scale(1.1);
 }
 div{
   background-color: #652d7c;
@@ -170,10 +182,10 @@ select {
             of the courses, as well as their indexin optionobjectsstore array (see below) -->
                 <p id="majortoedit" style="margin-top: 0%; "></p>
             </div>
+            <button type="button" title="Restore factory data" id="factoryResetButton">
+              Factory Reset
+            </button>
         </div>
-    <button type="button" title="Restore factory data" id="factoryResetButton">
-      Factory Reset
-    </button>
     </div>
 </body>
 <script type="module">
