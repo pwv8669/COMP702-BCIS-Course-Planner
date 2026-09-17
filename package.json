@@ -1,0 +1,25 @@
+{
+  "name": "comp702-bcis-course-planner",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/pwv8669/COMP702-BCIS-Course-Planner.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/pwv8669/COMP702-BCIS-Course-Planner/issues"
+  },
+  "homepage": "https://github.com/pwv8669/COMP702-BCIS-Course-Planner#readme",
+  "devDependencies": {
+    "@vitest/coverage-v8": "^5.0.1",
+    "vitest": "^5.0.1"
+  }
+}
