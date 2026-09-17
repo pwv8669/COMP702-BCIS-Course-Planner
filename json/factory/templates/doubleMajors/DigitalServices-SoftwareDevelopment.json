@@ -1,12 +1,16 @@
 {
-"selectedPathway":"doubleMajors",
-"selectedMajors": ["DigitalServices","SoftwareDevelopment"],
-"selectedMinors": ["null","null"],
-"selectedElectives": ["ELEC600","null","null","null"],
-"schedule": [["COMP500","COMP501","COMP507","COMP508"],
-["DIGD507","MATH503","INFS502","COMP503"],
-["INFS603","INFS604","COMP603","COMP604"],
-["INFS605","COMP602","COMP610","ELEC600"],
-["COMP702","COMP718","INFS704","COMP721"],
-["COMP703","COMP728","COMP719","ENSE707"]]
+  "selectedPathway": "doubleMajors",
+  "selectedMajors": [ "DigitalServices", "SoftwareDevelopment" ],
+  "selectedMinors": [ "null", "null" ],
+  "selectedElectives": [ "ELEC600", "null", "null", "null" ],
+  "schedule": [
+    [ "COMP500", "COMP501", "COMP507", "COMP508" ],
+    [ "DIGD507", "MATH503", "INFS502", "COMP503" ],
+    [ "INFS603", "INFS604", "COMP603", "COMP604" ],
+    [ "INFS605", "COMP602", "COMP610", "ELEC600" ],
+    [ "COMP702", "COMP718", "INFS704", "COMP721" ],
+    [ "COMP703", "COMP728", "COMP719", "ENSE707" ]
+  ],
+  "mode": "full-time",
+  "ignoredErrors": []
 }
