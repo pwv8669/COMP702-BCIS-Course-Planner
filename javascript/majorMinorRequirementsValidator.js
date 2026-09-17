@@ -139,10 +139,7 @@ export function validateMajorMinorRequirements(){
                 substitution.unfulfilledOptionCode
             );
         } else {
-            addChooseNError(
-                substitution.majorOrMinor,
-                substitution.requirement
-            );
+            addChooseNSubstitutionError(substitution);
         }
     }
 
@@ -288,6 +285,76 @@ function addChooseNError(majorOrMinor, requirement) {
     const id =
         `MissingReqs-${coursesToDisplay.join("-")}-` +
         `${majorOrMinor.Name}-${requirement.Count}`;
+
+    errors.push(new PlanError(null, message, id));
+}
+
+function addChooseNSubstitutionError(substitution) {
+    const totalSubstitutionPoints =
+        getRequiredSubstitutionPoints() +
+        chooseNSubstitutions.reduce(
+            (total, chooseNSubstitution) =>
+                total + chooseNSubstitution.points,
+            0
+        );
+
+    if (!canUseUnrestrictedSubstitution(
+        substitution,
+        totalSubstitutionPoints
+    )) {
+        addChooseNError(
+            substitution.majorOrMinor,
+            substitution.requirement
+        );
+        return;
+    }
+
+    const overlappingCourses = substitution.requirement.Courses
+        .filter(course =>
+            coursePlanCourses.has(course.code) &&
+            attributedCourses.has(course.code) &&
+            attributedCourses.get(course.code) !==
+                substitution.majorOrMinor.Code
+        );
+    const possessingOptionCodes = new Set(
+        overlappingCourses.map(course =>
+            attributedCourses.get(course.code)
+        )
+    );
+    const possessingOptionNames = Array.from(
+        possessingOptionCodes,
+        optionCode =>
+            selectedOptions.find(option =>
+                option.Code === optionCode
+            )?.Name ?? optionCode
+    );
+    const courseCount = substitution.count;
+    const courseWord = courseCount === 1
+        ? "course"
+        : "courses";
+    const pointsText = substitution.points > 0
+        ? ` (${substitution.points} points)`
+        : "";
+    const ownerText = possessingOptionNames.length === 1
+        ? possessingOptionNames[0]
+        : "other requirements";
+    const overlappingCourseCodes = overlappingCourses.map(
+        course => course.code
+    );
+    const attributionVerb = overlappingCourses.length === 1
+        ? "is"
+        : "are";
+    const message =
+        `${substitution.majorOrMinor.Name} requires ` +
+        `${courseCount} additional elective ${courseWord}` +
+        `${pointsText} because ${overlappingCourseCodes.join(", ")} ` +
+        `${attributionVerb} already attributed to ${ownerText}.`;
+    const requirementCourseCodes =
+        substitution.requirement.Courses.map(course => course.code);
+    const id =
+        `MissingReqs-${requirementCourseCodes.join("-")}-` +
+        `${substitution.majorOrMinor.Name}-` +
+        `${substitution.requirement.Count}`;
 
     errors.push(new PlanError(null, message, id));
 }
