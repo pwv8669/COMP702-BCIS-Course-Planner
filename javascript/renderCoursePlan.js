@@ -54,7 +54,7 @@ import { mapCoursePlanToDom } from "./dragAndDropController.js";
 
 async function TypeOfCell(coursecode, cell, state){
 try{
-    
+    cell.classList = ''
     const majorOptions = await loadMajorOptions();
     //get the options from core
     let coreOptions = majorOptions["Core"];
