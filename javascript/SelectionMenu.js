@@ -34,10 +34,12 @@ export async function SetupSelections()
 export async function SetupMajorMinorSelections()
 {
 	let majorminor = "";
-	if(document.getElementById("MajorMinorSelection").value != undefined){
-		majorminor = document.getElementById("MajorMinorSelection").value;
+	try {
+		if (document.getElementById("MajorMinorSelection").value != undefined) {
+			majorminor = document.getElementById("MajorMinorSelection").value;
+		}
 	}
-	else{
+	catch {
 		majorminor = "Major";
 	}
 	let optionsData  = await fetch('json/majors.json', { cache: 'no-store' });
@@ -54,7 +56,8 @@ export async function SetupMajorMinorSelections()
 
 	// For each course in courses, add an option to the selection menu with the course code as the display text and the index of the course in the courseobjects array as the value.
 	let optionobjects = [];//this will be a temporary array of the course objects, which will be used to get the course data when the user selects a course from the selection menu.
-			optionobjectsstore = [];
+	let optionobjectsstore = [];
+
 	for (const code in optionarray)
 	{
 
@@ -64,10 +67,51 @@ export async function SetupMajorMinorSelections()
 	}
  	text += "</select>"
 
+	try 
+	{
+		document.getElementById("majortoedit").innerHTML = text;
+	}
+	catch
+	{
+		
+	}
+	
 
-	document.getElementById("majortoedit").innerHTML = text;
+}
+
+async function initFactoryResetButton() 
+{
+    const button = document.getElementById('factoryResetButton');
+
+    button.addEventListener('click', async () => {
+        if (!window.confirm('Reset all course and major/minor data to default values? This action cannot be undone.')) 
+        {
+            return;
+        }
+    
+        try
+        {
+            const response = await fetch('./php/factory_reset.php', {
+                method: 'POST'
+            });
+            const result = await response.json();
+    
+			// Throw error if response is bad
+            if (!response.ok || !result.success) {
+                throw new Error(result.error || 'Factory reset failed.');
+            }
+			// Alert the user of success and reload the page
+            window.alert(result.message);
+            window.location.reload();
+        }
+        catch (error)
+        {
+            window.alert(error.message);
+        }
+    })
 
 }
 
 await SetupSelections();
+await initFactoryResetButton();
 await SetupMajorMinorSelections();
