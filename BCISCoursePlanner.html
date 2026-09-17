@@ -105,10 +105,10 @@ td{
     border: calc(.3 * var(--scale)) solid #3842af;
 }
 
-.schedule-table td.cell-required-minor:nth-child(even){background-color: #7eb2a8 ;}  /* Alternate between light and dark cells */
-.schedule-table td.cell-required-minor:nth-child(odd) {background-color: #5f8587 ;}
+.schedule-table td.cell-required-minor:nth-child(even){background-color: #bc80dc ;}  /* Alternate between light and dark cells */
+.schedule-table td.cell-required-minor:nth-child(odd) {background-color: #9461af ;}
 .schedule-table td.cell-required-minor {
-    border: calc(.3 * var(--scale)) solid #435b5d;
+    border: calc(.3 * var(--scale)) solid #5d3672;
 }
 
 .schedule-table td.cell-elective:nth-child(even){background-color: #636870 ;}  /* Alternate between light and dark cells */
@@ -717,8 +717,12 @@ label[for="pathwaySelect"] {
 
                 </button>
 
-                <button id="partTimeButton">
-                    Part-time Schedule <!-- need to find a suitable symbol for this-->
+                <button title="Switch Schedule to Part-Time" id="partTimeButton">
+
+                    <svg alt="Switch Schedule to part time" class="icon" xmlns="http://www.w3.org/2000/svg" id="Layer_1" data-name="Layer 1" viewBox="0 0 24 24" width="512" height="512">
+                        <path d="M19.5,2h-1.5V.5c0-.28-.22-.5-.5-.5s-.5,.22-.5,.5v1.5H7V.5c0-.28-.22-.5-.5-.5s-.5,.22-.5,.5v1.5h-1.5C2.02,2,0,4.02,0,6.5v13c0,2.48,2.02,4.5,4.5,4.5h15c2.48,0,4.5-2.02,4.5-4.5V6.5c0-2.48-2.02-4.5-4.5-4.5Zm-8,7v4H7v-4h4.5Zm5.5,0v4h-4.5v-4h4.5Zm6,0v4h-5v-4h5ZM6,13H1v-4H6v4Zm-5,1H6v4H1v-4Zm6,0h4.5v4H7v-4Zm4.5,5v4H7v-4h4.5Zm1,0h4.5v4h-4.5v-4Zm0-1v-4h4.5v4h-4.5Zm5.5-4h5v4h-5v-4ZM4.5,3h15c1.93,0,3.5,1.57,3.5,3.5v1.5H1v-1.5c0-1.93,1.57-3.5,3.5-3.5ZM1,19.5v-.5H6v4h-1.5c-1.93,0-3.5-1.57-3.5-3.5Zm18.5,3.5h-1.5v-4h5v.5c0,1.93-1.57,3.5-3.5,3.5Z"/>
+                    </svg>
+
                 </button>
 
                 <form action="https://www.aut.ac.nz/__data/assets/pdf_file/0011/952796/BCIS-Programme-Structure-2026.pdf" method="get" target="_blank">
@@ -733,7 +737,10 @@ label[for="pathwaySelect"] {
 
                 <button title="Editor Tools" id="openEditor">
 
-                    Editor Tools
+                   <svg alt="Editor Tools" class="icon" xmlns="http://www.w3.org/2000/svg" id="Layer_1" data-name="Layer 1" viewBox="0 0 24 24">
+                        <path d="m23.207,19.379l-8.069-8.068-1.562,1.578-5.576-5.576V3.147L2.613.049.029,2.632l3.099,5.388h4.165l5.579,5.579-1.543,1.558,8.05,8.05c.511.512,1.191.793,1.914.793s1.403-.281,1.914-.793c.511-.511.793-1.19.793-1.914s-.282-1.402-.793-1.914ZM7,7.02h-3.294L1.278,2.798l1.5-1.501,4.222,2.429v3.294Zm15.5,15.48c-.645.645-1.77.645-2.414,0l-7.346-7.347,2.402-2.425,7.358,7.357c.322.322.5.751.5,1.207s-.178.885-.5,1.207Zm-12.595-5.961l.707.707-5.955,5.955c-.532.532-1.23.798-1.929.798s-1.397-.266-1.929-.798c-1.063-1.063-1.063-2.795,0-3.858l7.493-7.493.707.707-7.493,7.493c-.673.674-.673,1.771,0,2.444.674.675,1.771.673,2.444,0l5.955-5.955Zm.137-10.013l-.848-.848c.817-3.257,3.76-5.678,7.267-5.678,1.18,0,2.317.272,3.38.811l.611.31-4.005,4.055c-.314.314-.486.729-.486,1.171s.172.857.484,1.17c.644.645,1.694.645,2.339,0l4.02-4.068.316.611c.558,1.077.841,2.235.841,3.441,0,2.657-1.393,4.99-3.482,6.322l-.727-.727c1.917-1.132,3.209-3.213,3.209-5.596,0-.811-.148-1.596-.44-2.344l-3.028,3.064c-1.037,1.037-2.72,1.035-3.755.002-.501-.501-.777-1.167-.777-1.877s.276-1.375.777-1.876l3.012-3.05c-.733-.279-1.5-.42-2.29-.42-3.252,0-5.946,2.404-6.419,5.526Z"/>
+                   </svg>
+
 
                 </button>
 

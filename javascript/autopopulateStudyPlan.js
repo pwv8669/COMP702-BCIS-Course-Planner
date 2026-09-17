@@ -29,7 +29,8 @@ const requiredCourseOwners = new Map();
 const requiredCourseSubstitutions = [];
 
 const chooseNSubstitutions = [];
-const MAX_UNRESTRICTED_DOUBLE_MAJOR_SUBSTITUTION_POINTS = 30;
+const chooseNRequirementOwners = new WeakMap();
+const MAX_DOUBLE_MAJOR_OVERLAP_POINTS = 30;
 
 /*
  * Course data and semester rules are static for the lifetime of the page, so
@@ -248,6 +249,8 @@ function tryChooseNRequirements(
             if (substitutionCount > 0) {
                 chooseNSubstitutions.push({
                     requirement,
+                    unfulfilledOption:
+                        chooseNRequirementOwners.get(requirement),
                     count: substitutionCount,
                     points: overlappingCourses
                         .slice(0, substitutionCount)
@@ -379,9 +382,14 @@ function getAllChooseNRequirements() {
         if (!major) continue;
 
         requirements.push(
-            ...major.Requirements.filter(
-                requirement => requirement.Type === "ChooseN"
-            )
+            ...major.Requirements.filter(requirement => {
+                if (requirement.Type !== "ChooseN") {
+                    return false;
+                }
+
+                chooseNRequirementOwners.set(requirement, major);
+                return true;
+            })
         );
     }
 
@@ -391,9 +399,14 @@ function getAllChooseNRequirements() {
         if (!minor) continue;
 
         requirements.push(
-            ...minor.Requirements.filter(
-                requirement => requirement.Type === "ChooseN"
-            )
+            ...minor.Requirements.filter(requirement => {
+                if (requirement.Type !== "ChooseN") {
+                    return false;
+                }
+
+                chooseNRequirementOwners.set(requirement, minor);
+                return true;
+            })
         );
     }
 
@@ -924,16 +937,17 @@ function getChooseNReplacementGroups() {
         substitution => ({
             duplicatedCourse: null,
             requirement: substitution.requirement,
+            unfulfilledOption: substitution.unfulfilledOption,
             count: substitution.count,
             points: substitution.points
         })
     );
 }
 
-// Determine candidate courses that can substitute for a duplicated required course.
-// - For double majors with <=30 overlapping points, electives are allowed
-// - Otherwise only courses from the two overlapping options are considered
-// - Filters out courses already selected and, for safety, courses below the duplicated course's level
+// Determine candidate courses that compensate for a duplicated required
+// course. Double-major overlaps use electives and may never exceed 30 points.
+// Other pathways require a same-or-higher-level course from the option whose
+// requirement still needs to be fulfilled.
 function getAvailableReplacementCourses(
     group,
     selectedCourses
@@ -944,23 +958,21 @@ function getAvailableReplacementCourses(
     const requiredSubstitutionPoints =
         getRequiredSubstitutionPoints();
 
-    const canUseElectives =
-        isDoubleMajor &&
-        requiredSubstitutionPoints <=
-            MAX_UNRESTRICTED_DOUBLE_MAJOR_SUBSTITUTION_POINTS;
+    if (isDoubleMajor) {
+        if (
+            requiredSubstitutionPoints >
+            MAX_DOUBLE_MAJOR_OVERLAP_POINTS
+        ) {
+            return [];
+        }
 
-    if (canUseElectives) {
-        return getAvailableElectiveCourses(
+        return getAvailableDoubleMajorElectiveCourses(
             selectedCourses
         );
     }
 
     const courseMap = new Map();
 
-    addCoursesFromOption(
-        group.possessingOption,
-        courseMap
-    );
     addCoursesFromOption(
         group.unfulfilledOption,
         courseMap
@@ -1005,28 +1017,24 @@ function getAvailableChooseNReplacementCourses(
         requiredSubstitutionPoints +
         chooseNSubstitutionPoints;
 
-    /*
-     * Double majors can use unrestricted electives for up to 30 points of
-     * overlapping requirements.
-     */
-    if (
-        isDoubleMajor &&
-        totalSubstitutionPoints <=
-            MAX_UNRESTRICTED_DOUBLE_MAJOR_SUBSTITUTION_POINTS
-    ) {
-        return getAvailableElectiveCourses(
+    if (isDoubleMajor) {
+        if (
+            totalSubstitutionPoints >
+            MAX_DOUBLE_MAJOR_OVERLAP_POINTS
+        ) {
+            // Reject this ChooseN branch so the caller can try a combination
+            // with no more than 30 points of double-major overlap.
+            return [];
+        }
+
+        return getAvailableDoubleMajorElectiveCourses(
             selectedCourses
         );
     }
 
-    /*
-     * Once the 30-point double-major allowance is exceeded,
-     * replacements must come from courses offered by the
-     * selected majors/minors.
-     *
-     * The replacement must be at least the level of the
-     * ChooseN course(s) being replaced.
-     */
+    // Major/minor overlaps require a replacement from within the option whose
+    // requirement is unfulfilled. The replacement must be at least the level
+    // of the overlapping ChooseN course.
     const minimumLevel =
         Math.min(
             ...group.requirement.Courses.map(
@@ -1034,7 +1042,13 @@ function getAvailableChooseNReplacementCourses(
             )
         );
 
-    return getCoursesFromSelectedMajorsAndMinors()
+    const replacementCourses = new Map();
+    addCoursesFromOption(
+        group.unfulfilledOption,
+        replacementCourses
+    );
+
+    return [...replacementCourses.values()]
         .filter(course => {
 
             if (
@@ -1068,6 +1082,23 @@ function getRequiredSubstitutionPoints() {
 function getAvailableElectiveCourses(selectedCourses) {
     return Object.values(coursesObject).filter(
         course => !selectedCourses.has(course.code)
+    );
+}
+
+function getAvailableDoubleMajorElectiveCourses(selectedCourses) {
+    const selectedMajorCourseCodes = new Set(
+        state.selectedMajors
+            .filter(major => major)
+            .flatMap(major =>
+                major.Requirements.flatMap(requirement =>
+                    requirement.Courses.map(course => course.code)
+                )
+            )
+    );
+
+    return Object.values(coursesObject).filter(course =>
+        !selectedCourses.has(course.code) &&
+        !selectedMajorCourseCodes.has(course.code)
     );
 }
 
@@ -1309,6 +1340,89 @@ function offeredThisSemester(course, semester) {
     return course.semester2Offered;
 }
 
+const POINT_PREREQUISITE_LEVELS = [5, 6, 7];
+
+function getPointPrerequisites(course) {
+    return POINT_PREREQUISITE_LEVELS
+        .map(level => [
+            level,
+            Number(
+                course[
+                    `level${level}PointsRequired`
+                ] ?? 0
+            )
+        ])
+        .filter(
+            ([, requiredPoints]) =>
+                Number.isFinite(requiredPoints) &&
+                requiredPoints > 0
+        );
+}
+
+/*
+ * Point prerequisites only count courses completed in an earlier semester.
+ * During search, an unassigned course is counted as a potential contributor
+ * only when its current domain still contains an earlier semester. This is
+ * deliberately optimistic: it removes impossible placements without
+ * discarding a placement whose contributing courses can still be arranged.
+ */
+function pointPrerequisitesCanBeSatisfied(
+    course,
+    semester,
+    courses,
+    assignments,
+    domains = null
+) {
+    for (
+        const [level, requiredPoints]
+        of getPointPrerequisites(course)
+    ) {
+        let availablePoints = 0;
+
+        for (const candidate of courses.values()) {
+            if (
+                candidate.code === course.code ||
+                Number(candidate.level) !== level
+            ) {
+                continue;
+            }
+
+            const points = Number(candidate.points);
+            if (!Number.isFinite(points)) {
+                continue;
+            }
+
+            if (assignments.has(candidate.code)) {
+                if (
+                    assignments.get(candidate.code) <
+                    semester
+                ) {
+                    availablePoints += points;
+                }
+                continue;
+            }
+
+            const candidateDomain =
+                domains?.get(candidate.code);
+
+            if (
+                candidateDomain?.some(
+                    candidateSemester =>
+                        candidateSemester < semester
+                )
+            ) {
+                availablePoints += points;
+            }
+        }
+
+        if (availablePoints < requiredPoints) {
+            return false;
+        }
+    }
+
+    return true;
+}
+
 function buildInitialSemesterDomains(
     courses,
     semesterCount
@@ -1504,6 +1618,13 @@ function propagateSemesterDomains(
                         semester,
                         assignments,
                         propagatedDomains
+                    ) ||
+                    !pointPrerequisitesCanBeSatisfied(
+                        course,
+                        semester,
+                        courses,
+                        assignments,
+                        propagatedDomains
                     )
                 ) {
                     return null;
@@ -1524,6 +1645,13 @@ function propagateSemesterDomains(
                         prerequisiteTreeCanBeSatisfied(
                             getEffectivePrerequisiteTree(course),
                             semester,
+                            assignments,
+                            propagatedDomains
+                        ) &&
+                        pointPrerequisitesCanBeSatisfied(
+                            course,
+                            semester,
+                            courses,
                             assignments,
                             propagatedDomains
                         )
@@ -2147,6 +2275,12 @@ function assignmentsAreValid(
             !evaluatePrerequisiteTree(
                 getEffectivePrerequisiteTree(course),
                 completedCourses
+            ) ||
+            !pointPrerequisitesCanBeSatisfied(
+                course,
+                semester,
+                courses,
+                assignments
             )
         ) {
             return false;
