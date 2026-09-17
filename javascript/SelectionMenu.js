@@ -34,10 +34,12 @@ export async function SetupSelections()
 export async function SetupMajorMinorSelections()
 {
 	let majorminor = "";
-	if(document.getElementById("MajorMinorSelection").value != undefined){
-		majorminor = document.getElementById("MajorMinorSelection").value;
+	try {
+		if (document.getElementById("MajorMinorSelection").value != undefined) {
+			majorminor = document.getElementById("MajorMinorSelection").value;
+		}
 	}
-	else{
+	catch {
 		majorminor = "Major";
 	}
 	let optionsData  = await fetch('json/majors.json', { cache: 'no-store' });
@@ -54,7 +56,8 @@ export async function SetupMajorMinorSelections()
 
 	// For each course in courses, add an option to the selection menu with the course code as the display text and the index of the course in the courseobjects array as the value.
 	let optionobjects = [];//this will be a temporary array of the course objects, which will be used to get the course data when the user selects a course from the selection menu.
-			optionobjectsstore = [];
+	let optionobjectsstore = [];
+
 	for (const code in optionarray)
 	{
 
@@ -64,8 +67,15 @@ export async function SetupMajorMinorSelections()
 	}
  	text += "</select>"
 
-
-	document.getElementById("majortoedit").innerHTML = text;
+	try 
+	{
+		document.getElementById("majortoedit").innerHTML = text;
+	}
+	catch
+	{
+		
+	}
+	
 
 }
 
