@@ -6,7 +6,7 @@ $dir = "../json/templates/";
 $templates = [];
 
 if (is_dir($dir)) {
-    // Create an iterator loop that crawls down into child folders automatically
+    //iterator loop that crawls down into child folders automatically
     $directoryIterator = new RecursiveDirectoryIterator($dir, RecursiveDirectoryIterator::SKIP_DOTS);
     $iterator = new RecursiveIteratorIterator($directoryIterator);
 
@@ -19,17 +19,17 @@ if (is_dir($dir)) {
             $jsonPos = strpos($realPath, 'json');
             $relativePath = substr($realPath, $jsonPos);
             
-            // Normalize path separators to forward slashes for JavaScript stability
+            // Normalize path separators to forward slashes for JavaScript 
             $cleanRelativePath = str_replace('\\', '/', $relativePath);
 
             $templates[] = [
-                'filepath' => './' . $cleanRelativePath, // Browser-safe path reference
+                'filepath' => './' . $cleanRelativePath, // Browser safe path reference
                 'display_name' => $fileInfo->getBasename('.json') // Clean label text
             ];
         }
     }
 }
 
-// Return the collection of discovered files back to client-side JavaScript
+// Return the collection of discovered files back to client side JavaScript
 echo json_encode($templates);
 ?>
