@@ -15,7 +15,7 @@ body{
 }
 
 /* Factory Reset button */
-button {
+.factorybutton {
   cursor:pointer;
     color: #6d6767;
     border-radius: 10px;
@@ -32,7 +32,7 @@ button {
    transition: background-color .2s, transform .2s;
 }
 
-button:hover {
+.factorybutton:hover {
   background-color: #ff2121;
   color: #e4d8d7;
   transform: scale(1.1);
@@ -182,7 +182,7 @@ select {
             of the courses, as well as their indexin optionobjectsstore array (see below) -->
                 <p id="majortoedit" style="margin-top: 0%; "></p>
             </div>
-            <button type="button" title="Restore factory data" id="factoryResetButton">
+            <button class="factorybutton" title="Restore factory data" id="factoryResetButton">
               Factory Reset
             </button>
         </div>

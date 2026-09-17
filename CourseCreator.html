@@ -16,30 +16,6 @@ body{
 
 }
 
-/* Factory Reset button */
-button {
-  cursor:pointer;
-    color: #6d6767;
-    border-radius: 10px;
-  font-family: 'Trebuchet MS'; 
-  font-weight: bolder;
-   outline:0px;
-  align-content: center;
-  border:0px; 
-  width:20%;
-  background-color: #852b1f;
-  font-size: 20px;
-  padding:12px;
- transform: scale(1);
-   transition: background-color .2s, transform .2s;
-}
-
-button:hover {
-  background-color: #ff2121;
-  color: #e4d8d7;
-  transform: scale(1.1);
-}
-
 html{
     height: 100%;
 }
@@ -135,6 +111,30 @@ input[type=checkbox]:checked + label:before {
    transition: background-color .2s, transform .2s;
 }
 
+/* Factory Reset button */
+.factorybutton {
+  cursor:pointer;
+    color: #6d6767;
+    border-radius: 10px;
+  font-family: 'Trebuchet MS'; 
+  font-weight: bolder;
+   outline:0px;
+  align-content: center;
+  border:0px; 
+  width:20%;
+  background-color: #852b1f;
+  font-size: 20px;
+  padding:12px;
+ transform: scale(1);
+   transition: background-color .2s, transform .2s;
+}
+
+.factorybutton:hover {
+  background-color: #ff2121;
+  color: #e4d8d7;
+  transform: scale(1.1);
+}
+
 select {
     color: #ffffff;
   font-family: 'Trebuchet MS'; 
@@ -206,7 +206,7 @@ select {
                 <p id="coursetoedit" style="margin-top: 0%; "></p>
             </div>
 
-            <button type="button" title="Restore factory data" id="factoryResetButton">
+            <button class="factorybutton" title="Restore factory data" id="factoryResetButton">
               Factory Reset
             </button>
         </div>
