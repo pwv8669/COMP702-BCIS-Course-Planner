@@ -1,3 +1,18 @@
+import { getCoursesFromSelectedMajorsAndMinors } from './autopopulateStudyPlan.js';
+import { loadMajorOptions } from "./objects/majorMinorOption.js";
+import { attributedCourses } from "./majorMinorRequirementsValidator.js";
+import { scheduleConfig, mapCoursePlanToDom } from "./state.js";
+import { validateMajorMinorRequirements } from "./majorMinorRequirementsValidator.js";
+
+function formatAttribution(attribution) {
+    return attribution
+        .split(" & ")
+        .map(optionCode =>
+            optionCode.replace(/([A-Z])/g, ' $1').trim()
+        )
+        .join(" & ");
+}
+
 function parsePrereqs(node) {
     if (!node) return "No prerequisites";
 
@@ -46,14 +61,11 @@ function parsePrereqs(node) {
 
     return "Unknown prerequisite structure";
 }
-import { getCoursesFromSelectedMajorsAndMinors } from './autopopulateStudyPlan.js';
-import { loadMajorOptions } from "./objects/majorMinorOption.js";
-import { attributedCourses } from "./majorMinorRequirementsValidator.js";
-import { scheduleConfig } from "./state.js";
-import { mapCoursePlanToDom } from "./dragAndDropController.js";
 
-async function TypeOfCell(coursecode, cell){
+
+async function TypeOfCell(coursecode, cell, state){
 try{
+    cell.classList = ''
     const majorOptions = await loadMajorOptions();
     //get the options from core
     let coreOptions = majorOptions["Core"];
@@ -62,19 +74,41 @@ try{
     let arrayofcourses = (getCoursesFromSelectedMajorsAndMinors());//we kind of need this to "break" the try loop
     //when the website first loads so it defaults to core
     //when i fixed this system it instead started returning "Elective" which we dont want 
-
-    if(!attributedCourses.has(coursecode)){//if the courses has an attributed major/minor/core, we can assume its not an elective
+    if(attributedCourses.get(coursecode) == "Elective"){//if the courses has an attributed major/minor/core, we can assume its not an elective
         cell.classList = 'cell-elective';//else give it an elective color and label
+        console.log("Elective given")
         return "Elective";
+        
     }
-    if(attributedCourses.get(coursecode).replace(/([A-Z])/g, ' $1').trim() != "Core"){//if the attributed course isnt core
-        cell.classList = 'cell-required';//make it required class color
+    const formattedAttribution = formatAttribution(
+        attributedCourses.get(coursecode)
+    );
+    if(formattedAttribution != "Core"){//if the attributed course isnt core
+        if(state.selectedPathway.name != "Double Majors"){
+            if(state.selectedMajors[0].Code == attributedCourses.get(coursecode)){//if major is found
+                cell.classList = 'cell-required';//add class list
+                 return formattedAttribution;
+            }
+            for (let minor = 0; minor < state.selectedMinors.length; minor++) {//for loop for the extraordinarily unlikely futureproof of allowing 3 minors
+                if(state.selectedMinors[minor] != null){//if unselected minor, skip it
+                    if(state.selectedMinors[minor].Code == attributedCourses.get(coursecode)){//if minor is found
+                        cell.classList = 'cell-required-minor';//add class list
+                        break;//stop looking
+                    }
+                }
+            }
+            if(!cell.classList.contains('cell-required-minor')){//if the min
+                cell.classList = 'cell-required';//make it required class color
+            }
+        }
+        else{
+            cell.classList = 'cell-required';//make it required class color
+        }
     }
     else{
         cell.classList = ''; //else make it the default color (core uses default green as of this time)
     }
-        
-        return attributedCourses.get(coursecode).replace(/([A-Z])/g, ' $1').trim();//return the attributed course name e.g. the major/minor/core
+    return formattedAttribution;//return the attributed course name e.g. the major/minor/core
 }
 catch{
     return "Core";//return core as a "just in case"
@@ -82,7 +116,6 @@ catch{
     //validatemajorminorrequirements working in time
 }
 }
-import { validateMajorMinorRequirements } from "./majorMinorRequirementsValidator.js";
 
 export async function renderCoursePlan(state) {
     await validateMajorMinorRequirements();
@@ -108,24 +141,7 @@ export async function renderCoursePlan(state) {
                 continue;
             }
             const prereqText = parsePrereqs(course.prerequisites);//parse prereqs 
-            const typecell = await TypeOfCell(course.code, cell);
-            cell.innerHTML = `<div class="course-cell">${typecell}:`;//set the requirement level e.g. Elective, Core or Major/Minor name
-            if(!(cell.classList.contains('cell-red-error') || cell.classList.contains('cell-yellow-warning'))){//we dont want to overwrite the error class, so we check if theres already a class
-                cell.classList.remove("cell-required", "cell-elective");
-
-                switch(typecell){//usually the error applied, if not, only then do we check for this
-                    case "Core"://keep core green
-                        break;
-                    case "Elective"://make electives their color
-                            cell.classList.add('cell-elective');
-                        break;
-                    default://make required courses eg major minor courses their own color
-                            cell.classList.add('cell-required');
-                        break;
-                            
-                }
-            }
-            
+            const typecell = await TypeOfCell(course.code, cell, state);
             
             cell.innerHTML = `<div class="course-cell">${typecell}:<div class="course-name">${course.code}: ${course.name}</div>`;//set the requirement level e.g. Elective, Core or Major/Minor name
             

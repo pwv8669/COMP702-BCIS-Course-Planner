@@ -51,6 +51,8 @@ export function validateStudyPlan(){
     const semestersOfferedErrors = validateSemestersOffered();
     for (let i = 0; i < semestersOfferedErrors.length; i++) {
         const error = semestersOfferedErrors[i];
+        if (state.ignoredErrors[error.id]) continue;
+        errors.push(error);
     }
     
     const pointErrors = validatePoints();

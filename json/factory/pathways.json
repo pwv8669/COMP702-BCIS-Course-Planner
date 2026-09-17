@@ -1,0 +1,23 @@
+{
+    "doubleMajors": 
+    {
+        "name": "Double Majors",
+        "numMajors": 2,
+        "numMinors": 0,
+        "numElectives": 0
+    },
+    "doubleMinors": 
+    {
+        "name": "Single Major + Double Minors",
+        "numMajors": 1,
+        "numMinors": 2,
+        "numElectives": 0
+    },
+    "electives": 
+    {
+        "name": "Single Major + Single Minor + Electives",
+        "numMajors": 1,
+        "numMinors": 1,
+        "numElectives": 4
+    }
+}

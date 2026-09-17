@@ -1,7 +1,8 @@
 import { placeCourse, PathwayRefresh } from "./app.js";
 import { renderCoursePlan } from "./renderCoursePlan.js";
-import { state } from "./state.js";
+import { state, scheduleConfig } from "./state.js";
 import { renderIgnoredErrors } from "./errorDisplay.js";
+import { switchSchedule } from "./partTimeScheduleHandler.js"
 import {
     loadMajorOptions,
     loadMinorOptions
@@ -21,7 +22,7 @@ if (document.readyState === "loading") {
     init();
 }
 
-function getCode(value) {
+export function getCode(value) {
     const code = typeof value === "object" && value !== null
         ? value.Code ?? value.code
         : value;
@@ -132,6 +133,13 @@ export function importschedule(jsonInput) {
             : null
     );
 
+    const modeType = jsonInput.mode;
+
+    if ( scheduleConfig.mode !== modeType )
+    {
+        switchSchedule();
+    }
+
     loadSchedule(jsonInput.schedule);
 
     state.ignoredErrors = (
@@ -149,7 +157,7 @@ export function importschedule(jsonInput) {
     return true;
 }
 
-function getSelectedPathwayCode() {
+export function getSelectedPathwayCode() {
     const selectedValue = document.getElementById("pathwaySelect")?.value;
     if (selectedValue) return selectedValue;
 
@@ -170,6 +178,7 @@ export function SaveFile() {
         schedule: state.coursePlan.map(semester =>
             semester.map(course => getCode(course))
         ),
+        mode: scheduleConfig.mode,
         ignoredErrors: state.ignoredErrors ?? {}
     };
 

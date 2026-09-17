@@ -11,10 +11,11 @@ export async function initPartTime()
 
 }
 
-function switchSchedule()
+export function switchSchedule()
 {
-    //add a toggle that changes the icon/text so that the button displays "full-time schedule" if the study plan is set to parttime mode
+    
     const partTimeHeader = document.getElementById('partTimeHeader');
+    const partTimeButton = document.getElementById('partTimeButton');
     const cellIDs = [];
 
 
@@ -22,15 +23,13 @@ function switchSchedule()
     {
         setScheduleMode('part-time');
         partTimeHeader.style.display = "table-row";
-       
-        
-
-}
-else
-{
-    partTimeHeader.style.display = "none";
-    setScheduleMode('full-time');
-   
+        partTimeButton.title = "Switch Schedule to Full-Time";
+    } 
+    else 
+    {
+        partTimeHeader.style.display = "none";
+        setScheduleMode('full-time');
+        partTimeButton.title = "Switch Schedule to Part-Time";
     }
 
     refreshStudyPlan();

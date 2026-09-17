@@ -1,12 +1,16 @@
 {
-"selectedPathway":"doubleMajors",
-"selectedMajors": ["DataScience","SoftwareDevelopment"],
-"selectedMinors": ["null","null"],
-"selectedElectives": ["ELEC600","null","null","null"],
-"schedule": [["COMP500","COMP501","COMP507","COMP508"],
-["DIGD507","MATH503","COMP517","COMP503"],
-["COMP615","COMP616","COMP610","COMP603"],
-["STAT603","COMP602","COMP611","ELEC600"],
-["COMP702","COMP701","COMP717","COMP721"],
-["COMP703","COMP723","COMP719","ENSE707"]]
+  "selectedPathway": "doubleMajors",
+  "selectedMajors": [ "DataScience", "SoftwareDevelopment" ],
+  "selectedMinors": [ "null", "null" ],
+  "selectedElectives": [ "ELEC600", "null", "null", "null" ],
+  "schedule": [
+    [ "COMP500", "COMP501", "COMP507", "COMP508" ],
+    [ "DIGD507", "MATH503", "COMP517", "COMP503" ],
+    [ "COMP615", "COMP616", "COMP610", "COMP603" ],
+    [ "STAT603", "COMP602", "COMP611", "ELEC600" ],
+    [ "COMP702", "COMP701", "COMP717", "COMP721" ],
+    [ "COMP703", "COMP723", "COMP719", "ENSE707" ]
+  ],
+  "mode": "full-time",
+  "ignoredErrors": []
 }

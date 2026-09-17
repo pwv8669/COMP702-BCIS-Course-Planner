@@ -1,0 +1,56 @@
+{
+    "selectedPathway": "doubleMajors",
+    "selectedMajors": [
+        "ComputerScience",
+        "SoftwareDevelopment"
+    ],
+    "selectedMinors": [
+        null,
+        null
+    ],
+    "selectedElectives": [
+        null,
+        null,
+        null,
+        null
+    ],
+    "schedule": [
+        [
+            "COMP500",
+            "COMP501",
+            "COMP507",
+            "COMP508"
+        ],
+        [
+            "DIGD507",
+            "MATH503",
+            "COMP503",
+            null
+        ],
+        [
+            "COMP610",
+            "COMP613",
+            "COMP603",
+            "COMP604"
+        ],
+        [
+            "COMP611",
+            "COMP612",
+            "COMP602",
+            "COMP711"
+        ],
+        [
+            "COMP702",
+            "COMP721",
+            "COMP719",
+            null
+        ],
+        [
+            "COMP703",
+            "COMP712",
+            "COMP713",
+            "ENSE707"
+        ]
+    ],
+    "ignoredErrors": []
+}

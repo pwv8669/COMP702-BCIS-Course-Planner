@@ -1,0 +1,69 @@
+{
+    "selectedPathway": "doubleMajors",
+    "selectedMajors": [
+        "DataScience",
+        "SoftwareDevelopment"
+    ],
+    "selectedMinors": [
+        null,
+        null
+    ],
+    "selectedElectives": [
+        null,
+        null,
+        null,
+        null
+    ],
+  "schedule": [
+    [
+      "COMP500",
+      "COMP501"
+    ],
+    [
+      "MATH503",
+      "COMP508"
+    ],
+    [
+      "COMP507",
+      "DIGD507"
+    ],
+    [
+      "COMP503",
+      "COMP517"
+    ],
+    [
+      "COMP615",
+      "COMP603"
+    ],
+    [
+      "COMP602",
+      "STAT603"
+    ],
+    [
+      "COMP616",
+      "COMP613"
+    ],
+    [
+      "COMP610",
+      "COMP604"
+    ],
+    [
+      "COMP705",
+      "COMP721"
+    ],
+    [
+      "COMP723",
+      "COMP719"
+    ],
+    [
+      "COMP702",
+      "COMP717"
+    ],
+    [
+      "COMP703",
+      "COMP700"
+    ]
+  ],
+    "mode": "part-time",
+    "ignoredErrors": []
+}
