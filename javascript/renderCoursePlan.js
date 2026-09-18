@@ -92,12 +92,19 @@ try{
             for (let minor = 0; minor < state.selectedMinors.length; minor++) {//for loop for the extraordinarily unlikely futureproof of allowing 3 minors
                 if(state.selectedMinors[minor] != null){//if unselected minor, skip it
                     if(state.selectedMinors[minor].Code == attributedCourses.get(coursecode)){//if minor is found
-                        cell.classList = 'cell-required-minor';//add class list
+                        switch (minor){
+                            case 0:
+                                cell.classList = 'cell-required-minor';//add class list
+                                break;
+                            case 1:
+                                cell.classList = 'cell-required-minor-second';//add class list
+                                break;
+                        }    
                         break;//stop looking
                     }
                 }
             }
-            if(!cell.classList.contains('cell-required-minor')){//if the min
+            if(!(cell.classList.contains('cell-required-minor') || cell.classList.contains('cell-required-minor-second') )){//if the min
                 cell.classList = 'cell-required';//make it required class color
             }
         }
@@ -141,35 +148,26 @@ export async function renderCoursePlan(state) {
                 continue;
             }
             const prereqText = parsePrereqs(course.prerequisites);//parse prereqs 
-            const typecell = await TypeOfCell(course.code, cell, state);
+            const typecell = await TypeOfCell(course.code, cell, state);//this returns the major/minor name, and colors the cell given into it
             
-            cell.innerHTML = `<div class="course-cell">${typecell}:<div class="course-name">${course.code}: ${course.name}</div>`;//set the requirement level e.g. Elective, Core or Major/Minor name
+            cell.innerHTML = `<div class="course-cell"><div class="course-name">${course.code}: ${course.name}</div>`;//set the requirement level e.g. Elective, Core or Major/Minor name
             
-            const coreqText = parsePrereqs(course.corequisites);
-
-            if(prereqText != "No prerequisites" || coreqText != "No prerequisites" ){
+            const coreqText = parsePrereqs(course.corequisites);//get the corequisites, thankfull the prerequisites function serves just as well for corequisites
+            //set up the button
                   cell.innerHTML += `<button class="prereq-btn" data-html2canvas-ignore="true">
-                        Show reqs
+                        i
                     </button>`
-                    if(prereqText != "No prerequisites"){
-                        cell.innerHTML +=`<div class="prereq-list" style="display:none;">
-                            Prerequisites: ${prereqText}
-                        </div>`;
+                    let toaddstring = `<div class="prereq-list" style="display:none;">${typecell}`//this will contain the string to be added for the information button
+                
+                    if(prereqText != "No prerequisites"){//if there are prerequisites then add them to the string
+                             toaddstring +=`<br>Prerequisites: ${prereqText}</div>`;
                     }
-
-                    if(coreqText != "No prerequisites"){
-                        cell.innerHTML +=`<div class="prereq-list" style="display:none;">
-                            Corequisites: ${coreqText}
-                        </div>`;
+                    if(coreqText != "No prerequisites"){//if there are corequisites then add them to the string
+                        toaddstring +=`<br>Corequisites: ${coreqText}</div>`;
                     }
-                    
-            }
-
-                    cell.innerHTML +=`<div class="prereq-list" style="display:none;" data-html2canvas-ignore="true">
-                        ${prereqText}
-                    </div>
-                </div>`;
-            cell.innerHTML += `</div>`;
+                    cell.innerHTML+= toaddstring;//finally add the full created div to the html
+            cell.innerHTML +=`
+            </div></div>`;
         }
     }
 }
@@ -182,7 +180,6 @@ export async function renderCoursePlan(state) {
         const hidden = box.style.display === "none";
 
         box.style.display = hidden ? "block" : "none";
-        e.target.textContent = hidden ? "Hide reqs" : "Show reqs";
     });
 
 
