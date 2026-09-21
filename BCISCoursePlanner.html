@@ -17,17 +17,13 @@
         font-weight: bolder;
         background-color: #373537;
     }
-
 .top-selector-row {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr)); 
+  grid-template-columns: auto auto auto 1fr; 
   gap: calc(2 * var(--scale));
-  flex-wrap: nowrap; 
   width: 100%;
   padding-bottom: calc(1 * var(--scale));
 }
-
-
 th {
   background-color: #6eacc4;
   font-size: calc(2 * var(--scale));
@@ -64,7 +60,6 @@ td{
 }
 .schedule-table td:nth-child(even){background-color: #3abd3a;}  /* Alternate between light and dark cells */
 .schedule-table td:nth-child(odd) {background-color: #298429;}
-
 .schedule-table {
     border-collapse: collapse;
     width: 100%;
@@ -85,6 +80,7 @@ td{
     color: white;
     padding: calc(.8 * var(--scale));
     border: calc(.1 * var(--scale)) solid #6e7475;
+    height: calc(.1 * var(--scale));
 }
 .semester-headers th {
     background-color: #bd6fc1;
@@ -97,26 +93,21 @@ td{
 .schedule-table th{
     border: calc(.1 * var(--scale)) solid #373537 !important; 
 }
-
-
 .schedule-table td.cell-required:nth-child(even){background-color: #71a1dc  ;}  /* Alternate between light and dark cells */
 .schedule-table td.cell-required:nth-child(odd) {background-color: #5286c5 ;}
 .schedule-table td.cell-required {
     border: calc(.3 * var(--scale)) solid #3842af;
 }
-
 .schedule-table td.cell-required-minor:nth-child(even){background-color: #bc80dc ;}  /* Alternate between light and dark cells */
 .schedule-table td.cell-required-minor:nth-child(odd) {background-color: #9461af ;}
 .schedule-table td.cell-required-minor {
     border: calc(.3 * var(--scale)) solid #5d3672;
 }
-
 .schedule-table td.cell-elective:nth-child(even){background-color: #636870 ;}  /* Alternate between light and dark cells */
 .schedule-table td.cell-elective:nth-child(odd) {background-color: #4e5359 ;}
 .schedule-table td.cell-elective {
     border: calc(.3 * var(--scale)) solid #0b0b0e;
 }
-
 .schedule-table td.cell-red-error {
     background-color: #b23b3b !important;
     border: calc(.3 * var(--scale)) solid #ff4d4d;
@@ -197,12 +188,15 @@ td{
     gap: calc(.8 * var(--scale));
     padding: calc(1 * var(--scale)) 0;
 }
-.table-grid {
+#table-grid {
   display: grid;
   width: 100%;
   grid-template-columns: 5fr 1fr;
+  /*height: calc(60 * var(--scale));*/
   align-items: stretch;
   clear: both;
+  padding-bottom: calc(1 * var(--scale));
+  
 }
 .driver {
   align-self: stretch;
@@ -285,7 +279,6 @@ table{
     cursor: pointer;
     bottom:calc(.4 * var(--scale));
     width: 7%;
-
 }
 .prereq-list {
     margin-bottom: calc(3 * var(--scale)); 
@@ -314,7 +307,6 @@ button {
   font-size: calc(2 * var(--scale));
   padding: calc(2 * var(--scale));
   text-align: center;   
-  
 }
 .button-grid {
     display: grid;
@@ -323,6 +315,7 @@ button {
     height: 100%;  
     padding: 0;
     margin-left: auto;
+    grid-column: 4;
 }
 .button-grid button {
     width: 100%;
@@ -332,14 +325,10 @@ button {
   padding: 0;
   height: 100%;
 }
-
 .button-grid form button {
   width: 100%;
   height: 100%;
 }
-
-
-
 select {
   color: #ffffff;
   font-family: 'Trebuchet MS'; 
@@ -348,6 +337,10 @@ select {
   border:0px;
   font-size: calc(2 * var(--scale));
   padding: calc(1.2 * var(--scale)); 
+  background-color: #bd6fc1;
+  width: 100%; 
+  max-width: calc(35 * var(--scale)); 
+  box-sizing: border-box;
 }
 select,button{
   cursor:pointer;
@@ -359,19 +352,10 @@ select,button{
   background-color: #6eacc4;
   margin: 0.165%;
 }
-
-
-select{
-  background-color: #bd6fc1;
-  width: 100%; 
-  max-width: calc(35 * var(--scale)); 
-  box-sizing: border-box;
-}
 select:hover,button:hover{
    transform: scale(1.025);
 
 }
-
 #ignoreModal {
   position: fixed;
   top: 0; left: 0; right: 0; bottom: 0;
@@ -393,7 +377,6 @@ select:hover,button:hover{
   justify-content: space-between;
   margin-top: calc(1 * var(--scale));
 }
-
 .ignore-error-btn {
     font-size: calc(1.2 * var(--scale));
     padding: calc(.2 * var(--scale)) calc(.6 * var(--scale));
@@ -420,7 +403,6 @@ select:hover,button:hover{
     overflow-y: auto;
     overflow-x: hidden;
 }
-
 #ignored-errors-container h3 {
     margin: 0 0 calc(1 * var(--scale)) 0;
     font-size: calc(1.6 * var(--scale));
@@ -452,21 +434,20 @@ select:hover,button:hover{
 .delete-ignored-btn:hover {
     background-color: #6eacc4;
 }
-
 .bottom-section-grid {
   display: grid;
   grid-template-columns: 1fr 1fr; 
   grid-template-rows: auto auto;
   gap: calc(.1 * var(--scale));
   width: 100%;
-  margin-top: calc(1 * var(--scale));
 }
 .buttons-column {
   display: flex;
   width: 100%;
   flex-direction: column;
+  grid-column: 4;
+  align-items: flex-end;
 }
-
 .icon {
     width: calc(4 * var(--scale));
     stroke: #ffffff;
@@ -474,23 +455,19 @@ select:hover,button:hover{
     height: auto;
     stroke-width: calc(.06 * var(--scale));
 }
-
 .save-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: calc(1 * var(--scale)); 
 
 }
-
 .save-grid button{
     aspect-ratio: 3/2; 
 }
-
 .edit-grid {
     display: grid;
     grid-gap: calc(1 * var(--scale)); 
 }
-
 .button-link {
    color: #ffffff;
   font-family: 'Trebuchet MS'; 
@@ -503,9 +480,6 @@ select:hover,button:hover{
   text-decoration: none;
 
 }
-
-
-
 #pathwayOptionContainer {
   display: flex;
   flex-direction: row;
@@ -513,8 +487,9 @@ select:hover,button:hover{
   gap: calc(.2 * var(--scale));
   flex-wrap: nowrap;
    width: 100%; 
-   max-width: calc(45 * var(--scale)); 
+   max-width: calc(90 * var(--scale)); 
   min-width: 0;
+  grid-column: span 2; 
 }
     #pathwayOptionContainer label,
     label[for="pathwaySelect"] {
@@ -680,7 +655,7 @@ select:hover,button:hover{
         </div>
 
 
-        <div class="table-grid">
+        <div class="table-grid" id="table-grid">
 
             <table class="schedule-table driver">
                 <thead>
