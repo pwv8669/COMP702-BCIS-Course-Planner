@@ -17,6 +17,7 @@
         font-weight: bolder;
         background-color: #373537;
     }
+
 .top-selector-row {
   display: grid;
   grid-template-columns: auto auto auto 1fr; 
@@ -29,12 +30,12 @@ th {
   font-size: calc(2 * var(--scale));
   text-align: center;
 }
-.main-layout-container {
-    display: block;
-    width: 100%;
-    margin: calc(.3 * var(--scale));
-    padding: 0;
-}
+    .main-layout-container {
+        display: block;
+        width: 100%;
+        margin: calc(.3 * var(--scale));
+        padding: 0;
+    }
 .hidden-element {
   display: none;
   opacity: 0;
@@ -71,10 +72,14 @@ td{
     color: white;
     padding: calc(1.2 * var(--scale)) calc(.8 * var(--scale));
     vertical-align: top;
-    font-size: calc(1.6 * var(--scale));;
+    font-size: calc(1.6 * var(--scale));
     border: calc(.1 * var(--scale)) solid #6e7475;
-    word-wrap: break-word;
+    overflow-wrap: break-word;
+    word-break: break-word;
 }
+
+
+
 .year-headers th {
     background-color: #822787;
     color: white;
@@ -192,7 +197,7 @@ td{
   display: grid;
   width: 100%;
   grid-template-columns: 5fr 1fr;
-  /*height: calc(60 * var(--scale));*/
+  min-height: calc(60 * var(--scale));
   align-items: stretch;
   clear: both;
   padding-bottom: calc(1 * var(--scale));
@@ -346,12 +351,7 @@ select,button{
   cursor:pointer;
   transition: transform .2s;
 }
-.yearheading{
-  width: 33%; 
-  text-align: center;
-  background-color: #6eacc4;
-  margin: 0.165%;
-}
+
 select:hover,button:hover{
    transform: scale(1.025);
 

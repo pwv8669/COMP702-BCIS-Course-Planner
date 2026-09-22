@@ -6,7 +6,7 @@ import { state, mapCoursePlanToDom } from './state.js';
 
 function resizeScheduleTable()
 {
-    let tableHeight = 60;//need to uncomment table-grid height attribute in the css to use
+    let tableHeight = 60; //need to uncomment table-grid height attribute in the css to use
 
     const tableGrid = document.getElementById("table-grid");
     const errorBoxes = document.getElementById('red-error-list-container');
@@ -14,14 +14,14 @@ function resizeScheduleTable()
 
     if (errorBoxes.style.display === 'none')
     {
-        tableHeight += 12.5;
+        tableHeight += 11.5;
     }
     if (ignoreBox.style.display === 'none')
     {
-        tableHeight += 12.5;
+        tableHeight += 11.5;
     }
 
-    tableGrid.style.height = `calc(${tableHeight} * var(--scale))`;
+    tableGrid.style.minHeight = `calc(${tableHeight} * var(--scale))`;
 }
 
 //Gets the error list container from the html and the error list from validateStudyPlan() populates it with error messages by calling renderErrors()
@@ -42,16 +42,20 @@ export function errorDisplay()
         yellowErrorTextContainer.innerHTML = '';
     }
 
+
     //if there are no errors at all display a success message to the user
     if (!errors || errors.length === 0) {
         if (redErrorTextContainer) {
             redErrorTextContainer.style.display = "none";
             yellowErrorTextContainer.style.display = "none";
         }
+       resizeScheduleTable()
         return errors;
     }
     
+    
     renderErrors(errors);
+    resizeScheduleTable()
     return errors;
 }
 
@@ -144,9 +148,6 @@ export function renderIgnoredErrors() {
     const parentContainer = document.getElementById("ignored-errors-container");
 
     const container = document.getElementById("ignored-errors-list");
-    
-   
-    if (!container) return;
 
     container.innerHTML = "";
 
@@ -226,6 +227,9 @@ document.getElementById("saveIgnoreNoteBtn").addEventListener("click", () => {
 
     //Clearing the text
     noteInput.value = "";
+
+    //refresh page
+    errorDisplay()
 
 });
 //Adding event listener to the cancel button on the note creation page. If pressed adds hidden attribute to the modal
