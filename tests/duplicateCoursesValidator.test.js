@@ -1,3 +1,5 @@
+// This file contains unit tests for the validateCourseAppearances function, which checks for duplicate courses in a course plan.
+
 import { beforeEach, describe, expect, test } from "vitest";
 import {
     state,
@@ -8,11 +10,14 @@ import {
 } from "../javascript/duplicateCoursesValidator.js";
 
 describe("validateCourseAppearances", () => {
+    // Reset the state before each test to ensure tests are independent and do not affect each other.
     beforeEach(() => {
         // Give every test a fresh, empty plan.
         setScheduleMode("full-time");
     });
 
+    // Test cases for validateCourseAppearances function
+    // Test that no errors are returned when every course is unique
     test("returns no errors when every course is unique", () => {
         state.coursePlan[0][0] = { code: "COMP500" };
         state.coursePlan[0][1] = { code: "COMP501" };
@@ -22,6 +27,7 @@ describe("validateCourseAppearances", () => {
         expect(errors).toEqual([]);
     });
 
+    // Test that a course that appears twice is reported correctly
     test("reports a course that appears twice", () => {
         state.coursePlan[0][0] = { code: "COMP500" };
         state.coursePlan[1][2] = { code: "COMP500" };
