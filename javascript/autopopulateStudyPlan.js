@@ -2196,6 +2196,17 @@ function consecutivePrerequisitesCanBeSatisfied(
     );
 }
 
+function isCoreCourseCode(courseCode) {
+    return (
+        majorOptions.Core?.Requirements.some(
+            requirement =>
+                requirement.Courses.some(
+                    course => course.code === courseCode
+                )
+        ) ?? false
+    );
+}
+
 function selectMostConstrainedCourse(
     courses,
     domains,
@@ -2212,6 +2223,14 @@ function selectMostConstrainedCourse(
             );
 
     unassignedCourses.sort((a, b) => {
+        const corePriorityDifference =
+            Number(isCoreCourseCode(b.code)) -
+            Number(isCoreCourseCode(a.code));
+
+        if (corePriorityDifference !== 0) {
+            return corePriorityDifference;
+        }
+
         const domainDifference =
             domains.get(a.code).length -
             domains.get(b.code).length;
@@ -2246,8 +2265,20 @@ function orderSemesterChoices(
         [...domains.get(courseCode)];
     const hasDependents =
         dependencyCounts.get(courseCode) > 0;
+    const isCoreCourse =
+        isCoreCourseCode(courseCode);
 
     semesters.sort((a, b) => {
+        /*
+         * Core courses are tried chronologically so they appear as early as
+         * their academic constraints permit. This remains a preference, not
+         * a fixed placement: backtracking can try later semesters when an
+         * early choice prevents the rest of the plan from being scheduled.
+         */
+        if (isCoreCourse && a !== b) {
+            return a - b;
+        }
+
         const pressureDifference =
             getSemesterPressure(
                 a,
@@ -2526,10 +2557,21 @@ function buildCoursePlan(
                 ).fill(null)
         );
 
-    for (
-        const [courseCode, semester]
-        of assignments
-    ) {
+    const orderedAssignments =
+        Array.from(assignments).sort(
+            ([courseCodeA, semesterA], [courseCodeB, semesterB]) => {
+                if (semesterA !== semesterB) {
+                    return semesterA - semesterB;
+                }
+
+                return (
+                    Number(isCoreCourseCode(courseCodeB)) -
+                    Number(isCoreCourseCode(courseCodeA))
+                );
+            }
+        );
+
+    for (const [courseCode, semester] of orderedAssignments) {
         const availableSlot =
             coursePlan[semester]
                 .findIndex(
