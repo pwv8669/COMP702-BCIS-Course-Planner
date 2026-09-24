@@ -4,7 +4,7 @@ import { attributedCourses } from "./majorMinorRequirementsValidator.js";
 import { scheduleConfig, mapCoursePlanToDom } from "./state.js";
 import { validateMajorMinorRequirements } from "./majorMinorRequirementsValidator.js";
 
-function formatAttribution(attribution) {
+function formatAttribution(attribution) {//this formats the text given by the cell attribution so we can tidily display it
     return attribution
         .split(" & ")
         .map(optionCode =>
@@ -13,8 +13,9 @@ function formatAttribution(attribution) {
         .join(" & ");
 }
 
-function parsePrereqs(node) {
-    if (!node) return "No prerequisites";
+function parsePrereqs(node) {//this function exists to find the prerequisites of a given node
+    //do note that despite the name, it can also be used to find co-requisites
+    if (!node) return "No prerequisites";//if theres nothing, return that information (used to be displayed, but now just shows no text instead)
 
     // COURSE node
     if (node.type === "COURSE") {
@@ -63,40 +64,34 @@ function parsePrereqs(node) {
 }
 
 
-async function TypeOfCell(coursecode, cell, state){
-try{
-    cell.classList = ''
-    const majorOptions = await loadMajorOptions();
-    //get the options from core
-    let coreOptions = majorOptions["Core"];
-    // console.log("TORETURN");
-    // console.log(attributedCourses.get(coursecode));
-    let arrayofcourses = (getCoursesFromSelectedMajorsAndMinors());//we kind of need this to "break" the try loop
-    //when the website first loads so it defaults to core
-    //when i fixed this system it instead started returning "Elective" which we dont want 
+async function TypeOfCell(coursecode, cell, state){//this is a function that sets the given cell's color and returns the given major/minor/reason its in the table
+try{//we do a try function here as when the site initially opens, it places the core courses. This is called before the system
+    //can even attribute them to anything so it will always create an error.
+    //Unless the user is somehow able to add courses before the site even finishes loading, this should be fine because it should be only doing
+    //this for the initial core courses
+    cell.classList = ''//clear the list
     if(attributedCourses.get(coursecode) == "Elective"){//if the courses has an attributed major/minor/core, we can assume its not an elective
         cell.classList = 'cell-elective';//else give it an elective color and label
-        console.log("Elective given")
-        return "Elective";
-        
+        console.log("Elective given")//debug
+        return "Elective";//return attributed text
     }
     const formattedAttribution = formatAttribution(
-        attributedCourses.get(coursecode)
+        attributedCourses.get(coursecode)//string showing course attribution
     );
     if(formattedAttribution != "Core"){//if the attributed course isnt core
-        if(state.selectedPathway.name != "Double Majors"){
-            if(state.selectedMajors[0].Code == attributedCourses.get(coursecode)){//if major is found
-                cell.classList = 'cell-required';//add class list
-                 return formattedAttribution;
+        if(state.selectedPathway.name != "Double Majors"){//if not taking double majors
+            if(state.selectedMajors[0].Code == attributedCourses.get(coursecode)){//check first major, if matches course
+                cell.classList = 'cell-required';//add to class list (this one is the major color)
+                 return formattedAttribution;//return attribution
             }
             for (let minor = 0; minor < state.selectedMinors.length; minor++) {//for loop for the extraordinarily unlikely futureproof of allowing 3 minors
                 if(state.selectedMinors[minor] != null){//if unselected minor, skip it
                     if(state.selectedMinors[minor].Code == attributedCourses.get(coursecode)){//if minor is found
-                        switch (minor){
-                            case 0:
+                        switch (minor){//check if it was the first or second minor
+                            case 0://if first
                                 cell.classList = 'cell-required-minor';//add class list
                                 break;
-                            case 1:
+                            case 1://if second
                                 cell.classList = 'cell-required-minor-second';//add class list
                                 break;
                         }    
@@ -124,26 +119,26 @@ catch{
 }
 }
 
-export async function renderCoursePlan(state) {
-    await validateMajorMinorRequirements();
-    for (let row = 0; row < scheduleConfig.semesters; row++) {
+export async function renderCoursePlan(state) {//this function assigns colors and text information for a given cell, as well as anything else inside (e.g. information buttons)
+    await validateMajorMinorRequirements();//this is called beforehand as it attributes the major and minor requirements for courses/cells
+    for (let row = 0; row < scheduleConfig.semesters; row++) {//for loops to go through all cells
         for (let col = 0; col < scheduleConfig.slotsPerSemester; col++) {
 
         const { UIRow, UICol } = mapCoursePlanToDom( row, col );
-            const cell = document.getElementById(`cell-${UIRow}-${UICol}`);
+            const cell = document.getElementById(`cell-${UIRow}-${UICol}`);//get cell from a given part of a table
             if (!cell) continue;
 
-            const course = state.coursePlan[row][col];
+            const course = state.coursePlan[row][col];//get course from row and column
 
-            if (!course) {
+            if (!course) {//if no course, make it blank and reset it
                 cell.textContent = "";
-                cell.classList.remove(
+                cell.classList.remove(//remove all classlists that may influence its color
                     "cell-required",
                     "cell-elective",
                     "cell-red-error",
                     "cell-yellow-warning"
                     );
-
+                //set it to the warning color
                 cell.classList.add("cell-yellow-warning");
                 continue;
             }
@@ -156,7 +151,7 @@ export async function renderCoursePlan(state) {
             //set up the button
                   cell.innerHTML += `<button class="prereq-btn" data-html2canvas-ignore="true">
                         i
-                    </button>`
+                    </button>`//information button goes here
                     let toaddstring = `<div class="prereq-list" style="display:none;">${typecell}`//this will contain the string to be added for the information button
                 
                     if(prereqText != "No prerequisites"){//if there are prerequisites then add them to the string
@@ -173,7 +168,7 @@ export async function renderCoursePlan(state) {
 }
 
 
-    document.addEventListener("click", (e) => {
+    document.addEventListener("click", (e) => {//adds event listener to show the information text when the prereq button is clicked
         if (!e.target.classList.contains("prereq-btn")) return;
 
         const box = e.target.nextElementSibling;
