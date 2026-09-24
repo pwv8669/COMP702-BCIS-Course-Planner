@@ -1,5 +1,3 @@
-import { getCoursesFromSelectedMajorsAndMinors } from './autopopulateStudyPlan.js';
-import { loadMajorOptions } from "./objects/majorMinorOption.js";
 import { attributedCourses } from "./validation/majorMinorRequirementsValidator.js";
 import { scheduleConfig, mapCoursePlanToDom } from "./state.js";
 import { validateMajorMinorRequirements } from "./validation/majorMinorRequirementsValidator.js";
@@ -63,20 +61,14 @@ function parsePrereqs(node) {
 }
 
 
-async function TypeOfCell(coursecode, cell, state){
+function TypeOfCell(coursecode, cell, state){
 try{
     cell.classList = ''
-    const majorOptions = await loadMajorOptions();
-    //get the options from core
-    let coreOptions = majorOptions["Core"];
-    // console.log("TORETURN");
-    // console.log(attributedCourses.get(coursecode));
-    let arrayofcourses = (getCoursesFromSelectedMajorsAndMinors());//we kind of need this to "break" the try loop
-    //when the website first loads so it defaults to core
-    //when i fixed this system it instead started returning "Elective" which we dont want 
+    // Default to core while the page is starting and no pathway is selected.
+    if (!state.selectedPathway) return "Core";
+
     if(attributedCourses.get(coursecode) == "Elective"){//if the courses has an attributed major/minor/core, we can assume its not an elective
         cell.classList = 'cell-elective';//else give it an elective color and label
-        console.log("Elective given")
         return "Elective";
         
     }
@@ -141,7 +133,7 @@ export async function renderCoursePlan(state) {
                 continue;
             }
             const prereqText = parsePrereqs(course.prerequisites);//parse prereqs 
-            const typecell = await TypeOfCell(course.code, cell, state);
+            const typecell = TypeOfCell(course.code, cell, state);
             
             cell.innerHTML = `<div class="course-cell">${typecell}:<div class="course-name">${course.code}: ${course.name}</div>`;//set the requirement level e.g. Elective, Core or Major/Minor name
             

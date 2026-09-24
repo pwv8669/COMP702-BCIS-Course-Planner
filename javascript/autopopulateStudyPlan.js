@@ -44,7 +44,6 @@ const effectivePrerequisiteTreeCache = new WeakMap();
 // Rigging event listener to button that triggers autopopulation
 const button = document.getElementById('AutocompletePlanButton');
 button.addEventListener('click', () => {
-    console.log("Autopopulate Plan button clicked");
     // Call the function to autopopulate the study plan
     autocompleteStudyPlan();
 });
@@ -916,20 +915,12 @@ function getCombinationCount(
 // two participating options on the group allows the candidate policy to
 // match the requirements validator.
 function getReplacementGroups() {
-    const replacementGroups =
-        requiredCourseSubstitutions.map(
-            substitution => ({
-                ...substitution,
-                count: 1
-            })
-        );
-
-    replacementGroups.sort(
-        (a, b) =>
-            a.count - b.count
+    return requiredCourseSubstitutions.map(
+        substitution => ({
+            ...substitution,
+            count: 1
+        })
     );
-
-    return replacementGroups;
 }
 
 function getChooseNReplacementGroups() {
@@ -1100,53 +1091,6 @@ function getAvailableDoubleMajorElectiveCourses(selectedCourses) {
         !selectedCourses.has(course.code) &&
         !selectedMajorCourseCodes.has(course.code)
     );
-}
-
-// Collect all courses that appear in the selected majors and minors
-export function getCoursesFromSelectedMajorsAndMinors() {
-    const courses = new Map();
-
-    const selectedPathway =
-        state.selectedPathway;
-
-
-    // Selected majors
-    for (
-        let i = 0;
-        i < selectedPathway.numMajors;
-        i++
-    ) {
-        const major =
-            state.selectedMajors[i];
-
-        if (!major) continue;
-
-        addCoursesFromOption(
-            major,
-            courses
-        );
-    }
-
-
-    // Selected minors
-    for (
-        let i = 0;
-        i < selectedPathway.numMinors;
-        i++
-    ) {
-        const minor =
-            state.selectedMinors[i];
-
-        if (!minor) continue;
-
-        addCoursesFromOption(
-            minor,
-            courses
-        );
-    }
-
-
-    return Array.from(courses.values());
 }
 
 function addCoursesFromOption(
