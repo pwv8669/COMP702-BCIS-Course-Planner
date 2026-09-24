@@ -56,12 +56,13 @@ export async function SetupMajorMinorSelections()
 
 	// For each course in courses, add an option to the selection menu with the course code as the display text and the index of the course in the courseobjects array as the value.
 	let optionobjects = [];//this will be a temporary array of the course objects, which will be used to get the course data when the user selects a course from the selection menu.
-	let optionobjectsstore = [];
+	// Share the loaded objects with the editor's setInput function.
+	window.optionobjectsstore = [];
 
 	for (const code in optionarray)
 	{
 
-		optionobjectsstore.push(optionarray[code]);//push to the autofill array
+		window.optionobjectsstore.push(optionarray[code]);//push to the autofill array
 		optionobjects.push(optionarray[code]);//add the course to the courseobjects array
 		text += "<option value="+(optionobjects.length-1)+">" + optionarray[code].Code + "</option>";
 	}
