@@ -7,7 +7,7 @@ import {
 } from "../javascript/state.js";
 import {
     validateCourseAppearances
-} from "../javascript/duplicateCoursesValidator.js";
+} from "../javascript/validation/duplicateCoursesValidator.js";
 
 describe("validateCourseAppearances", () => {
     // Reset the state before each test to ensure tests are independent and do not affect each other.

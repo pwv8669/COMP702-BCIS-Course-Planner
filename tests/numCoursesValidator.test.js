@@ -2,7 +2,7 @@
 
 import { beforeEach, describe, expect, test } from "vitest";
 import { validateNumberOfCourses } from
-    "../javascript/numCoursesValidator.js";
+    "../javascript/validation/numCoursesValidator.js";
 import {
     buildCoursePlan,
     scheduleConfig,

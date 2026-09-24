@@ -29,7 +29,7 @@ import {
     validateCorequisites,
     validatePointPrerequisites,
     validatePrerequisites
-} from "../javascript/prerequisiteValidator.js";
+} from "../javascript/validation/prerequisiteValidator.js";
 import {
     setScheduleMode,
     state
