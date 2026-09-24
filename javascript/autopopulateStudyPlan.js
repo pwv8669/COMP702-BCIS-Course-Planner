@@ -370,43 +370,35 @@ function* getCombinations(
     }
 }
 
-// Collectt all ChooseN requirements from selected majors and minors.
+// Collect all ChooseN requirements from Core and selected majors/minors.
 function getAllChooseNRequirements() {
     const requirements = [];
     const selectedPathway = state.selectedPathway;
 
-    // Majors
-    for (let i = 0; i < selectedPathway.numMajors; i++) {
-        const major = state.selectedMajors[i];
-        if (!major) continue;
+    const options = [
+        majorOptions.Core,
+        ...state.selectedMajors.slice(
+            0,
+            selectedPathway.numMajors
+        ),
+        ...state.selectedMinors.slice(
+            0,
+            selectedPathway.numMinors
+        )
+    ].filter(option => option);
 
-        requirements.push(
-            ...major.Requirements.filter(requirement => {
-                if (requirement.Type !== "ChooseN") {
-                    return false;
-                }
+    for (const option of options) {
+        for (const requirement of option.Requirements) {
+            if (requirement.Type !== "ChooseN") {
+                continue;
+            }
 
-                chooseNRequirementOwners.set(requirement, major);
-                return true;
-            })
-        );
-    }
-
-    // Minors
-    for (let i = 0; i < selectedPathway.numMinors; i++) {
-        const minor = state.selectedMinors[i];
-        if (!minor) continue;
-
-        requirements.push(
-            ...minor.Requirements.filter(requirement => {
-                if (requirement.Type !== "ChooseN") {
-                    return false;
-                }
-
-                chooseNRequirementOwners.set(requirement, minor);
-                return true;
-            })
-        );
+            chooseNRequirementOwners.set(
+                requirement,
+                option
+            );
+            requirements.push(requirement);
+        }
     }
 
     return requirements;
@@ -488,6 +480,10 @@ function tryReplacementGroups(
             !prerequisiteTreeIsCovered(
                 getEffectivePrerequisiteTree(course),
                 potentiallySelectableCourseCodes
+            ) ||
+            !prerequisiteTreeIsCovered(
+                course.corequisites,
+                potentiallySelectableCourseCodes
             )
         ) {
             return false;
@@ -505,6 +501,10 @@ function tryReplacementGroups(
                 course =>
                     prerequisiteTreeIsCovered(
                         getEffectivePrerequisiteTree(course),
+                        potentiallySelectableCourseCodes
+                    ) &&
+                    prerequisiteTreeIsCovered(
+                        course.corequisites,
                         potentiallySelectableCourseCodes
                     )
             );
@@ -630,6 +630,10 @@ function orderCandidateCourses(
 
         collectPrerequisiteCodes(
             getEffectivePrerequisiteTree(selectedCourse),
+            prerequisiteCodes
+        );
+        collectPrerequisiteCodes(
+            selectedCourse.corequisites,
             prerequisiteCodes
         );
 
@@ -1113,25 +1117,14 @@ function addCoursesFromOption(
     }
 }
 
-const FIXED_COURSE_PLACEMENTS = new Map([
-    ["COMP500", { semester: 0, slot: 0 }],
-    ["COMP501", { semester: 0, slot: 1 }],
-    ["COMP508", { semester: 0, slot: 2 }],
-    ["MATH503", { semester: 0, slot: 3 }],
-    ["COMP507", { semester: 1, slot: 0 }],
-    ["DIGD507", { semester: 1, slot: 1 }],
-    ["COMP702", { semester: 4, slot: 0 }],
-    ["COMP703", { semester: 5, slot: 0 }]
-]);
-
 /*
  * Schedule a course set as a constraint-satisfaction problem.
  *
- * Apart from the explicitly fixed core courses, a course is assigned to a
- * semester rather than a particular table slot because the remaining slots
- * in the same semester are interchangeable. The search uses domain
- * propagation, chooses the course with the fewest semester choices, and
- * backtracks immediately when a remaining course has no possible semester.
+ * A course is assigned to a semester rather than a particular table slot
+ * because slots in the same semester are interchangeable. The search uses
+ * domain propagation, chooses the course with the fewest semester choices,
+ * and backtracks immediately when a remaining course has no possible
+ * semester.
  *
  * All work is done against local data. state.coursePlan is updated only after
  * a complete valid schedule has been found.
@@ -1157,6 +1150,7 @@ function scheduleCourses(selectedCourses) {
         .sort()
         .join("|");
     const courseSetKey =
+        `${semesterCount}x${semesterCapacity}::` +
         `${selectedMajorKey}::` +
         Array.from(courses.keys())
             .sort()
@@ -1194,6 +1188,10 @@ function scheduleCourses(selectedCourses) {
             !prerequisiteTreeIsCovered(
                 getEffectivePrerequisiteTree(course),
                 selectedCourseCodes
+            ) ||
+            !prerequisiteTreeIsCovered(
+                course.corequisites,
+                selectedCourseCodes
             )
         ) {
             scheduleCache.set(
@@ -1218,23 +1216,6 @@ function scheduleCourses(selectedCourses) {
     const assignments = new Map();
     const semesterLoads =
         Array(semesterCount).fill(0);
-
-    for (
-        const [courseCode, placement]
-        of FIXED_COURSE_PLACEMENTS
-    ) {
-        if (!courses.has(courseCode)) {
-            continue;
-        }
-
-        assignments.set(
-            courseCode,
-            placement.semester
-        );
-        semesterLoads[
-            placement.semester
-        ]++;
-    }
 
     const dependencyCounts =
         buildDependencyCounts(courses);
@@ -1374,32 +1355,6 @@ function buildInitialSemesterDomains(
     const domains = new Map();
 
     for (const course of courses.values()) {
-        const fixedPlacement =
-            FIXED_COURSE_PLACEMENTS.get(
-                course.code
-            );
-
-        if (fixedPlacement) {
-            const fixedSemester =
-                fixedPlacement.semester;
-
-            if (
-                fixedSemester >= semesterCount ||
-                !offeredThisSemester(
-                    course,
-                    fixedSemester
-                )
-            ) {
-                return null;
-            }
-
-            domains.set(
-                course.code,
-                [fixedSemester]
-            );
-            continue;
-        }
-
         const possibleSemesters = [];
 
         for (
@@ -1563,6 +1518,18 @@ function propagateSemesterDomains(
                         assignments,
                         propagatedDomains
                     ) ||
+                    !consecutivePrerequisitesCanBeSatisfied(
+                        course,
+                        semester,
+                        assignments,
+                        propagatedDomains
+                    ) ||
+                    !corequisiteTreeCanBeSatisfied(
+                        course.corequisites,
+                        semester,
+                        assignments,
+                        propagatedDomains
+                    ) ||
                     !pointPrerequisitesCanBeSatisfied(
                         course,
                         semester,
@@ -1588,6 +1555,18 @@ function propagateSemesterDomains(
                             semesterCapacity &&
                         prerequisiteTreeCanBeSatisfied(
                             getEffectivePrerequisiteTree(course),
+                            semester,
+                            assignments,
+                            propagatedDomains
+                        ) &&
+                        consecutivePrerequisitesCanBeSatisfied(
+                            course,
+                            semester,
+                            assignments,
+                            propagatedDomains
+                        ) &&
+                        corequisiteTreeCanBeSatisfied(
+                            course.corequisites,
                             semester,
                             assignments,
                             propagatedDomains
@@ -1637,6 +1616,44 @@ function propagateSemesterDomains(
             if (result.changed) {
                 changed = true;
             }
+
+            if (course.mustBeTakenConsequtively) {
+                const consecutiveResult =
+                    restrictPrerequisiteDomains(
+                        course.prerequisites,
+                        dependentDomain,
+                        assignments,
+                        propagatedDomains,
+                        "consecutive"
+                    );
+
+                if (!consecutiveResult.valid) {
+                    return null;
+                }
+
+                if (consecutiveResult.changed) {
+                    changed = true;
+                }
+            }
+
+            if (course.corequisites) {
+                const corequisiteResult =
+                    restrictPrerequisiteDomains(
+                        course.corequisites,
+                        dependentDomain,
+                        assignments,
+                        propagatedDomains,
+                        "same-or-earlier"
+                    );
+
+                if (!corequisiteResult.valid) {
+                    return null;
+                }
+
+                if (corequisiteResult.changed) {
+                    changed = true;
+                }
+            }
         }
 
         const capacityResult =
@@ -1662,15 +1679,15 @@ function propagateSemesterDomains(
 /*
  * Prerequisite checking normally narrows a dependent course from left to
  * right. This complementary pass also narrows prerequisite courses from
- * right to left. For example, because COMP702 is fixed in semester five, all
- * of its effective core and major prerequisites are immediately restricted
- * to the first four semesters.
+ * right to left. Consecutive prerequisites can additionally require the
+ * prerequisite to be exactly one semester earlier.
  */
 function restrictPrerequisiteDomains(
     node,
     dependentDomain,
     assignments,
-    domains
+    domains,
+    relationship = "earlier"
 ) {
     if (!node) {
         return {
@@ -1688,8 +1705,11 @@ function restrictPrerequisiteDomains(
                 valid:
                     dependentDomain.some(
                         dependentSemester =>
-                            prerequisiteSemester <
-                            dependentSemester
+                            semesterRelationshipIsValid(
+                                prerequisiteSemester,
+                                dependentSemester,
+                                relationship
+                            )
                     ),
                 changed: false
             };
@@ -1710,8 +1730,11 @@ function restrictPrerequisiteDomains(
                 prerequisiteSemester =>
                     dependentDomain.some(
                         dependentSemester =>
-                            prerequisiteSemester <
-                            dependentSemester
+                            semesterRelationshipIsValid(
+                                prerequisiteSemester,
+                                dependentSemester,
+                                relationship
+                            )
                     )
             );
 
@@ -1748,7 +1771,8 @@ function restrictPrerequisiteDomains(
                     child,
                     dependentDomain,
                     assignments,
-                    domains
+                    domains,
+                    relationship
                 );
 
             if (!result.valid) {
@@ -1772,12 +1796,26 @@ function restrictPrerequisiteDomains(
                 child =>
                     dependentDomain.some(
                         semester =>
-                            prerequisiteTreeCanBeSatisfied(
-                                child,
-                                semester,
-                                assignments,
-                                domains
-                            )
+                            relationship === "consecutive"
+                                ? prerequisiteTreeCanBeSatisfiedInSemester(
+                                    child,
+                                    semester - 1,
+                                    assignments,
+                                    domains
+                                )
+                                : relationship === "same-or-earlier"
+                                    ? corequisiteTreeCanBeSatisfied(
+                                        child,
+                                        semester,
+                                        assignments,
+                                        domains
+                                    )
+                                : prerequisiteTreeCanBeSatisfied(
+                                    child,
+                                    semester,
+                                    assignments,
+                                    domains
+                                )
                     )
             );
 
@@ -1798,7 +1836,8 @@ function restrictPrerequisiteDomains(
                 viableChildren[0],
                 dependentDomain,
                 assignments,
-                domains
+                domains,
+                relationship
             );
         }
 
@@ -1812,6 +1851,25 @@ function restrictPrerequisiteDomains(
         valid: false,
         changed: false
     };
+}
+
+function semesterRelationshipIsValid(
+    requirementSemester,
+    dependentSemester,
+    relationship
+) {
+    if (relationship === "consecutive") {
+        return (
+            requirementSemester ===
+            dependentSemester - 1
+        );
+    }
+
+    if (relationship === "same-or-earlier") {
+        return requirementSemester <= dependentSemester;
+    }
+
+    return requirementSemester < dependentSemester;
 }
 
 /*
@@ -2009,6 +2067,135 @@ function prerequisiteTreeCanBeSatisfied(
     return false;
 }
 
+/*
+ * A corequisite may be completed before its dependent course or alongside it
+ * in the same semester.
+ */
+function corequisiteTreeCanBeSatisfied(
+    node,
+    semester,
+    assignments,
+    domains
+) {
+    if (!node) {
+        return true;
+    }
+
+    if (node.type === "COURSE") {
+        if (assignments.has(node.value)) {
+            return assignments.get(node.value) <= semester;
+        }
+
+        return Boolean(
+            domains.get(node.value)?.some(
+                corequisiteSemester =>
+                    corequisiteSemester <= semester
+            )
+        );
+    }
+
+    if (node.type === "AND") {
+        return node.children.every(
+            child =>
+                corequisiteTreeCanBeSatisfied(
+                    child,
+                    semester,
+                    assignments,
+                    domains
+                )
+        );
+    }
+
+    if (node.type === "OR") {
+        return node.children.some(
+            child =>
+                corequisiteTreeCanBeSatisfied(
+                    child,
+                    semester,
+                    assignments,
+                    domains
+                )
+        );
+    }
+
+    return false;
+}
+
+/*
+ * Check a prerequisite expression against one exact semester. This is used
+ * for courses such as COMP703 whose prerequisite must be taken immediately
+ * beforehand rather than at any earlier point in the plan.
+ */
+function prerequisiteTreeCanBeSatisfiedInSemester(
+    node,
+    requiredSemester,
+    assignments,
+    domains
+) {
+    if (!node || requiredSemester < 0) {
+        return !node;
+    }
+
+    if (node.type === "COURSE") {
+        if (assignments.has(node.value)) {
+            return (
+                assignments.get(node.value) ===
+                requiredSemester
+            );
+        }
+
+        return Boolean(
+            domains.get(node.value)?.includes(
+                requiredSemester
+            )
+        );
+    }
+
+    if (node.type === "AND") {
+        return node.children.every(
+            child =>
+                prerequisiteTreeCanBeSatisfiedInSemester(
+                    child,
+                    requiredSemester,
+                    assignments,
+                    domains
+                )
+        );
+    }
+
+    if (node.type === "OR") {
+        return node.children.some(
+            child =>
+                prerequisiteTreeCanBeSatisfiedInSemester(
+                    child,
+                    requiredSemester,
+                    assignments,
+                    domains
+                )
+        );
+    }
+
+    return false;
+}
+
+function consecutivePrerequisitesCanBeSatisfied(
+    course,
+    semester,
+    assignments,
+    domains
+) {
+    if (!course.mustBeTakenConsequtively) {
+        return true;
+    }
+
+    return prerequisiteTreeCanBeSatisfiedInSemester(
+        course.prerequisites,
+        semester - 1,
+        assignments,
+        domains
+    );
+}
+
 function selectMostConstrainedCourse(
     courses,
     domains,
@@ -2151,6 +2338,10 @@ function buildDependencyCounts(courses) {
             getEffectivePrerequisiteTree(course),
             prerequisiteCodes
         );
+        collectPrerequisiteCodes(
+            course.corequisites,
+            prerequisiteCodes
+        );
 
         for (
             const prerequisiteCode
@@ -2210,6 +2401,11 @@ function assignmentsAreValid(
                 assignments,
                 semester
             );
+        const completedAndCurrentCourses =
+            getCompletedCoursesForSemester(
+                assignments,
+                semester + 1
+            );
 
         if (
             !offeredThisSemester(
@@ -2219,6 +2415,15 @@ function assignmentsAreValid(
             !evaluatePrerequisiteTree(
                 getEffectivePrerequisiteTree(course),
                 completedCourses
+            ) ||
+            !evaluatePrerequisiteTree(
+                course.corequisites,
+                completedAndCurrentCourses
+            ) ||
+            !consecutivePrerequisitesAreValid(
+                course,
+                semester,
+                assignments
             ) ||
             !pointPrerequisitesCanBeSatisfied(
                 course,
@@ -2232,6 +2437,32 @@ function assignmentsAreValid(
     }
 
     return true;
+}
+
+function consecutivePrerequisitesAreValid(
+    course,
+    semester,
+    assignments
+) {
+    if (!course.mustBeTakenConsequtively) {
+        return true;
+    }
+
+    const previousSemesterCourses = new Set();
+
+    for (
+        const [courseCode, assignedSemester]
+        of assignments
+    ) {
+        if (assignedSemester === semester - 1) {
+            previousSemesterCourses.add(courseCode);
+        }
+    }
+
+    return evaluatePrerequisiteTree(
+        course.prerequisites,
+        previousSemesterCourses
+    );
 }
 
 function getCompletedCoursesForSemester(
@@ -2295,43 +2526,10 @@ function buildCoursePlan(
                 ).fill(null)
         );
 
-    // Insert fixed courses into their exact semester and slot positions.
-    for (
-        const [courseCode, placement]
-        of FIXED_COURSE_PLACEMENTS
-    ) {
-        if (!assignments.has(courseCode)) {
-            continue;
-        }
-
-        if (
-            placement.semester >= semesterCount ||
-            placement.slot >= semesterCapacity ||
-            coursePlan[
-                placement.semester
-            ][placement.slot] !== null
-        ) {
-            return null;
-        }
-
-        coursePlan[
-            placement.semester
-        ][placement.slot] =
-            courses.get(courseCode);
-    }
-
     for (
         const [courseCode, semester]
         of assignments
     ) {
-        if (
-            FIXED_COURSE_PLACEMENTS.has(
-                courseCode
-            )
-        ) {
-            continue;
-        }
-
         const availableSlot =
             coursePlan[semester]
                 .findIndex(
