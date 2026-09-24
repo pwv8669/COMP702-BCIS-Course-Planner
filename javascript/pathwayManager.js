@@ -1,4 +1,4 @@
-import { validateStudyPlan } from './planValidator.js';
+import { validateStudyPlan } from './validation/planValidator.js';
 import { loadPathways } from './objects/pathway.js';
 import { loadMajorOptions, loadMinorOptions } from './objects/majorMinorOption.js';
 import { state } from './state.js';

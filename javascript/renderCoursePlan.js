@@ -1,8 +1,8 @@
 import { getCoursesFromSelectedMajorsAndMinors } from './autopopulateStudyPlan.js';
 import { loadMajorOptions } from "./objects/majorMinorOption.js";
-import { attributedCourses } from "./majorMinorRequirementsValidator.js";
+import { attributedCourses } from "./validation/majorMinorRequirementsValidator.js";
 import { scheduleConfig, mapCoursePlanToDom } from "./state.js";
-import { validateMajorMinorRequirements } from "./majorMinorRequirementsValidator.js";
+import { validateMajorMinorRequirements } from "./validation/majorMinorRequirementsValidator.js";
 
 function formatAttribution(attribution) {
     return attribution

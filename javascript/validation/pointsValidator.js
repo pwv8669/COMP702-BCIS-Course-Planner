@@ -1,6 +1,6 @@
-import { state } from "./state.js";
-import { PlanError } from './objects/planError.js';
-import { courses } from "./app.js";
+import { state } from "../state.js";
+import { PlanError } from '../objects/planError.js';
+import { courses } from "../app.js";
 
 let errors = [];
 let attributedCourses = state.attributedCourses;

@@ -1,7 +1,7 @@
 // Importing the state object from the state.js file which contains the coursePlan array. This allows us to manipulate the course plan data from this file globally.
 import { state } from './state.js';
 import { loadCourses } from "./courseObjectConverter.js";
-import { validateStudyPlan } from './planValidator.js';
+import { validateStudyPlan } from './validation/planValidator.js';
 import { renderCoursePlan } from './renderCoursePlan.js';
 import { updatePathwayOptions } from './pathwayManager.js';
 import { initPathwayOptions } from './pathwayManager.js';
