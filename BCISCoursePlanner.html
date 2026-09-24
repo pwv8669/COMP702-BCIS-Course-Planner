@@ -92,7 +92,7 @@ td{
     padding: calc(1 * var(--scale)) calc(.4 * var(--scale));
     font-size: calc(1.4 * var(--scale));
     border: calc(.1 * var(--scale)) solid #6e7475;
-}
+}s
 .schedule-table,
 .schedule-table th{
     border: calc(.1 * var(--scale)) solid #373537 !important; 
@@ -116,6 +116,13 @@ td{
 .schedule-table td.cell-required-minor {
     border: calc(.3 * var(--scale)) solid #5d3672;
 }
+
+.schedule-table td.cell-required-minor-second:nth-child(even){background-color: hsl(318, 57%, 68%) ;}  /* Alternate between light and dark cells */
+.schedule-table td.cell-required-minor-second:nth-child(odd) {background-color: #b75a9b ;}
+.schedule-table td.cell-required-minor-second {
+    border: calc(.3 * var(--scale)) solid #723657;
+}
+
 
 .schedule-table td.cell-elective:nth-child(even){background-color: #636870 ;}  /* Alternate between light and dark cells */
 .schedule-table td.cell-elective:nth-child(odd) {background-color: #4e5359 ;}
