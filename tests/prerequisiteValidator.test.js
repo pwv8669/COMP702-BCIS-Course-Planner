@@ -89,7 +89,7 @@ describe("evaluatePrerequisiteTree", () => {
         ).toBe(true);
     });
 
-    
+    // An AND prerequisite is valid only when every child course is complete.
     test("requires every child of an AND node", () => {
         const tree = operatorNode(
             "AND",
@@ -111,6 +111,7 @@ describe("evaluatePrerequisiteTree", () => {
         ).toBe(false);
     });
 
+    // An OR prerequisite is valid when any one child course is complete.
     test("requires at least one child of an OR node", () => {
         const tree = operatorNode(
             "OR",
@@ -127,6 +128,7 @@ describe("evaluatePrerequisiteTree", () => {
         expect(evaluatePrerequisiteTree(tree, new Set())).toBe(false);
     });
 
+    // Unsupported node types should fail safely instead of being accepted.
     test("rejects an unknown node type", () => {
         expect(
             evaluatePrerequisiteTree(
@@ -138,6 +140,7 @@ describe("evaluatePrerequisiteTree", () => {
 });
 
 describe("getCompletedCourses", () => {
+    // The current and future semesters must not be treated as completed.
     test("returns courses from earlier semesters only", () => {
         state.coursePlan[0][0] = makeCourse("COMP500");
         state.coursePlan[1][0] = makeCourse("COMP501");
@@ -150,6 +153,7 @@ describe("getCompletedCourses", () => {
 });
 
 describe("validatePrerequisites", () => {
+    // A course should produce a positioned error when its prerequisite is absent.
     test("reports a prerequisite that has not been completed", () => {
         state.coursePlan[0][1] = makeCourse("COMP600", {
             prerequisites: courseNode("COMP500")
@@ -166,6 +170,7 @@ describe("validatePrerequisites", () => {
         expect(errors[0].positions[0][1]).toBe(true);
     });
 
+    // A prerequisite from an earlier semester should satisfy the course rule.
     test("accepts a prerequisite completed in an earlier semester", () => {
         state.coursePlan[0][0] = makeCourse("COMP500");
         state.coursePlan[1][0] = makeCourse("COMP600", {
@@ -175,6 +180,7 @@ describe("validatePrerequisites", () => {
         expect(validatePrerequisites()).toEqual([]);
     });
 
+    // Ordinary prerequisites must be completed before, not alongside, the course.
     test("does not count a course taken in the same semester", () => {
         state.coursePlan[0][0] = makeCourse("COMP500");
         state.coursePlan[0][1] = makeCourse("COMP600", {
@@ -188,6 +194,7 @@ describe("validatePrerequisites", () => {
         );
     });
 
+    // Consecutive prerequisites must be in the immediately preceding semester.
     test("reports a consecutive prerequisite taken too early", () => {
         state.coursePlan[0][0] = makeCourse("COMP500");
         state.coursePlan[2][0] = makeCourse("COMP600", {
@@ -204,6 +211,7 @@ describe("validatePrerequisites", () => {
 });
 
 describe("validateCorequisites", () => {
+    // Unlike a prerequisite, a corequisite may be taken in the same semester.
     test("accepts a corequisite taken in the same semester", () => {
         state.coursePlan[0][0] = makeCourse("COMP500");
         state.coursePlan[0][1] = makeCourse("COMP501", {
@@ -213,6 +221,7 @@ describe("validateCorequisites", () => {
         expect(validateCorequisites()).toEqual([]);
     });
 
+    // A missing corequisite should identify both the course and its plan position.
     test("reports a missing corequisite", () => {
         state.coursePlan[0][1] = makeCourse("COMP501", {
             corequisites: courseNode("COMP500")
@@ -227,6 +236,7 @@ describe("validateCorequisites", () => {
 });
 
 describe("validatePointPrerequisites", () => {
+    // Points from earlier semesters should satisfy a course's level-point rule.
     test("accepts sufficient points completed in earlier semesters", () => {
         state.coursePlan[0][0] = makeCourse("COMP500");
         state.coursePlan[0][1] = makeCourse("COMP501");
@@ -238,6 +248,7 @@ describe("validatePointPrerequisites", () => {
         expect(validatePointPrerequisites()).toEqual([]);
     });
 
+    // Insufficient earlier points should produce a detailed, positioned error.
     test("reports insufficient points and identifies the course position", () => {
         state.coursePlan[0][0] = makeCourse("COMP500");
         state.coursePlan[1][2] = makeCourse("COMP600", {
@@ -257,6 +268,7 @@ describe("validatePointPrerequisites", () => {
 });
 
 describe("evaluateCoreAndMajorRequirements", () => {
+    // Required and Choose-N rules apply only through the requested course level.
     test("checks required and choose-N courses up to the requested level", () => {
         majorOptions.Core = {
             Requirements: [
@@ -290,6 +302,7 @@ describe("evaluateCoreAndMajorRequirements", () => {
         ).toBe(false);
     });
 
+    // Requirements from selected majors must be checked alongside core courses.
     test("includes requirements from the selected majors", () => {
         state.selectedMajors[0] = {
             Requirements: [
