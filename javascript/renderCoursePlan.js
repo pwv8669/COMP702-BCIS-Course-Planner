@@ -4,7 +4,9 @@ import { attributedCourses } from "./validation/majorMinorRequirementsValidator.
 import { scheduleConfig, mapCoursePlanToDom } from "./state.js";
 import { validateMajorMinorRequirements } from "./validation/majorMinorRequirementsValidator.js";
 
-function formatAttribution(attribution) {
+function formatAttribution(attribution) {//This formats the text given by the cell attribution so we can tidily display it.
+    //Inputs:A cell's attributed text
+    //Outputs:A string that formats it tidily
     return attribution
         .split(" & ")
         .map(optionCode =>
@@ -13,8 +15,11 @@ function formatAttribution(attribution) {
         .join(" & ");
 }
 
-function parsePrereqs(node) {
-    if (!node) return "No prerequisites";
+function parsePrereqs(node) {//This function exists to find the prerequisites of a given node
+    //Inputs:A node
+    //Outputs: A string that attempts to give the user a node's prerequisites
+    //Do note that despite the name, it can also be used to find co-requisites
+    if (!node) return "No prerequisites";//If theres nothing, return that information (used to be displayed, but now just shows no text instead)
 
     // COURSE node
     if (node.type === "COURSE") {
@@ -63,45 +68,51 @@ function parsePrereqs(node) {
 }
 
 
-async function TypeOfCell(coursecode, cell, state){
-try{
-    cell.classList = ''
-    const majorOptions = await loadMajorOptions();
-    //get the options from core
-    let coreOptions = majorOptions["Core"];
-    // console.log("TORETURN");
-    // console.log(attributedCourses.get(coursecode));
-    let arrayofcourses = (getCoursesFromSelectedMajorsAndMinors());//we kind of need this to "break" the try loop
-    //when the website first loads so it defaults to core
-    //when i fixed this system it instead started returning "Elective" which we dont want 
+async function TypeOfCell(coursecode, cell, state){//this is a function that sets the given cell's color and returns the given major/minor/reason its in the table
+    //Inputs: Course Code, The cell associated with this course, the state for its arrays
+    //Outputs: A modified class list of the given cell and a string cnotaining its attributed course.
+
+    try{//we do a try function here as when the site initially opens, it places the core courses. This is called before the system
+    //can even attribute them to anything so it will always create an error.
+    //Unless the user is somehow able to add courses before the site even finishes loading, 
+    //this should be fine because it should be only doing
+    //this for the initial core courses.
+    cell.classList = ''//clear the list
     if(attributedCourses.get(coursecode) == "Elective"){//if the courses has an attributed major/minor/core, we can assume its not an elective
         cell.classList = 'cell-elective';//else give it an elective color and label
-        console.log("Elective given")
-        return "Elective";
-        
+        console.log("Elective given")//For debugging purposes
+        return "Elective";//return attributed text
     }
     const formattedAttribution = formatAttribution(
         attributedCourses.get(coursecode)
-    );
-    if(formattedAttribution != "Core"){//if the attributed course isnt core
-        if(state.selectedPathway.name != "Double Majors"){
-            if(state.selectedMajors[0].Code == attributedCourses.get(coursecode)){//if major is found
-                cell.classList = 'cell-required';//add class list
-                 return formattedAttribution;
+    );//Call function to get string showing course attribution
+    if(formattedAttribution != "Core"){//If the attributed course isnt core
+        if(state.selectedPathway.name != "Double Majors"){//If not taking double majors
+            if(state.selectedMajors[0].Code == attributedCourses.get(coursecode)){//Check first major, if it matches the course
+                cell.classList = 'cell-required';//add to class list (this one is the major color)
+                 return formattedAttribution;//return attribution
             }
             for (let minor = 0; minor < state.selectedMinors.length; minor++) {//for loop for the extraordinarily unlikely futureproof of allowing 3 minors
                 if(state.selectedMinors[minor] != null){//if unselected minor, skip it
                     if(state.selectedMinors[minor].Code == attributedCourses.get(coursecode)){//if minor is found
-                        cell.classList = 'cell-required-minor';//add class list
-                        break;//stop looking
+                        switch (minor){//check if it was the first or second minor
+                            case 0://If it's the first minor
+                                cell.classList = 'cell-required-minor';//add class list
+                                break;
+                            case 1://If it's the second instead
+                                cell.classList = 'cell-required-minor-second';//add class list
+                                break;
+                        }    
+                        break;//stop looking if its added the class
                     }
                 }
             }
-            if(!cell.classList.contains('cell-required-minor')){//if the min
+            if(!(cell.classList.contains('cell-required-minor') || cell.classList.contains('cell-required-minor-second') )){
+                //if a minor wasnt added we can assume its a major by process of elimination
                 cell.classList = 'cell-required';//make it required class color
             }
         }
-        else{
+        else{//If the given pathway is double majors and its neither an elective or core, we can assume its a major
             cell.classList = 'cell-required';//make it required class color
         }
     }
@@ -117,72 +128,64 @@ catch{
 }
 }
 
-export async function renderCoursePlan(state) {
-    await validateMajorMinorRequirements();
-    for (let row = 0; row < scheduleConfig.semesters; row++) {
+export async function renderCoursePlan(state) {//this function assigns colors and text information for a given cell, as well as anything else inside (e.g. information buttons)
+    //INPUT: State (holds all course, pathways major/minor information)
+    //OUTPUT: Sets up the site display specifically for the table
+    await validateMajorMinorRequirements();//this is called beforehand as it attributes the major and minor requirements for courses/cells
+    for (let row = 0; row < scheduleConfig.semesters; row++) {//for loops to go through all cells
         for (let col = 0; col < scheduleConfig.slotsPerSemester; col++) {
 
         const { UIRow, UICol } = mapCoursePlanToDom( row, col );
-            const cell = document.getElementById(`cell-${UIRow}-${UICol}`);
+            const cell = document.getElementById(`cell-${UIRow}-${UICol}`);//get cell from a given part of a table
             if (!cell) continue;
 
-            const course = state.coursePlan[row][col];
+            const course = state.coursePlan[row][col];//get course from row and column
 
-            if (!course) {
+            if (!course) {//if no course, make it blank and reset it
                 cell.textContent = "";
-                cell.classList.remove(
+                cell.classList.remove(//remove all classlists that may influence its color
                     "cell-required",
                     "cell-elective",
                     "cell-red-error",
                     "cell-yellow-warning"
                     );
-
+                //set it to the warning color
                 cell.classList.add("cell-yellow-warning");
                 continue;
             }
             const prereqText = parsePrereqs(course.prerequisites);//parse prereqs 
-            const typecell = await TypeOfCell(course.code, cell, state);
+            const typecell = await TypeOfCell(course.code, cell, state);//this returns the major/minor name, and colors the cell given into it
             
-            cell.innerHTML = `<div class="course-cell">${typecell}:<div class="course-name">${course.code}: ${course.name}</div>`;//set the requirement level e.g. Elective, Core or Major/Minor name
+            cell.innerHTML = `<div class="course-cell"><div class="course-name">${course.code}: ${course.name}</div>`;//set the requirement level e.g. Elective, Core or Major/Minor name
             
-            const coreqText = parsePrereqs(course.corequisites);
-
-            if(prereqText != "No prerequisites" || coreqText != "No prerequisites" ){
+            const coreqText = parsePrereqs(course.corequisites);//get the corequisites, thankfull the prerequisites function serves just as well for corequisites
+            //set up the button
                   cell.innerHTML += `<button class="prereq-btn" data-html2canvas-ignore="true">
-                        Show reqs
-                    </button>`
-                    if(prereqText != "No prerequisites"){
-                        cell.innerHTML +=`<div class="prereq-list" style="display:none;">
-                            Prerequisites: ${prereqText}
-                        </div>`;
+                        i
+                    </button>`//information button goes here
+                    let toaddstring = `<div class="prereq-list" style="display:none;">${typecell}`//this will contain the string to be added for the information button
+                
+                    if(prereqText != "No prerequisites"){//if there are prerequisites then add them to the string
+                             toaddstring +=`<br>Prerequisites: ${prereqText}</div>`;
                     }
-
-                    if(coreqText != "No prerequisites"){
-                        cell.innerHTML +=`<div class="prereq-list" style="display:none;">
-                            Corequisites: ${coreqText}
-                        </div>`;
+                    if(coreqText != "No prerequisites"){//if there are corequisites then add them to the string
+                        toaddstring +=`<br>Corequisites: ${coreqText}</div>`;
                     }
-                    
-            }
-
-                    cell.innerHTML +=`<div class="prereq-list" style="display:none;" data-html2canvas-ignore="true">
-                        ${prereqText}
-                    </div>
-                </div>`;
-            cell.innerHTML += `</div>`;
+                    cell.innerHTML+= toaddstring;//finally add the full created div to the html
+            cell.innerHTML +=`
+            </div></div>`;
         }
     }
 }
 
 
-    document.addEventListener("click", (e) => {
+    document.addEventListener("click", (e) => {//adds event listener to show the information text when the prereq button is clicked
         if (!e.target.classList.contains("prereq-btn")) return;
 
         const box = e.target.nextElementSibling;
         const hidden = box.style.display === "none";
 
         box.style.display = hidden ? "block" : "none";
-        e.target.textContent = hidden ? "Hide reqs" : "Show reqs";
     });
 
 
