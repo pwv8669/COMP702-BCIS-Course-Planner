@@ -6,7 +6,7 @@ import { state, mapCoursePlanToDom } from './state.js';
 
 function resizeScheduleTable()
 {
-    let tableHeight = 60; //need to uncomment table-grid height attribute in the css to use
+    let tableHeight = 60;
 
     const tableGrid = document.getElementById("table-grid");
     const errorBoxes = document.getElementById('red-error-list-container');
@@ -14,11 +14,11 @@ function resizeScheduleTable()
 
     if (errorBoxes.style.display === 'none')
     {
-        tableHeight += 11.5;
+        tableHeight += 15;
     }
     if (ignoreBox.style.display === 'none')
     {
-        tableHeight += 11.5;
+        tableHeight += 15;
     }
 
     tableGrid.style.minHeight = `calc(${tableHeight} * var(--scale))`;

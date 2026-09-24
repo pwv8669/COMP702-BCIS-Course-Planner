@@ -6,7 +6,7 @@
 <style>
   /* Styling here */
     :root {
-        --scale: .96vmin;
+        --scale: .94vmin;
     }
 
     body {
@@ -16,6 +16,9 @@
         font-family: 'Trebuchet MS';
         font-weight: bolder;
         background-color: #373537;
+        box-sizing: border-box;
+        max-height: 100%;
+        max-width: 100%;
     }
 
 .top-selector-row {
@@ -54,7 +57,7 @@ td:hover .hidden-element {
 }
 td{
   height: calc(10 * var(--scale));
-  font-size: 80%;
+  font-size: 100%;
 
   font-weight: bolder;
   vertical-align: top;
@@ -66,6 +69,8 @@ td{
     width: 100%;
     table-layout: fixed; /* Forces all 6 columns to stay exactly the same width */
     font-family: Arial, sans-serif;
+
+
 }
 .schedule-table td {
     background-color: #9c9c9c;
@@ -201,6 +206,7 @@ td{
   align-items: stretch;
   clear: both;
   padding-bottom: calc(1 * var(--scale));
+
   
 }
 .driver {
@@ -273,17 +279,18 @@ table{
   background-color: #4285b9;
 }
 .prereq-btn {
-    position:fixed;
-    margin-left:8.5%;
-    padding: 0.3%;
+    position: absolute;
+    margin-left:13.5%;
+    padding: 0;
     font-size: 100%;
-    border-radius: 0px;
-    background: #5a2ea6;
+    background:#96969600;
     color: white;
     border: none;
     cursor: pointer;
     bottom:calc(.4 * var(--scale));
-    width: 7%;
+    width: 2%;
+    aspect-ratio: 1 / 1;
+    border-radius: 50%;
 }
 .prereq-list {
     margin-bottom: calc(3 * var(--scale)); 
@@ -440,6 +447,8 @@ select:hover,button:hover{
   grid-template-rows: auto auto;
   gap: calc(.1 * var(--scale));
   width: 100%;
+
+  box-sizing: border-box;
 }
 .buttons-column {
   display: flex;
@@ -454,6 +463,16 @@ select:hover,button:hover{
     fill: #ffffff;
     height: auto;
     stroke-width: calc(.06 * var(--scale));
+}
+
+.infoIcon {
+    width: 70%;
+    stroke: #ffffffe0;
+    fill: #ffffffe0;
+    height: 100%;
+    object-fit: contain;
+    
+    stroke-width: calc(.04 * var(--scale));
 }
 .save-grid {
     display: grid;
@@ -505,13 +524,22 @@ select:hover,button:hover{
         box-sizing: border-box;
         margin-right: calc(0 * var(--scale));
 
-        flex: 0 1 auto; /* Forces label to shrink (1) and never grow (0) */
-        max-width: calc(45 * var(--scale)); /* Explicit cap to ensure it stays uniform */
-        min-width: 0; /* Allows it to adapt downward safely */
-        white-space: nowrap; /* Prevents unexpected text wrapping from bloating heights */
-        text-overflow: ellipsis; /* Handles layout overflows cleanly */
+        flex: 0 1 auto; 
+        max-width: calc(45 * var(--scale)); 
+        min-width: 0; 
+        white-space: nowrap; 
+        text-overflow: ellipsis; 
         overflow: hidden;
     }
+
+#course-cell {
+    display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  overflow-wrap: break-word;
+}
 
 </style>
 </head>
@@ -547,6 +575,25 @@ select:hover,button:hover{
 
             <div class="buttons-column">
                 <div class="button-grid">
+
+                   <!-- <button title="Save / Load schedule" id="openFileFuntions">
+
+                        <svg fill="#000000" class="icon" height="800px" width="800px" version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" 
+	                        viewBox="0 0 64 64" enable-background="new 0 0 64 64" xml:space="preserve"  >
+                             <g id="Floppy-disk">
+	             <path d="M35.2673988,6.0411h-7.9999981v10h7.9999981V6.0411z M33.3697014,14.1434002h-4.2046013V7.9387999h4.2046013V14.1434002z"/>
+	        <path d="M41,47.0410995H21c-0.5527992,0-1,0.4472008-1,1c0,0.5527,0.4472008,1,1,1h20c0.5527,0,1-0.4473,1-1C42,47.4883003,41.5527,47.0410995,41,47.0410995z"/>
+	        <path d="M41,39.0410995H21c-0.5527992,0-1,0.4472008-1,1c0,0.5527,0.4472008,1,1,1h20c0.5527,0,1-0.4473,1-1
+	        	C42,39.4883003,41.5527,39.0410995,41,39.0410995z"/>
+	        <path d="M12,56.0410995h38v-26H12V56.0410995z M14,32.0410995h34v22H14V32.0410995z"/>
+	        <path d="M49.3811989,0.0411L49.3610992,0H7C4.7908001,0,3,1.7909,3,4v56c0,2.2092018,1.7908001,4,4,4h50
+		        c2.2090988,0,4-1.7907982,4-4V11.6962996L49.3811989,0.0411z M39.9604988,2.0804999v17.9211006H14.0394001V2.0804999H39.9604988z
+		         M59,60c0,1.1027985-0.8972015,2-2,2H7c-1.1027999,0-2-0.8972015-2-2V4c0-1.1027999,0.8972001-2,2-2h5v20.0410995h30V2h6.5099983
+		        L59,12.5228996V60z"/>
+                               </g>
+                        </svg>
+
+                    </button> -->
 
                     <button title="Save Course Plan" id="openSave">
 
