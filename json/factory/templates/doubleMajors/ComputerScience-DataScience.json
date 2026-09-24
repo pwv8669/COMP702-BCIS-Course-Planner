@@ -14,43 +14,44 @@
         null,
         null
     ],
-    "schedule": [
-        [
-            "COMP500",
-            "COMP501",
-            "COMP507",
-            "COMP508"
-        ],
-        [
-            "DIGD507",
-            "MATH503",
-            "COMP503",
-            "COMP517"
-        ],
-        [
-            "COMP610",
-            "COMP613",
-            "COMP615",
-            "COMP616"
-        ],
-        [
-            "COMP611",
-            "COMP612",
-            "STAT603",
-            "COMP711"
-        ],
-        [
-            "COMP702",
-            null,
-            "COMP719",
-            "COMP717"
-        ],
-        [
-            "COMP703",
-            "COMP712",
-            "COMP723",
-            "COMP700"
-        ]
+  "schedule": [
+    [
+      "COMP500",
+      "COMP501",
+      "COMP507",
+      "COMP508"
     ],
+    [
+      "DIGD507",
+      "MATH503",
+      "COMP503",
+      "COMP517"
+    ],
+    [
+      "COMP610",
+      "COMP613",
+      "COMP615",
+      "COMP616"
+    ],
+    [
+      "COMP611",
+      "COMP612",
+      "STAT603",
+      "COMP711"
+    ],
+    [
+      "COMP702",
+      null,
+      "COMP719",
+      "COMP717"
+    ],
+    [
+      "COMP703",
+      "COMP712",
+      "COMP723",
+      "COMP700"
+    ]
+  ],
+    "mode": "full-time",
     "ignoredErrors": []
 }

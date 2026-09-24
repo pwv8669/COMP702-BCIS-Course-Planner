@@ -7,7 +7,7 @@ import { validateSemestersOffered } from "./semesterOfferedValidator.js";
 import { validatePoints } from "./pointsValidator.js";
 
 //Import state for error notes
-import { state } from "./state.js";
+import { state } from "../state.js";
 
 // Returns an array of error objects.
 export function validateStudyPlan(){
