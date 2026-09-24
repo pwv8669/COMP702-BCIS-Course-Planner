@@ -104,6 +104,11 @@ td{
 .schedule-table td.cell-required {
     border: calc(.3 * var(--scale)) solid #3842af;
 }
+.minor1color{background-color: #bc80dc !important;} 
+.minor2color{background-color: #dc7fc0 !important;} 
+.selectioncolor{background-color: #94bae8  ;}  /* Alternate between light and dark cells */
+.minor1selectioncolor{background-color: #d09deb  ;}  /* Alternate between light and dark cells */
+.minor2selectioncolor{background-color: #e197ca  ;}  /* Alternate between light and dark cells */
 
 .schedule-table td.cell-required-minor:nth-child(even){background-color: #bc80dc ;}  /* Alternate between light and dark cells */
 .schedule-table td.cell-required-minor:nth-child(odd) {background-color: #9461af ;}
@@ -523,8 +528,8 @@ label[for="pathwaySelect"] {
   flex-direction: column;
   font-size: calc(2 * var(--scale));
   justify-content: center;
-  gap: calc(1 * var(--scale));
   background-color: #822787;
+  gap: calc(1 * var(--scale));
   padding: calc(1 * var(--scale));
   min-width: calc(20 * var(--scale));
   width: auto;

@@ -85,6 +85,8 @@ function createMajorDropdowns()
     const major1 = document.createElement('select');
    	major1.id = 'major1';
 	major1Label.id = 'major1label';
+    major1.classList = 'selectioncolor'
+    major1Label.classList = 'majorcolor'
     // Add an event listener to the major 1 select element to handle changes and validate the selected option.
     major1.addEventListener('change', (e) => {
         checkValidOptionChange(major1, 'major1', e.target.value);
@@ -113,6 +115,8 @@ function createMajorDropdowns()
         const major2 = document.createElement('select');
         	major2.id = 'major2'; 
 		major2Label.id = 'major2label';
+        major2.classList = 'selectioncolor'
+        major2Label.classList = 'majorcolor'
         // Add an event listener to the major 2 select element to handle changes and validate the selected option.
         major2.addEventListener('change', (e) => {
             checkValidOptionChange(major2, 'major2', e.target.value);
@@ -148,6 +152,8 @@ function createMinorDropdowns()
         const minor1 = document.createElement('select');
         minor1.id  = 'minor1'; 
 		minor1Label.id = 'minor1label';
+        minor1.classList = 'minor1selectioncolor'
+        minor1Label.classList = 'minor1color'
         // Add an event listener to the minor 1 select element to handle changes and validate the selected option.
         minor1.addEventListener('change', (e) => {
             checkValidOptionChange(minor1, 'minor1', e.target.value);
@@ -178,6 +184,8 @@ function createMinorDropdowns()
         const minor2 = document.createElement('select');
        minor2.id = 'minor2';
 		 minor2Label.id = 'minor2label';
+        minor2.classList = 'minor2selectioncolor'
+        minor2Label.classList = 'minor2color'
         // Add an event listener to the minor 2 select element to handle changes and validate the selected option.
         minor2.addEventListener('change', (e) => {
             checkValidOptionChange(minor2, 'minor2', e.target.value);
