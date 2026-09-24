@@ -115,8 +115,8 @@ function createMajorDropdowns()
         const major2 = document.createElement('select');
         	major2.id = 'major2'; 
 		major2Label.id = 'major2label';
-        major2.classList = 'selectioncolor'
-        major2Label.classList = 'majorcolor'
+        major2.classList = 'minor1selectioncolor'
+        major2Label.classList = 'minor1color'
         // Add an event listener to the major 2 select element to handle changes and validate the selected option.
         major2.addEventListener('change', (e) => {
             checkValidOptionChange(major2, 'major2', e.target.value);

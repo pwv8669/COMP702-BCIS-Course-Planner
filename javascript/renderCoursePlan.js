@@ -113,7 +113,14 @@ async function TypeOfCell(coursecode, cell, state){//this is a function that set
             }
         }
         else{//If the given pathway is double majors and its neither an elective or core, we can assume its a major
-            cell.classList = 'cell-required';//make it required class color
+            if(state.selectedMajors[0].Code == attributedCourses.get(coursecode)){//Check first major, if it matches the course
+                cell.classList = 'cell-required';//add to class list (this one is the major color)
+            }
+            else{
+                cell.classList = 'cell-required-minor';//make it required class color
+
+            }
+                            return formattedAttribution;//return attribution
         }
     }
     else{
