@@ -7,7 +7,7 @@
 import { refreshStudyPlan } from './app.js';
 import { state } from './state.js';
 import { loadMajorOptions } from "./objects/majorMinorOption.js";
-import { evaluatePrerequisiteTree } from './prerequisiteValidator.js';
+import { evaluatePrerequisiteTree } from './validation/prerequisiteValidator.js';
 import { loadCourses, NodeType } from './courseObjectConverter.js';
 
 // Global consts ---------- //

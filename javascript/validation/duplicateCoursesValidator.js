@@ -1,5 +1,5 @@
-import { state, scheduleConfig } from './state.js';
-import { PlanError, ErrorSeverity } from './objects/planError.js';
+import { state, scheduleConfig } from '../state.js';
+import { PlanError, ErrorSeverity } from '../objects/planError.js';
 
 function getCourseCounts(){
     const appearances = new Map();

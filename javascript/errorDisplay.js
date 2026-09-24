@@ -1,4 +1,4 @@
-import { validateStudyPlan } from './planValidator.js';
+import { validateStudyPlan } from './validation/planValidator.js';
 import { ErrorSeverity } from './objects/planError.js';
 import { state, mapCoursePlanToDom } from './state.js';
 
