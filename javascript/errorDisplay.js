@@ -142,6 +142,11 @@ function renderErrors(errorList) {
 
 }
 
+
+
+
+
+
 //This function populates the html ignored error list and adds delete buttons to each entry.
 export function renderIgnoredErrors() {
 
