@@ -2,6 +2,28 @@ import { validateStudyPlan } from './validation/planValidator.js';
 import { ErrorSeverity } from './objects/planError.js';
 import { state, mapCoursePlanToDom } from './state.js';
 
+
+
+function resizeScheduleTable()
+{
+    let tableHeight = 60;
+
+    const tableGrid = document.getElementById("table-grid");
+    const errorBoxes = document.getElementById('red-error-list-container');
+    const ignoreBox = document.getElementById("ignored-errors-container");
+
+    if (errorBoxes.style.display === 'none')
+    {
+        tableHeight += 15;
+    }
+    if (ignoreBox.style.display === 'none')
+    {
+        tableHeight += 15;
+    }
+
+    tableGrid.style.minHeight = `calc(${tableHeight} * var(--scale))`;
+}
+
 //Gets the error list container from the html and the error list from validateStudyPlan() populates it with error messages by calling renderErrors()
 export function errorDisplay()
 {
@@ -19,22 +41,21 @@ export function errorDisplay()
     if (yellowErrorTextContainer) {
         yellowErrorTextContainer.innerHTML = '';
     }
+
+
     //if there are no errors at all display a success message to the user
     if (!errors || errors.length === 0) {
         if (redErrorTextContainer) {
-            redErrorTextContainer.innerHTML = '<p class="success-msg"> All requirements met!</p>';
+            redErrorTextContainer.style.display = "none";
+            yellowErrorTextContainer.style.display = "none";
         }
+       resizeScheduleTable()
         return errors;
     }
-
-    if (!errors || errors.length === 0) {
-        if (yellowErrorTextContainer) {
-            yellowErrorTextContainer.innerHTML = '<p class="success-msg"> All requirements met!</p>';
-        }
-        return errors;
-    }
-
+    
+    
     renderErrors(errors);
+    resizeScheduleTable()
     return errors;
 }
 
@@ -52,8 +73,14 @@ opens a note creation panel.
 function renderErrors(errorList) {
     const redContainer = document.getElementById("red-error-list-container");
     const yellowContainer = document.getElementById("yellow-error-list-container");
+    
+
+    redContainer.style.display = "";
+    yellowContainer.style.display = "";
+
     redContainer.innerHTML = "";
     yellowContainer.innerHTML = "";
+    renderIgnoredErrors();
 
     for (const error of errorList) {
 
@@ -61,6 +88,7 @@ function renderErrors(errorList) {
         const isError = error.severity === ErrorSeverity.ERROR;
 
         const div = document.createElement("div");
+
 
         //Colouring based on type of error message
         div.className = isError
@@ -111,12 +139,20 @@ function renderErrors(errorList) {
             openIgnoreModal(errorId);
         });
     });
+
 }
+
+
+
+
+
 
 //This function populates the html ignored error list and adds delete buttons to each entry.
 export function renderIgnoredErrors() {
+
+    const parentContainer = document.getElementById("ignored-errors-container");
+
     const container = document.getElementById("ignored-errors-list");
-    if (!container) return;
 
     container.innerHTML = "";
 
@@ -124,8 +160,11 @@ export function renderIgnoredErrors() {
 
     if (entries.length === 0) {
         container.innerHTML = "<p>No ignored errors.</p>";
+        parentContainer.style.display = "none";
         return;
     }
+
+    parentContainer.style.display = "";
 
     for (const [id, data] of entries) {
         const div = document.createElement("div");
@@ -193,6 +232,9 @@ document.getElementById("saveIgnoreNoteBtn").addEventListener("click", () => {
 
     //Clearing the text
     noteInput.value = "";
+
+    //refresh page
+    errorDisplay()
 
 });
 //Adding event listener to the cancel button on the note creation page. If pressed adds hidden attribute to the modal

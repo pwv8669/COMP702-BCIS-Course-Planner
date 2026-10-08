@@ -172,8 +172,13 @@ export async function renderCoursePlan(state) {//this function assigns colors an
             }
 
             cell.innerHTML = `<div class="course-cell">
+                <div class="course-type">${typecell}</div>
                 <div class="course-name">${course.code}: ${course.name}</div>
-                <button class="prereq-btn" data-html2canvas-ignore="true">i</button>
+                <button class="prereq-btn" data-html2canvas-ignore="true">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="infoIcon" viewBox="0 0 24 24" aria-label="Course details">
+                        <path d="M12,0A12,12,0,1,0,24,12,12.013,12.013,0,0,0,12,0Zm0,22A10,10,0,1,1,22,12,10.011,10.011,0,0,1,12,22Z"/><path d="M12,10H11a1,1,0,0,0,0,2h1v6a1,1,0,0,0,2,0V12A2,2,0,0,0,12,10Z"/><circle cx="12" cy="6.5" r="1.5"/>
+                    </svg>
+                </button>
                 <div class="prereq-list" style="display:none;" data-html2canvas-ignore="true">
                     ${details.join("<br>")}
                 </div>
@@ -183,10 +188,12 @@ export async function renderCoursePlan(state) {//this function assigns colors an
 }
 
 
-    document.addEventListener("click", (e) => {//adds event listener to show the information text when the prereq button is clicked
-        if (!e.target.classList.contains("prereq-btn")) return;
+    document.addEventListener("click", (e) => {//Show the course details when its info button is clicked.
+        const button = e.target.closest(".prereq-btn");
+        if (!button) return;
 
-        const box = e.target.nextElementSibling;
+        const box = button.nextElementSibling;
+        if (!box || !box.classList.contains("prereq-list")) return;
         const hidden = box.style.display === "none";
 
         box.style.display = hidden ? "block" : "none";

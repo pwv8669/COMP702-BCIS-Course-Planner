@@ -28,6 +28,12 @@ function initTemplatesController() {
     const openEditor = document.getElementById('openEditor');
     const closeEditorModal = document.getElementById('closeEditorModal');
     
+    // Adding event listeners to "File" pop up window
+    const fileModal = document.getElementById('fileModal');
+    const openFileFunctions = document.getElementById('openFileFunctions');
+    const closeFileModal = document.getElementById('closeFileModal');
+
+
     const templateInput = document.getElementById('localJsonFileInput');
     const uploadForm = document.getElementById('uploadTemplateForm');
     const saveBtn = document.getElementById('saveTemplateBtn'); 
@@ -52,6 +58,12 @@ function initTemplatesController() {
         });
     }
 
+    if (openFileFunctions && fileModal) {
+        openFileFunctions.addEventListener('click', () => {
+            fileModal.showModal();
+        });
+    }
+
 
     if (closeTemplates && panel) {
         closeTemplates.addEventListener('click', () => panel.close());
@@ -66,6 +78,12 @@ function initTemplatesController() {
     if (closeEditorModal && editorModal) {
         closeEditorModal.addEventListener('click', () => {
             editorModal.close();
+        });
+    }
+
+    if (closeFileModal && fileModal) {
+        closeFileModal.addEventListener('click', () => {
+            fileModal.close();
         });
     }
 

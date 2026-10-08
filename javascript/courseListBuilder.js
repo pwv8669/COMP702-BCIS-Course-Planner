@@ -25,7 +25,7 @@ export function generateDynamicCourseList(courses) {
 );
 
     // Clear old layout but retain container heading
-    sidebar.innerHTML = '<h3>Available Courses</h3>';
+    sidebar.innerHTML = '<h3>Available Courses for<br>Selected Pathway</h3>';
 
     // Creating a set of the courses present in the schedule so they can be deactivated in the sidebar
     const placedCourses = [];
