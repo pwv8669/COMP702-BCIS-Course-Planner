@@ -1,6 +1,6 @@
-import { state } from "./state.js";
-import { PlanError, ErrorSeverity } from './objects/planError.js';
-import { scheduleConfig } from "./state.js";
+import { state } from "../state.js";
+import { PlanError, ErrorSeverity } from '../objects/planError.js';
+import { scheduleConfig } from "../state.js";
 
 export function validateSemestersOffered() {
     const errors = [];

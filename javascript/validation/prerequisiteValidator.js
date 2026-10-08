@@ -1,7 +1,7 @@
-import { state, scheduleConfig } from './state.js';
-import { NodeType } from './courseObjectConverter.js';
-import { ErrorSeverity, PlanError } from './objects/planError.js';
-import { loadMajorOptions } from './objects/majorMinorOption.js';
+import { state, scheduleConfig } from '../state.js';
+import { NodeType } from '../objects/course.js';
+import { ErrorSeverity, PlanError } from '../objects/planError.js';
+import { loadMajorOptions } from '../objects/majorMinorOption.js';
 
 const majorOptions = await loadMajorOptions();
 

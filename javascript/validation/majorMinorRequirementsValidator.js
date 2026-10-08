@@ -1,6 +1,6 @@
-import { state } from "./state.js";
-import { loadMajorOptions } from "./objects/majorMinorOption.js";
-import { PlanError, ErrorSeverity } from "./objects/planError.js";
+import { state } from "../state.js";
+import { loadMajorOptions } from "../objects/majorMinorOption.js";
+import { PlanError, ErrorSeverity } from "../objects/planError.js";
 
 const majorOptions = await loadMajorOptions();
 

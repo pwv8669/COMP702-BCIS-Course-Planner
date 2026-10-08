@@ -30,8 +30,7 @@ export const state = {
     ignoredErrors: {},
     mode: scheduleConfig.mode,
 
-    attributedCourses: new Map(),
-    totalPoints: null
+    attributedCourses: new Map()
 };
 
 export function setScheduleMode(mode) {

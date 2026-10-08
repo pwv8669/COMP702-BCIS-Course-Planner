@@ -115,11 +115,25 @@ td{
 .schedule-table td.cell-required {
     border: calc(.3 * var(--scale)) solid #3842af;
 }
+.majorcolor{background-color: #5286c5 !important;}
+.minor1color{background-color: #9461af !important;}
+.minor2color{background-color: #b75a9b !important;}
+.selectioncolor{background-color: #71a1dc  ;}  /* Alternate between light and dark cells */
+.minor1selectioncolor{background-color: #bc80dc  ;}  /* Alternate between light and dark cells */
+.minor2selectioncolor{background-color: #dc7fc0  ;}  /* Alternate between light and dark cells */
+
 .schedule-table td.cell-required-minor:nth-child(even){background-color: #bc80dc ;}  /* Alternate between light and dark cells */
 .schedule-table td.cell-required-minor:nth-child(odd) {background-color: #9461af ;}
 .schedule-table td.cell-required-minor {
     border: calc(.3 * var(--scale)) solid #5d3672;
 }
+.schedule-table td.cell-required-minor-second:nth-child(even){background-color: #dc7fc0 ;}  /* Alternate between light and dark cells */
+.schedule-table td.cell-required-minor-second:nth-child(odd) {background-color: #b75a9b ;}
+.schedule-table td.cell-required-minor-second {
+    border: calc(.3 * var(--scale)) solid #723657;
+}
+
+
 .schedule-table td.cell-elective:nth-child(even){background-color: #636870 ;}  /* Alternate between light and dark cells */
 .schedule-table td.cell-elective:nth-child(odd) {background-color: #4e5359 ;}
 .schedule-table td.cell-elective {
@@ -533,8 +547,8 @@ select:hover,button:hover{
         flex-direction: column;
         font-size: calc(2 * var(--scale));
         justify-content: center;
-        gap: calc(1 * var(--scale));
         background-color: #822787;
+        gap: calc(1 * var(--scale));
         padding: calc(1 * var(--scale));
         
         
@@ -548,15 +562,6 @@ select:hover,button:hover{
         text-overflow: ellipsis; 
         overflow: hidden;
     }
-
-#course-cell {
-    display: -webkit-box;
-  -webkit-line-clamp: 3;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  overflow-wrap: break-word;
-}
 
 </style>
 </head>
@@ -577,10 +582,10 @@ select:hover,button:hover{
                                     Double Majors
                                 </option>
                                 <option value="doubleMinors">
-                                    Single Major + Double Minors
+                                    Major + Double Minors
                                 </option>
                                 <option value="electives">
-                                    Single Major + Single Minor + Electives
+                                    Major + Minor + Electives
                                 </option>
                             </select>
                         </label>

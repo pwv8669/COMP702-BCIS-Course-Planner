@@ -1,6 +1,6 @@
-import { PlanError } from './objects/planError.js';
-import { state } from './state.js';
-import { scheduleConfig } from './state.js'
+import { PlanError } from '../objects/planError.js';
+import { state } from '../state.js';
+import { scheduleConfig } from '../state.js'
 
 export function validateNumberOfCourses()
 {
