@@ -6,7 +6,7 @@
 <style>
   /* Styling here */
     :root {
-        --scale: .96vmin;
+        --scale: .94vmin;
     }
 
     body {
@@ -16,29 +16,36 @@
         font-family: 'Trebuchet MS';
         font-weight: bolder;
         background-color: #373537;
+        box-sizing: border-box;
+        max-height: 100%;
+        max-width: 100%;
     }
 
 .top-selector-row {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: flex-start;
+  display: grid;
+  grid-template-columns: max-content max-content max-content max-content 1fr;
   gap: calc(2 * var(--scale));
-  flex-wrap: nowrap; 
   width: 100%;
+  padding-bottom: calc(1 * var(--scale));
 }
-
+#AutocompletePlanButton {
+  grid-column: 4;
+  align-self: start;
+  justify-self: start;
+  width: fit-content;
+  height: 100%;
+}
 th {
   background-color: #6eacc4;
   font-size: calc(2 * var(--scale));
   text-align: center;
 }
-.main-layout-container {
-    display: block;
-    width: 100%;
-    margin: calc(.3 * var(--scale));
-    padding: 0;
-}
+    .main-layout-container {
+        display: block;
+        width: 100%;
+        margin: calc(.3 * var(--scale));
+        padding: 0;
+    }
 .hidden-element {
   display: none;
   opacity: 0;
@@ -57,61 +64,70 @@ td:hover .hidden-element {
 }
 td{
   height: calc(10 * var(--scale));
-  font-size: 80%;
+  font-size: 100%;
 
   font-weight: bolder;
   vertical-align: top;
 }
 .schedule-table td:nth-child(even){background-color: #3abd3a;}  /* Alternate between light and dark cells */
 .schedule-table td:nth-child(odd) {background-color: #298429;}
-
 .schedule-table {
     border-collapse: collapse;
     width: 100%;
     table-layout: fixed; /* Forces all 6 columns to stay exactly the same width */
     font-family: Arial, sans-serif;
+
+
 }
 .schedule-table td {
     background-color: #9c9c9c;
     color: white;
     padding: calc(1.2 * var(--scale)) calc(.8 * var(--scale));
     vertical-align: top;
-    font-size: calc(1.6 * var(--scale));;
+    font-size: calc(2 * var(--scale));
     border: calc(.1 * var(--scale)) solid #6e7475;
-    word-wrap: break-word;
+    overflow-wrap: break-word;
+    word-break: break-word;
 }
+
+
+
 .year-headers th {
     background-color: #822787;
     color: white;
     padding: calc(.8 * var(--scale));
     border: calc(.1 * var(--scale)) solid #6e7475;
+    height: calc(.1 * var(--scale));
 }
 .semester-headers th {
     background-color: #bd6fc1;
     color: white;
     padding: calc(1 * var(--scale)) calc(.4 * var(--scale));
-    font-size: calc(1.4 * var(--scale));
+    font-size: calc(1.8 * var(--scale));
     border: calc(.1 * var(--scale)) solid #6e7475;
-}s
+}
 .schedule-table,
 .schedule-table th{
     border: calc(.1 * var(--scale)) solid #373537 !important; 
 }
-
-
 .schedule-table td.cell-required:nth-child(even){background-color: #71a1dc  ;}  /* Alternate between light and dark cells */
 .schedule-table td.cell-required:nth-child(odd) {background-color: #5286c5 ;}
 .schedule-table td.cell-required {
     border: calc(.3 * var(--scale)) solid #3842af;
 }
+.majorcolor{background-color: #5286c5 !important;}
+.minor1color{background-color: #9461af !important;}
+.minor2color{background-color: #b75a9b !important;}
+.selectioncolor{background-color: #71a1dc  ;}  /* Alternate between light and dark cells */
+.minor1selectioncolor{background-color: #bc80dc  ;}  /* Alternate between light and dark cells */
+.minor2selectioncolor{background-color: #dc7fc0  ;}  /* Alternate between light and dark cells */
 
 .schedule-table td.cell-required-minor:nth-child(even){background-color: #bc80dc ;}  /* Alternate between light and dark cells */
 .schedule-table td.cell-required-minor:nth-child(odd) {background-color: #9461af ;}
 .schedule-table td.cell-required-minor {
     border: calc(.3 * var(--scale)) solid #5d3672;
 }
-
-.schedule-table td.cell-required-minor-second:nth-child(even){background-color: hsl(318, 57%, 68%) ;}  /* Alternate between light and dark cells */
+.schedule-table td.cell-required-minor-second:nth-child(even){background-color: #dc7fc0 ;}  /* Alternate between light and dark cells */
 .schedule-table td.cell-required-minor-second:nth-child(odd) {background-color: #b75a9b ;}
 .schedule-table td.cell-required-minor-second {
     border: calc(.3 * var(--scale)) solid #723657;
@@ -123,7 +139,6 @@ td{
 .schedule-table td.cell-elective {
     border: calc(.3 * var(--scale)) solid #0b0b0e;
 }
-
 .schedule-table td.cell-red-error {
     background-color: #b23b3b !important;
     border: calc(.3 * var(--scale)) solid #ff4d4d;
@@ -136,7 +151,7 @@ td{
     padding: calc(1 * var(--scale)) calc(1.4 * var(--scale));
     margin-bottom: calc(.6 * var(--scale));
     font-family: Arial, sans-serif;
-    font-size: calc(1.3 * var(--scale));
+    font-size: calc(2 * var(--scale));
     border-radius: calc(.4 * var(--scale));
     font-weight: 500;
 }
@@ -173,6 +188,7 @@ td{
     margin-top: calc(.1 * var(--scale));
     margin-left: calc(1 * var(--scale));
 }
+
 .success-msg {
     color: #3abd3a;
     font-weight: bold;
@@ -189,7 +205,7 @@ td{
     margin-bottom: calc(.6 * var(--scale));
     cursor: pointer;
     font-weight: bold;
-    font-size: calc(1.4 * var(--scale));
+    font-size: calc(2 * var(--scale));
     list-style: none;
     border: calc(1 * var(--scale)) solid rgba(255, 255, 255, 0.2);
     transition: background 0.2s ease;
@@ -204,13 +220,16 @@ td{
     gap: calc(.8 * var(--scale));
     padding: calc(1 * var(--scale)) 0;
 }
-
-.table-grid {
+#table-grid {
   display: grid;
   width: 100%;
   grid-template-columns: 5fr 1fr;
+  min-height: calc(60 * var(--scale));
   align-items: stretch;
   clear: both;
+  padding-bottom: calc(1 * var(--scale));
+
+  
 }
 .driver {
   align-self: stretch;
@@ -221,7 +240,6 @@ td{
   position: relative;
   width: 100%;
 }
-
 #dynamic-course-sidebar {
   position: absolute;
   top: 0;
@@ -239,13 +257,11 @@ td{
   box-sizing: border-box;
   color: white;
 }
-
 #dynamic-course-sidebar h3 {
     text-align: center;
+    font-size: calc(3 * var(--scale));
 
 }
-
-
     /* Draggable Items */
     .course-card {
         background-color: #bd6fc1;
@@ -253,7 +269,7 @@ td{
         padding: calc(1 * var(--scale)) calc(.6 * var(--scale));
         border-radius: calc(.4 * var(--scale));
         cursor: grab;
-        font-size: calc(1.1 * var(--scale));
+        font-size: calc(2 * var(--scale));
         font-weight: bold;
         user-select: none;
         display: flex;
@@ -267,7 +283,6 @@ td{
 .course-card:active {
         cursor: grabbing;
 }
-
 .course-card-disabled {
     background-color: #555 !important;
     color: #ccc !important;
@@ -287,18 +302,18 @@ table{
   background-color: #4285b9;
 }
 .prereq-btn {
-    position:fixed;
-    margin-left:8.5%;
-    padding: 0.3%;
+    position: absolute;
+    margin-left:13.5%;
+    padding: 0;
     font-size: 100%;
-    border-radius: 0px;
-    background: #5a2ea6;
+    background:#96969600;
     color: white;
     border: none;
     cursor: pointer;
     bottom:calc(.4 * var(--scale));
-    width: 7%;
-
+    width: 2%;
+    aspect-ratio: 1 / 1;
+    border-radius: 50%;
 }
 .prereq-list {
     margin-bottom: calc(3 * var(--scale)); 
@@ -325,18 +340,17 @@ button {
   border: 0px;
   background-color: #822787;
   font-size: calc(2 * var(--scale));
-  padding: calc(1 * var(--scale));
+  padding: calc(2 * var(--scale));
   text-align: center;   
-  
 }
 .button-grid {
     display: grid;
-    grid-template-columns: repeat(3, 1fr); 
+    grid-template-columns: repeat(4, 1fr); 
     gap: calc(1 * var(--scale)); 
     height: 100%;  
     padding: 0;
-    margin-left: calc(1 * var(--scale));
-    margin-top: calc(.1 * var(--scale));
+    margin-left: auto;
+    grid-column: 4;
 }
 .button-grid button {
     width: 100%;
@@ -346,14 +360,10 @@ button {
   padding: 0;
   height: 100%;
 }
-
 .button-grid form button {
   width: 100%;
   height: 100%;
 }
-
-
-
 select {
   color: #ffffff;
   font-family: 'Trebuchet MS'; 
@@ -362,28 +372,20 @@ select {
   border:0px;
   font-size: calc(2 * var(--scale));
   padding: calc(1.2 * var(--scale)); 
+  background-color: #bd6fc1;
+  width: 100%; 
+  max-width: calc(35 * var(--scale)); 
+  box-sizing: border-box;
 }
 select,button{
   cursor:pointer;
   transition: transform .2s;
 }
-.yearheading{
-  width: 33%; 
-  text-align: center;
-  background-color: #6eacc4;
-  margin: 0.165%;
-}
 
-
-select{
-  background-color: #bd6fc1;
-  width: calc(35 * var(--scale));
-}
 select:hover,button:hover{
    transform: scale(1.025);
 
 }
-
 #ignoreModal {
   position: fixed;
   top: 0; left: 0; right: 0; bottom: 0;
@@ -405,7 +407,6 @@ select:hover,button:hover{
   justify-content: space-between;
   margin-top: calc(1 * var(--scale));
 }
-
 .ignore-error-btn {
     font-size: calc(1.2 * var(--scale));
     padding: calc(.2 * var(--scale)) calc(.6 * var(--scale));
@@ -426,13 +427,12 @@ select:hover,button:hover{
     border-radius: calc(.6 * var(--scale)); 
     color: white;
     font-family: Arial, sans-serif;
-    grid-column: 1 / 3; /* spans col 1 and 2 */
+    grid-column: span 2; 
     min-height: calc(11.5 * var(--scale));
     max-height: calc(11.5 * var(--scale));
     overflow-y: auto;
     overflow-x: hidden;
 }
-
 #ignored-errors-container h3 {
     margin: 0 0 calc(1 * var(--scale)) 0;
     font-size: calc(1.6 * var(--scale));
@@ -443,6 +443,9 @@ select:hover,button:hover{
     border-radius: calc(.4 * var(--scale));
     width: calc(13 * var(--scale));
 }
+
+
+
 .ignored-error-item {
     padding: calc(1 * var(--scale)) calc(1.4 * var(--scale));
     margin-bottom: calc(.6 * var(--scale));
@@ -464,22 +467,22 @@ select:hover,button:hover{
 .delete-ignored-btn:hover {
     background-color: #6eacc4;
 }
-
 .bottom-section-grid {
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr; 
+  grid-template-columns: 1fr 1fr; 
   grid-template-rows: auto auto;
   gap: calc(.1 * var(--scale));
   width: 100%;
-  margin-top: calc(1 * var(--scale));
+
+  box-sizing: border-box;
 }
 .buttons-column {
-  grid-column: 3;
-  grid-row: 1 / 3; /* spans both rows */
   display: flex;
+  width: 100%;
   flex-direction: column;
+  grid-column: 5;
+  align-items: flex-end;
 }
-
 .icon {
     width: calc(4 * var(--scale));
     stroke: #ffffff;
@@ -488,22 +491,33 @@ select:hover,button:hover{
     stroke-width: calc(.06 * var(--scale));
 }
 
+.infoIcon {
+    width: 70%;
+    stroke: #ffffffe0;
+    fill: #ffffffe0;
+    height: 100%;
+    object-fit: contain;
+    
+    stroke-width: calc(.04 * var(--scale));
+}
 .save-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: calc(1 * var(--scale)); 
 
 }
-
 .save-grid button{
     aspect-ratio: 3/2; 
 }
-
 .edit-grid {
     display: grid;
     grid-gap: calc(1 * var(--scale)); 
 }
 
+.file-grid {
+    display: grid;
+    grid-gap: calc(1 * var(--scale)); 
+}
 .button-link {
    color: #ffffff;
   font-family: 'Trebuchet MS'; 
@@ -516,28 +530,38 @@ select:hover,button:hover{
   text-decoration: none;
 
 }
-
 #pathwayOptionContainer {
   display: flex;
   flex-direction: row;
   align-items: center;
   gap: calc(.2 * var(--scale));
   flex-wrap: nowrap;
+   width: 100%; 
+   max-width: calc(90 * var(--scale)); 
+  min-width: 0;
+  grid-column: span 2; 
 }
-#pathwayOptionContainer label,
-label[for="pathwaySelect"] {
-  display: flex;
-  flex-direction: column;
-  font-size: calc(2 * var(--scale));
-  justify-content: center;
-  gap: calc(1 * var(--scale));
-  background-color: #822787;
-  padding: calc(1 * var(--scale));
-  min-width: calc(20 * var(--scale));
-  width: auto;
-  box-sizing: border-box;
-  margin-right: calc(0 * var(--scale));
-}
+    #pathwayOptionContainer label,
+    label[for="pathwaySelect"] {
+        display: flex;
+        flex-direction: column;
+        font-size: calc(2 * var(--scale));
+        justify-content: center;
+        background-color: #822787;
+        gap: calc(1 * var(--scale));
+        padding: calc(1 * var(--scale));
+        
+        
+        box-sizing: border-box;
+        margin-right: calc(0 * var(--scale));
+
+        flex: 0 1 auto; 
+        max-width: calc(45 * var(--scale)); 
+        min-width: 0; 
+        white-space: nowrap; 
+        text-overflow: ellipsis; 
+        overflow: hidden;
+    }
 
 </style>
 </head>
@@ -571,10 +595,141 @@ label[for="pathwaySelect"] {
 
             <form id="pathwayOptionContainer"></form>
 
+            <button title="Autopopulate course plan according to selected majors/minors" id="AutocompletePlanButton">
+                <svg alt="Autopopulate plan" class="icon" xmlns="http://www.w3.org/2000/svg" id="Layer_1" data-name="Layer 1" viewBox="0 0 24 24">
+                    <path d="m23.447,22.74l-2.43-7.17c-.316-.917-1.107-1.509-2.018-1.509s-1.702.593-2.018,1.513l-2.429,7.166c-.177.523.103,1.091.626,1.269.524.178,1.09-.104,1.268-.626l.469-1.383h4.168l.469,1.383c.142.416.53.679.947.679.106,0,.215-.017.321-.053.523-.178.804-.745.626-1.269Zm-5.854-2.74l1.281-3.779c.075-.221.177-.217.25-.004l1.282,3.783h-2.813Zm-1.935-10.449c-.506-.954-1.49-1.547-2.569-1.547l-3.833-.003,1.205-5.227c.309-1.078-.139-2.172-1.064-2.6-.88-.407-1.865-.086-2.473.826L.505,11.461c-.606.894-.668,2.042-.163,2.996.505.954,1.49,1.547,2.57,1.547h3.83l-1.204,5.226c-.309,1.079.139,2.172,1.064,2.6.253.117.515.174.773.174.642,0,1.267-.35,1.699-1l6.42-10.457c.606-.894.668-2.042.163-2.995Zm-1.843,1.91l-6.364,10.365c.005-.029,1.522-6.598,1.522-6.598.068-.297-.002-.608-.192-.848-.19-.238-.478-.377-.783-.377H2.912c-.494,0-.726-.338-.803-.483-.077-.146-.227-.528.075-.975L8.548,2.177c-.005.029-1.522,6.599-1.522,6.599-.068.297.002.608.192.847s.478.378.782.378l5.088.004h0c.494,0,.726.338.803.483.077.145.226.527-.076.974Z" />
+                </svg>
+            </button>
+
+            <div class="buttons-column">
+                <div class="button-grid">
+
+                     <button title="Save / Load Schedule" id="openFileFunctions">
+
+                         <svg fill="#000000" class="icon" height="800px" width="800px" version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+                             viewBox="0 0 64 64" enable-background="new 0 0 64 64" xml:space="preserve"  >
+                             <g id="Floppy-disk">
+                                <path d="M35.2673988,6.0411h-7.9999981v10h7.9999981V6.0411z M33.3697014,14.1434002h-4.2046013V7.9387999h4.2046013V14.1434002z"/>
+                                <path d="M41,47.0410995H21c-0.5527992,0-1,0.4472008-1,1c0,0.5527,0.4472008,1,1,1h20c0.5527,0,1-0.4473,1-1C42,47.4883003,41.5527,47.0410995,41,47.0410995z"/>
+                                <path d="M41,39.0410995H21c-0.5527992,0-1,0.4472008-1,1c0,0.5527,0.4472008,1,1,1h20c0.5527,0,1-0.4473,1-1
+                                C42,39.4883003,41.5527,39.0410995,41,39.0410995z"/>
+                                <path d="M12,56.0410995h38v-26H12V56.0410995z M14,32.0410995h34v22H14V32.0410995z"/>
+                                <path d="M49.3811989,0.0411L49.3610992,0H7C4.7908001,0,3,1.7909,3,4v56c0,2.2092018,1.7908001,4,4,4h50
+                                     c2.2090988,0,4-1.7907982,4-4V11.6962996L49.3811989,0.0411z M39.9604988,2.0804999v17.9211006H14.0394001V2.0804999H39.9604988z
+                                     M59,60c0,1.1027985-0.8972015,2-2,2H7c-1.1027999,0-2-0.8972015-2-2V4c0-1.1027999,0.8972001-2,2-2h5v20.0410995h30V2h6.5099983
+                                        L59,12.5228996V60z"/>
+                             </g>
+                         </svg>
+
+                     </button> 
+
+                   
+
+
+                    <dialog id="saveModal">
+                        <h2>Save as...</h2>
+                        <div class="save-grid">
+                            <button title="a template to the server" id="saveTemplateBtn" type="button">
+
+                                <svg alt="Upload Icon" class="icon" xmlns="http://www.w3.org/2000/svg" id="Outline" viewBox="0 0 24 24" width="512" height="512">
+                                    <path d="M11.007,2.578,11,18.016a1,1,0,0,0,1,1h0a1,1,0,0,0,1-1l.007-15.421,2.912,2.913a1,1,0,0,0,1.414,0h0a1,1,0,0,0,0-1.414L14.122.879a3,3,0,0,0-4.244,0L6.667,4.091a1,1,0,0,0,0,1.414h0a1,1,0,0,0,1.414,0Z" />
+                                    <path d="M22,17v4a1,1,0,0,1-1,1H3a1,1,0,0,1-1-1V17a1,1,0,0,0-1-1H1a1,1,0,0,0-1,1v4a3,3,0,0,0,3,3H21a3,3,0,0,0,3-3V17a1,1,0,0,0-1-1h0A1,1,0,0,0,22,17Z" />
+                                </svg>
+
+                            </button>
+
+                            <button title=" a . Json" id="SaveFileButton">
+
+                                <svg alt=".Json Icon" class="icon" id="Layer_1" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" data-name="Layer 1">
+                                    <path d="m16.582 12c-1.148 0-2.082.933-2.082 2.082v3.837c0 1.148.933 2.082 2.082 2.082s2.082-.933 2.082-2.082v-3.837c0-1.148-.933-2.082-2.082-2.082zm.482 5.918c0 .266-.216.482-.482.482s-.482-.216-.482-.482v-3.837c0-.266.216-.482.482-.482s.482.216.482.482zm6.937-5.118v6.264c0 .517-.419.936-.936.936-.398 0-.752-.251-.883-.627l-1.081-3.085v2.912c0 .442-.358.8-.8.8s-.8-.358-.8-.8v-6.257c0-.52.423-.941.943-.938.394.002.745.251.878.622l1.078 3.008v-2.835c0-.442.358-.8.8-.8s.8.358.8.8zm-16.3-.8c.442 0 .8.358.8.8v4.9c0 1.269-1.031 2.3-2.3 2.3-1.246 0-2.257-.996-2.293-2.233.018-.425.363-.767.793-.767.442 0 .8.358.8.8 0 0 .058.601.7.601.386 0 .7-.314.7-.7v-4.9c0-.442.358-.8.8-.8zm12.082-3.248c-.311-1.217-.945-2.329-1.833-3.217l-3.485-3.485c-1.322-1.322-3.08-2.05-4.95-2.05h-4.515c-2.757 0-5 2.243-5 5v14c0 2.757 2.243 5 5 5h10c.649 0 1.28-.123 1.876-.364.512-.208.758-.791.551-1.303-.208-.511-.791-.759-1.303-.551-.356.145-.734.218-1.124.218h-10c-1.654 0-3-1.346-3-3v-14c0-1.654 1.346-3 3-3h4.515c.163 0 .325.008.485.023v4.977c0 1.654 1.346 3 3 3h5.813c.309 0 .601-.143.79-.387s.255-.562.179-.861zm-6.782-.752c-.551 0-1-.449-1-1v-4.341c.379.218.732.488 1.05.806l3.485 3.485c.314.314.583.668.803 1.05zm-.759 9.619c0-.5-.194-.688-1.091-1.056-.501-.206-2.026-.833-2.026-2.372 0-1.249.958-2.191 2.228-2.191.416 0 .787.106 1.093.245.506.229.615.901.222 1.293-.238.237-.593.29-.901.157-.127-.055-.27-.095-.413-.095-.382 0-.628.232-.628.591 0 .14 0 .467 1.035.892.779.32 2.082.855 2.082 2.536 0 1.533-1.357 2.381-2.296 2.381-.684 0-1.248-.218-1.667-.463-.476-.279-.523-.947-.1-1.3.254-.212.612-.25.896-.083.218.128.514.246.87.246.082-.002.696-.181.696-.781z" />
+                                </svg>
+
+                            </button>
+
+                            <button title="a PDF" onclick="getPDF()">
+
+                                <svg alt="PDF Icon" class="icon" xmlns="http://www.w3.org/2000/svg" id="Layer_1" data-name="Layer 1" viewBox="0 0 24 24" width="512" height="512">
+                                    <path d="M19.95,5.54l-3.49-3.49c-1.32-1.32-3.08-2.05-4.95-2.05H7C4.24,0,2,2.24,2,5v14c0,2.76,2.24,5,5,5h10c2.76,0,5-2.24,5-5V10.49c0-1.87-.73-3.63-2.05-4.95Zm-1.41,1.41c.32,.32,.59,.67,.81,1.05h-4.34c-.55,0-1-.45-1-1V2.66c.38,.22,.73,.49,1.05,.81l3.49,3.49Zm1.46,12.05c0,1.65-1.35,3-3,3H7c-1.65,0-3-1.35-3-3V5c0-1.65,1.35-3,3-3h4.51c.16,0,.33,0,.49,.02V7c0,1.65,1.35,3,3,3h4.98c.02,.16,.02,.32,.02,.49v8.51ZM7.09,13h-1.09c-.55,0-1,.45-1,1v4.44c0,.35,.28,.62,.62,.62s.62-.28,.62-.62v-1.22h.84c1.18,0,2.14-.95,2.14-2.11s-.96-2.11-2.14-2.11Zm0,2.97h-.83s0-1.72,0-1.72h.84c.48,0,.89,.39,.89,.86s-.41,.86-.89,.86Zm11.93-2.34c0,.35-.28,.62-.62,.62h-1.69v1.14h1.24c.35,0,.62,.28,.62,.62s-.28,.62-.62,.62h-1.24v1.8c0,.35-.28,.62-.62,.62s-.62-.28-.62-.62v-4.81c0-.35,.28-.62,.62-.62h2.31c.35,0,.62,.28,.62,.62Zm-6.93-.62h-1.09c-.55,0-1,.45-1,1v4.44c0,.35,.28,.56,.62,.56s1.46,0,1.46,0c1.18,0,2.14-.95,2.14-2.11v-1.78c0-1.16-.96-2.11-2.14-2.11Zm.89,3.89c0,.47-.41,.86-.89,.86h-.83s0-3.5,0-3.5h.84c.48,0,.89,.39,.89,.86v1.78Z" />
+                                </svg>
+
+                            </button>
+
+                            <button id="closeSaveModal">Cancel</button>
+
+                        </div>
+                    </dialog>
+
+
+                    <button title="Switch to Part-Time Schedule" id="partTimeButton">
+
+                        <svg xmlns="http://www.w3.org/2000/svg" id="scheduleIcon" class="icon" width="1em" height="1em" alt="Switch Schedule to Part-Time"  viewBox="0 0 24 24"><title>Switch to Part-Time Schedule</title><path fill="currentColor" d="m16.5 15.82l2.44 1.41l-.75 1.3L15 16.69V13h1.5zm3.5-5.56V5a2 2 0 0 0-2-2H4c-1.1 0-2 .9-2 2v12a2 2 0 0 0 2 2h5.68c1.13 2.36 3.53 4 6.32 4c3.87 0 7-3.13 7-7c0-2.38-1.19-4.47-3-5.74M18 7v2.29c-.63-.18-1.3-.29-2-.29c-1.5 0-2.87.47-4 1.26V7zM4 7h6v4H4zm0 10v-4h5.68A7 7 0 0 0 9 16c0 .34.03.67.08 1zm12 4c-2.76 0-5-2.24-5-5s2.24-5 5-5s5 2.24 5 5s-2.24 5-5 5" /></svg>
+
+                    </button>
+
+                    <form action="https://www.aut.ac.nz/__data/assets/pdf_file/0011/952796/BCIS-Programme-Structure-2026.pdf" method="get" target="_blank">
+                        <button title="Open BCIS Programme Structure PDF in new tab" id="pdf">
+
+                            <svg alt="BCIS Programme Structure" class="icon" xmlns="http://www.w3.org/2000/svg" id="Layer_1" data-name="Layer 1" viewBox="0 0 24 24">
+                                <path d="m17,10c-3.86,0-7,3.14-7,7s3.14,7,7,7,7-3.14,7-7-3.14-7-7-7Zm0,12c-2.757,0-5-2.243-5-5s2.243-5,5-5,5,2.243,5,5-2.243,5-5,5Zm1-4v2c0,.552-.448,1-1,1s-1-.448-1-1v-2c0-.552.448-1,1-1s1,.448,1,1Zm.5-3.5c0,.828-.672,1.5-1.5,1.5s-1.5-.672-1.5-1.5.672-1.5,1.5-1.5,1.5.672,1.5,1.5Zm-9.5,7.5h-5c-1.103,0-2-.897-2-2s.897-2,2-2h3c.552,0,1-.448,1-1s-.448-1-1-1h-1V2h9c1.654,0,3,1.346,3,3v2c0,.552.448,1,1,1s1-.448,1-1v-2c0-2.757-2.243-5-5-5H5C2.244,0,0,2.243,0,5v15C0,22.206,1.795,24,4,24h5c.552,0,1-.448,1-1s-.448-1-1-1ZM2,5c0-1.302.839-2.402,2-2.816v13.816c-.732,0-1.409.212-2,.556V5Z" />
+                            </svg>
+
+                        </button>
+                    </form>
+
+                    <button title="Editor Tools" id="openEditor">
+
+                        <svg alt="Editor Tools" class="icon" xmlns="http://www.w3.org/2000/svg" id="Layer_1" data-name="Layer 1" viewBox="0 0 24 24">
+                            <path d="m23.207,19.379l-8.069-8.068-1.562,1.578-5.576-5.576V3.147L2.613.049.029,2.632l3.099,5.388h4.165l5.579,5.579-1.543,1.558,8.05,8.05c.511.512,1.191.793,1.914.793s1.403-.281,1.914-.793c.511-.511.793-1.19.793-1.914s-.282-1.402-.793-1.914ZM7,7.02h-3.294L1.278,2.798l1.5-1.501,4.222,2.429v3.294Zm15.5,15.48c-.645.645-1.77.645-2.414,0l-7.346-7.347,2.402-2.425,7.358,7.357c.322.322.5.751.5,1.207s-.178.885-.5,1.207Zm-12.595-5.961l.707.707-5.955,5.955c-.532.532-1.23.798-1.929.798s-1.397-.266-1.929-.798c-1.063-1.063-1.063-2.795,0-3.858l7.493-7.493.707.707-7.493,7.493c-.673.674-.673,1.771,0,2.444.674.675,1.771.673,2.444,0l5.955-5.955Zm.137-10.013l-.848-.848c.817-3.257,3.76-5.678,7.267-5.678,1.18,0,2.317.272,3.38.811l.611.31-4.005,4.055c-.314.314-.486.729-.486,1.171s.172.857.484,1.17c.644.645,1.694.645,2.339,0l4.02-4.068.316.611c.558,1.077.841,2.235.841,3.441,0,2.657-1.393,4.99-3.482,6.322l-.727-.727c1.917-1.132,3.209-3.213,3.209-5.596,0-.811-.148-1.596-.44-2.344l-3.028,3.064c-1.037,1.037-2.72,1.035-3.755.002-.501-.501-.777-1.167-.777-1.877s.276-1.375.777-1.876l3.012-3.05c-.733-.279-1.5-.42-2.29-.42-3.252,0-5.946,2.404-6.419,5.526Z" />
+                        </svg>
+
+
+                    </button>
+
+                    <dialog id="editorModal">
+                        <div class="edit-grid">
+                            <h2>Tools to edit the structure of majors or courses</h2><br>
+
+                            <a title="Course Editor" href="https://localhost/COMP702-BCIS-Course-Planner/CourseCreator.html" target="_blank" class="button-link">Course Editor</a>
+
+                            <a title="Major/Minor Editor" href="https://localhost/COMP702-BCIS-Course-Planner/majoreditor.html" target="_blank" class="button-link">Major/Minor Editor</a>
+
+                            <button id="closeEditorModal">Cancel</button>
+                        </div>
+                    </dialog>
+
+                    <dialog id="fileModal">
+                        <div class="file-grid">
+                            <h2>Save or Load schedules</h2><br>
+
+                            <button title="Save Course Plan" id="openSave">
+
+                                <svg alt="Save Course Plan" class="icon" xmlns="http://www.w3.org/2000/svg" id="Outline" viewBox="0 0 24 24" width="512" height="512">
+                                    <path d="M9.878,18.122a3,3,0,0,0,4.244,0l3.211-3.211A1,1,0,0,0,15.919,13.5l-2.926,2.927L13,1a1,1,0,0,0-1-1h0a1,1,0,0,0-1,1l-.009,15.408L8.081,13.5a1,1,0,0,0-1.414,1.415Z" />
+                                    <path d="M23,16h0a1,1,0,0,0-1,1v4a1,1,0,0,1-1,1H3a1,1,0,0,1-1-1V17a1,1,0,0,0-1-1H1a1,1,0,0,0-1,1v4a3,3,0,0,0,3,3H21a3,3,0,0,0,3-3V17A1,1,0,0,0,23,16Z" />
+                                </svg>
+
+                            </button>
+
+                            <button title="View pre-made schedule templates" id="openTemplates">
+
+                                <svg alt="Pre-made Study Plans" class="icon" xmlns="http://www.w3.org/2000/svg" id="Layer_1" data-name="Layer 1" viewBox="0 0 24 24">
+                                    <path d="M22.992,21.067c-.005-.042-.5-4.269-1.606-9.675-1.115-5.452-2.31-9.489-2.321-9.529-.046-.155-.165-.278-.317-.331-.063-.021-1.558-.524-3.148-.2-.839,.171-1.565,.546-2.07,.868-.018-.156-.107-.295-.243-.374-.057-.034-1.423-.826-3.044-.826-1.229,0-2.315,.458-2.791,.692-.475-.235-1.56-.692-2.792-.692-1.617,0-2.986,.792-3.044,.826-.14,.082-.231,.227-.245,.388-.004,.042-.365,4.283-.365,9.8,0,5.564,.361,9.759,.365,9.801,.014,.164,.108,.311,.252,.392,.057,.033,1.421,.793,3.037,.793,1.232,0,2.32-.443,2.792-.667,.47,.224,1.557,.667,2.791,.667,1.613,0,2.979-.76,3.037-.792,.144-.081,.238-.228,.252-.393,.004-.042,.365-4.283,.365-9.8,0-.286,0-.568-.003-.846,.104,.547,.215,1.11,.333,1.687,1.115,5.452,2.31,9.489,2.321,9.529,.047,.158,.169,.282,.325,.333,.047,.015,1.336,.499,3.135,.169,1.586-.291,2.766-1.341,2.816-1.384,.125-.108,.188-.271,.169-.435ZM15.798,2.312c.976-.199,1.945-.012,2.383,.099,.132,.461,.426,1.507,.798,2.969l-4.901,1.001c-.231-1.488-.373-2.568-.433-3.044,.358-.273,1.171-.824,2.153-1.024Zm-3.242,.261c.037,.478,.115,1.561,.186,3.069H7.909V2.58c.396-.194,1.316-.581,2.333-.581,.998,0,1.908,.377,2.315,.573Zm.339,9.441c0,1.997-.048,3.825-.108,5.343H7.909V6.641h4.878c.061,1.518,.109,3.354,.109,5.373Zm-10.89,0c0-2.01,.048-3.849,.11-5.373H6.909v10.716H2.112c-.06-1.513-.107-3.338-.107-5.343ZM4.659,1.999c.947,0,1.817,.34,2.25,.542v3.1H2.158c.072-1.504,.149-2.59,.186-3.069,.407-.196,1.319-.573,2.314-.573ZM2.343,21.45c-.037-.484-.116-1.576-.187-3.093H6.909v3.123c-.435,.195-1.3,.519-2.25,.519-.996,0-1.905-.359-2.315-.549Zm7.898,.549c-1.009,0-1.93-.37-2.333-.557v-3.085h4.834c-.072,1.514-.15,2.609-.187,3.093-.409,.19-1.315,.549-2.315,.549Zm3.994-14.631l4.987-1.018c.364,1.476,.779,3.265,1.183,5.242,.4,1.957,.72,3.758,.965,5.257l-4.989,1.019c-.362-1.47-.774-3.249-1.176-5.214-.403-1.97-.724-3.781-.969-5.286Zm5.571,14.539c-.975,.199-1.938,.029-2.378-.076-.134-.466-.429-1.52-.804-2.992l4.904-1.001c.233,1.497,.376,2.584,.436,3.067-.365,.269-1.185,.803-2.158,1.002Z" />
+                                </svg>
+
+                            </button>
+
+                            <button id="closeFileModal">Cancel</button>
+                        </div>
+                    </dialog>
+
+
+                </div>
+            </div>
+
         </div>
 
 
-        <div class="table-grid">
+        <div class="table-grid" id="table-grid">
 
             <table class="schedule-table driver">
                 <thead>
@@ -638,7 +793,7 @@ label[for="pathwaySelect"] {
 
             <div class="follower">
                 <div id="dynamic-course-sidebar" class="course-picker-sidebar">
-                    <h3>Available Courses</h3>
+                    <h3>Available Courses for<br>Selected Pathway</h3>
                 </div>
             </div>
         </div>
@@ -648,11 +803,11 @@ label[for="pathwaySelect"] {
 
 
         <div id="red-error-list-container">
-
+            <h3>Errors</h3>
         </div>
 
         <div id="yellow-error-list-container">
-
+            <h3>Warnings</h3>
         </div>
 
         <div id="ignored-errors-container">
@@ -661,112 +816,7 @@ label[for="pathwaySelect"] {
         </div>
 
 
-        <div class="buttons-column">
-            <div class="button-grid">
 
-                <button title="Save Course Plan" id="openSave">
-
-                    <svg alt="Save Course Plan" class="icon" xmlns="http://www.w3.org/2000/svg" id="Outline" viewBox="0 0 24 24" width="512" height="512">
-                        <path d="M9.878,18.122a3,3,0,0,0,4.244,0l3.211-3.211A1,1,0,0,0,15.919,13.5l-2.926,2.927L13,1a1,1,0,0,0-1-1h0a1,1,0,0,0-1,1l-.009,15.408L8.081,13.5a1,1,0,0,0-1.414,1.415Z" />
-                        <path d="M23,16h0a1,1,0,0,0-1,1v4a1,1,0,0,1-1,1H3a1,1,0,0,1-1-1V17a1,1,0,0,0-1-1H1a1,1,0,0,0-1,1v4a3,3,0,0,0,3,3H21a3,3,0,0,0,3-3V17A1,1,0,0,0,23,16Z" />
-                    </svg>
-
-                </button>
-
-
-                <dialog id="saveModal">
-                    <h2>Save as...</h2>
-                    <div class="save-grid">
-                        <button title="a template to the server" id="saveTemplateBtn" type="button">
-
-                            <svg alt="Upload Icon" class="icon" xmlns="http://www.w3.org/2000/svg" id="Outline" viewBox="0 0 24 24" width="512" height="512">
-                                <path d="M11.007,2.578,11,18.016a1,1,0,0,0,1,1h0a1,1,0,0,0,1-1l.007-15.421,2.912,2.913a1,1,0,0,0,1.414,0h0a1,1,0,0,0,0-1.414L14.122.879a3,3,0,0,0-4.244,0L6.667,4.091a1,1,0,0,0,0,1.414h0a1,1,0,0,0,1.414,0Z" />
-                                <path d="M22,17v4a1,1,0,0,1-1,1H3a1,1,0,0,1-1-1V17a1,1,0,0,0-1-1H1a1,1,0,0,0-1,1v4a3,3,0,0,0,3,3H21a3,3,0,0,0,3-3V17a1,1,0,0,0-1-1h0A1,1,0,0,0,22,17Z" />
-                            </svg>
-
-                        </button>
-
-                        <button title=" a . Json" id="SaveFileButton">
-
-                            <svg alt=".Json Icon" class="icon" id="Layer_1" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" data-name="Layer 1">
-                                <path d="m16.582 12c-1.148 0-2.082.933-2.082 2.082v3.837c0 1.148.933 2.082 2.082 2.082s2.082-.933 2.082-2.082v-3.837c0-1.148-.933-2.082-2.082-2.082zm.482 5.918c0 .266-.216.482-.482.482s-.482-.216-.482-.482v-3.837c0-.266.216-.482.482-.482s.482.216.482.482zm6.937-5.118v6.264c0 .517-.419.936-.936.936-.398 0-.752-.251-.883-.627l-1.081-3.085v2.912c0 .442-.358.8-.8.8s-.8-.358-.8-.8v-6.257c0-.52.423-.941.943-.938.394.002.745.251.878.622l1.078 3.008v-2.835c0-.442.358-.8.8-.8s.8.358.8.8zm-16.3-.8c.442 0 .8.358.8.8v4.9c0 1.269-1.031 2.3-2.3 2.3-1.246 0-2.257-.996-2.293-2.233.018-.425.363-.767.793-.767.442 0 .8.358.8.8 0 0 .058.601.7.601.386 0 .7-.314.7-.7v-4.9c0-.442.358-.8.8-.8zm12.082-3.248c-.311-1.217-.945-2.329-1.833-3.217l-3.485-3.485c-1.322-1.322-3.08-2.05-4.95-2.05h-4.515c-2.757 0-5 2.243-5 5v14c0 2.757 2.243 5 5 5h10c.649 0 1.28-.123 1.876-.364.512-.208.758-.791.551-1.303-.208-.511-.791-.759-1.303-.551-.356.145-.734.218-1.124.218h-10c-1.654 0-3-1.346-3-3v-14c0-1.654 1.346-3 3-3h4.515c.163 0 .325.008.485.023v4.977c0 1.654 1.346 3 3 3h5.813c.309 0 .601-.143.79-.387s.255-.562.179-.861zm-6.782-.752c-.551 0-1-.449-1-1v-4.341c.379.218.732.488 1.05.806l3.485 3.485c.314.314.583.668.803 1.05zm-.759 9.619c0-.5-.194-.688-1.091-1.056-.501-.206-2.026-.833-2.026-2.372 0-1.249.958-2.191 2.228-2.191.416 0 .787.106 1.093.245.506.229.615.901.222 1.293-.238.237-.593.29-.901.157-.127-.055-.27-.095-.413-.095-.382 0-.628.232-.628.591 0 .14 0 .467 1.035.892.779.32 2.082.855 2.082 2.536 0 1.533-1.357 2.381-2.296 2.381-.684 0-1.248-.218-1.667-.463-.476-.279-.523-.947-.1-1.3.254-.212.612-.25.896-.083.218.128.514.246.87.246.082-.002.696-.181.696-.781z" />
-                            </svg>
-
-                        </button>
-
-                        <button title="a PDF" onclick="getPDF()">
-
-                            <svg alt="PDF Icon" class="icon" xmlns="http://www.w3.org/2000/svg" id="Layer_1" data-name="Layer 1" viewBox="0 0 24 24" width="512" height="512">
-                                <path d="M19.95,5.54l-3.49-3.49c-1.32-1.32-3.08-2.05-4.95-2.05H7C4.24,0,2,2.24,2,5v14c0,2.76,2.24,5,5,5h10c2.76,0,5-2.24,5-5V10.49c0-1.87-.73-3.63-2.05-4.95Zm-1.41,1.41c.32,.32,.59,.67,.81,1.05h-4.34c-.55,0-1-.45-1-1V2.66c.38,.22,.73,.49,1.05,.81l3.49,3.49Zm1.46,12.05c0,1.65-1.35,3-3,3H7c-1.65,0-3-1.35-3-3V5c0-1.65,1.35-3,3-3h4.51c.16,0,.33,0,.49,.02V7c0,1.65,1.35,3,3,3h4.98c.02,.16,.02,.32,.02,.49v8.51ZM7.09,13h-1.09c-.55,0-1,.45-1,1v4.44c0,.35,.28,.62,.62,.62s.62-.28,.62-.62v-1.22h.84c1.18,0,2.14-.95,2.14-2.11s-.96-2.11-2.14-2.11Zm0,2.97h-.83s0-1.72,0-1.72h.84c.48,0,.89,.39,.89,.86s-.41,.86-.89,.86Zm11.93-2.34c0,.35-.28,.62-.62,.62h-1.69v1.14h1.24c.35,0,.62,.28,.62,.62s-.28,.62-.62,.62h-1.24v1.8c0,.35-.28,.62-.62,.62s-.62-.28-.62-.62v-4.81c0-.35,.28-.62,.62-.62h2.31c.35,0,.62,.28,.62,.62Zm-6.93-.62h-1.09c-.55,0-1,.45-1,1v4.44c0,.35,.28,.56,.62,.56s1.46,0,1.46,0c1.18,0,2.14-.95,2.14-2.11v-1.78c0-1.16-.96-2.11-2.14-2.11Zm.89,3.89c0,.47-.41,.86-.89,.86h-.83s0-3.5,0-3.5h.84c.48,0,.89,.39,.89,.86v1.78Z" />
-                            </svg>
-
-                        </button>
-
-                        <button id="closeSaveModal">Cancel</button>
-
-                    </div>
-                </dialog>
-
-                <button title="View pre-made schedule templates" id="openTemplates">
-
-                    <svg alt="Pre-made Study Plans" class="icon" xmlns="http://www.w3.org/2000/svg" id="Layer_1" data-name="Layer 1" viewBox="0 0 24 24">
-                        <path d="M22.992,21.067c-.005-.042-.5-4.269-1.606-9.675-1.115-5.452-2.31-9.489-2.321-9.529-.046-.155-.165-.278-.317-.331-.063-.021-1.558-.524-3.148-.2-.839,.171-1.565,.546-2.07,.868-.018-.156-.107-.295-.243-.374-.057-.034-1.423-.826-3.044-.826-1.229,0-2.315,.458-2.791,.692-.475-.235-1.56-.692-2.792-.692-1.617,0-2.986,.792-3.044,.826-.14,.082-.231,.227-.245,.388-.004,.042-.365,4.283-.365,9.8,0,5.564,.361,9.759,.365,9.801,.014,.164,.108,.311,.252,.392,.057,.033,1.421,.793,3.037,.793,1.232,0,2.32-.443,2.792-.667,.47,.224,1.557,.667,2.791,.667,1.613,0,2.979-.76,3.037-.792,.144-.081,.238-.228,.252-.393,.004-.042,.365-4.283,.365-9.8,0-.286,0-.568-.003-.846,.104,.547,.215,1.11,.333,1.687,1.115,5.452,2.31,9.489,2.321,9.529,.047,.158,.169,.282,.325,.333,.047,.015,1.336,.499,3.135,.169,1.586-.291,2.766-1.341,2.816-1.384,.125-.108,.188-.271,.169-.435ZM15.798,2.312c.976-.199,1.945-.012,2.383,.099,.132,.461,.426,1.507,.798,2.969l-4.901,1.001c-.231-1.488-.373-2.568-.433-3.044,.358-.273,1.171-.824,2.153-1.024Zm-3.242,.261c.037,.478,.115,1.561,.186,3.069H7.909V2.58c.396-.194,1.316-.581,2.333-.581,.998,0,1.908,.377,2.315,.573Zm.339,9.441c0,1.997-.048,3.825-.108,5.343H7.909V6.641h4.878c.061,1.518,.109,3.354,.109,5.373Zm-10.89,0c0-2.01,.048-3.849,.11-5.373H6.909v10.716H2.112c-.06-1.513-.107-3.338-.107-5.343ZM4.659,1.999c.947,0,1.817,.34,2.25,.542v3.1H2.158c.072-1.504,.149-2.59,.186-3.069,.407-.196,1.319-.573,2.314-.573ZM2.343,21.45c-.037-.484-.116-1.576-.187-3.093H6.909v3.123c-.435,.195-1.3,.519-2.25,.519-.996,0-1.905-.359-2.315-.549Zm7.898,.549c-1.009,0-1.93-.37-2.333-.557v-3.085h4.834c-.072,1.514-.15,2.609-.187,3.093-.409,.19-1.315,.549-2.315,.549Zm3.994-14.631l4.987-1.018c.364,1.476,.779,3.265,1.183,5.242,.4,1.957,.72,3.758,.965,5.257l-4.989,1.019c-.362-1.47-.774-3.249-1.176-5.214-.403-1.97-.724-3.781-.969-5.286Zm5.571,14.539c-.975,.199-1.938,.029-2.378-.076-.134-.466-.429-1.52-.804-2.992l4.904-1.001c.233,1.497,.376,2.584,.436,3.067-.365,.269-1.185,.803-2.158,1.002Z" />
-                    </svg>
-
-                </button>
-
-                <button title="Autopopulate course plan according to selected majors/minors" id="AutocompletePlanButton">
-
-                    <svg alt="Autopopulate plan" class="icon" xmlns="http://www.w3.org/2000/svg" id="Layer_1" data-name="Layer 1" viewBox="0 0 24 24">
-                        <path d="m23.447,22.74l-2.43-7.17c-.316-.917-1.107-1.509-2.018-1.509s-1.702.593-2.018,1.513l-2.429,7.166c-.177.523.103,1.091.626,1.269.524.178,1.09-.104,1.268-.626l.469-1.383h4.168l.469,1.383c.142.416.53.679.947.679.106,0,.215-.017.321-.053.523-.178.804-.745.626-1.269Zm-5.854-2.74l1.281-3.779c.075-.221.177-.217.25-.004l1.282,3.783h-2.813Zm-1.935-10.449c-.506-.954-1.49-1.547-2.569-1.547l-3.833-.003,1.205-5.227c.309-1.078-.139-2.172-1.064-2.6-.88-.407-1.865-.086-2.473.826L.505,11.461c-.606.894-.668,2.042-.163,2.996.505.954,1.49,1.547,2.57,1.547h3.83l-1.204,5.226c-.309,1.079.139,2.172,1.064,2.6.253.117.515.174.773.174.642,0,1.267-.35,1.699-1l6.42-10.457c.606-.894.668-2.042.163-2.995Zm-1.843,1.91l-6.364,10.365c.005-.029,1.522-6.598,1.522-6.598.068-.297-.002-.608-.192-.848-.19-.238-.478-.377-.783-.377H2.912c-.494,0-.726-.338-.803-.483-.077-.146-.227-.528.075-.975L8.548,2.177c-.005.029-1.522,6.599-1.522,6.599-.068.297.002.608.192.847s.478.378.782.378l5.088.004h0c.494,0,.726.338.803.483.077.145.226.527-.076.974Z" />
-                    </svg>
-
-
-                </button>
-
-                <button title="Switch Schedule to Part-Time" id="partTimeButton">
-
-                    <svg alt="Switch Schedule to part time" class="icon" xmlns="http://www.w3.org/2000/svg" id="Layer_1" data-name="Layer 1" viewBox="0 0 24 24" width="512" height="512">
-                        <path d="M19.5,2h-1.5V.5c0-.28-.22-.5-.5-.5s-.5,.22-.5,.5v1.5H7V.5c0-.28-.22-.5-.5-.5s-.5,.22-.5,.5v1.5h-1.5C2.02,2,0,4.02,0,6.5v13c0,2.48,2.02,4.5,4.5,4.5h15c2.48,0,4.5-2.02,4.5-4.5V6.5c0-2.48-2.02-4.5-4.5-4.5Zm-8,7v4H7v-4h4.5Zm5.5,0v4h-4.5v-4h4.5Zm6,0v4h-5v-4h5ZM6,13H1v-4H6v4Zm-5,1H6v4H1v-4Zm6,0h4.5v4H7v-4Zm4.5,5v4H7v-4h4.5Zm1,0h4.5v4h-4.5v-4Zm0-1v-4h4.5v4h-4.5Zm5.5-4h5v4h-5v-4ZM4.5,3h15c1.93,0,3.5,1.57,3.5,3.5v1.5H1v-1.5c0-1.93,1.57-3.5,3.5-3.5ZM1,19.5v-.5H6v4h-1.5c-1.93,0-3.5-1.57-3.5-3.5Zm18.5,3.5h-1.5v-4h5v.5c0,1.93-1.57,3.5-3.5,3.5Z"/>
-                    </svg>
-
-                </button>
-
-                <form action="https://www.aut.ac.nz/__data/assets/pdf_file/0011/952796/BCIS-Programme-Structure-2026.pdf" method="get" target="_blank">
-                    <button title="Open BCIS Programme Structure PDF in new tab" id="pdf">
-
-                        <svg alt="BCIS Programme Structure" class="icon" xmlns="http://www.w3.org/2000/svg" id="Layer_1" data-name="Layer 1" viewBox="0 0 24 24">
-                            <path d="m17,10c-3.86,0-7,3.14-7,7s3.14,7,7,7,7-3.14,7-7-3.14-7-7-7Zm0,12c-2.757,0-5-2.243-5-5s2.243-5,5-5,5,2.243,5,5-2.243,5-5,5Zm1-4v2c0,.552-.448,1-1,1s-1-.448-1-1v-2c0-.552.448-1,1-1s1,.448,1,1Zm.5-3.5c0,.828-.672,1.5-1.5,1.5s-1.5-.672-1.5-1.5.672-1.5,1.5-1.5,1.5.672,1.5,1.5Zm-9.5,7.5h-5c-1.103,0-2-.897-2-2s.897-2,2-2h3c.552,0,1-.448,1-1s-.448-1-1-1h-1V2h9c1.654,0,3,1.346,3,3v2c0,.552.448,1,1,1s1-.448,1-1v-2c0-2.757-2.243-5-5-5H5C2.244,0,0,2.243,0,5v15C0,22.206,1.795,24,4,24h5c.552,0,1-.448,1-1s-.448-1-1-1ZM2,5c0-1.302.839-2.402,2-2.816v13.816c-.732,0-1.409.212-2,.556V5Z" />
-                        </svg>
-
-                    </button>
-                </form>
-
-                <button title="Editor Tools" id="openEditor">
-
-                   <svg alt="Editor Tools" class="icon" xmlns="http://www.w3.org/2000/svg" id="Layer_1" data-name="Layer 1" viewBox="0 0 24 24">
-                        <path d="m23.207,19.379l-8.069-8.068-1.562,1.578-5.576-5.576V3.147L2.613.049.029,2.632l3.099,5.388h4.165l5.579,5.579-1.543,1.558,8.05,8.05c.511.512,1.191.793,1.914.793s1.403-.281,1.914-.793c.511-.511.793-1.19.793-1.914s-.282-1.402-.793-1.914ZM7,7.02h-3.294L1.278,2.798l1.5-1.501,4.222,2.429v3.294Zm15.5,15.48c-.645.645-1.77.645-2.414,0l-7.346-7.347,2.402-2.425,7.358,7.357c.322.322.5.751.5,1.207s-.178.885-.5,1.207Zm-12.595-5.961l.707.707-5.955,5.955c-.532.532-1.23.798-1.929.798s-1.397-.266-1.929-.798c-1.063-1.063-1.063-2.795,0-3.858l7.493-7.493.707.707-7.493,7.493c-.673.674-.673,1.771,0,2.444.674.675,1.771.673,2.444,0l5.955-5.955Zm.137-10.013l-.848-.848c.817-3.257,3.76-5.678,7.267-5.678,1.18,0,2.317.272,3.38.811l.611.31-4.005,4.055c-.314.314-.486.729-.486,1.171s.172.857.484,1.17c.644.645,1.694.645,2.339,0l4.02-4.068.316.611c.558,1.077.841,2.235.841,3.441,0,2.657-1.393,4.99-3.482,6.322l-.727-.727c1.917-1.132,3.209-3.213,3.209-5.596,0-.811-.148-1.596-.44-2.344l-3.028,3.064c-1.037,1.037-2.72,1.035-3.755.002-.501-.501-.777-1.167-.777-1.877s.276-1.375.777-1.876l3.012-3.05c-.733-.279-1.5-.42-2.29-.42-3.252,0-5.946,2.404-6.419,5.526Z"/>
-                   </svg>
-
-
-                </button>
-
-                <dialog id="editorModal">
-                    <div class="edit-grid">
-                        <h2>Tools to edit the structure of majors or courses</h2><br>
-
-                        <a title="Course Editor" href="https://localhost/COMP702-BCIS-Course-Planner/CourseCreator.html" target="_blank" class="button-link">Course Editor</a>
-
-                        <a title="Major/Minor Editor" href="https://localhost/COMP702-BCIS-Course-Planner/majoreditor.html" target="_blank" class="button-link">Major/Minor Editor</a>
-
-                        <button id="closeEditorModal">Cancel</button>
-                    </div>
-                </dialog>
-
-
-
-            </div>
-        </div>
     </div>
 
     <div id="saveModal" class="hidden">

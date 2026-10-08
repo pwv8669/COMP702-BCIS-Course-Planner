@@ -162,7 +162,7 @@ select {
                 <input name="Name" type="text" placeholder="Name" required><br><br>
                 <input name="OriginalCode" type="hidden">
                 <p>Courses: </p>
-                <textarea style="field-sizing: content;resize: vertical;" name="Courses" type="text" placeholder="e.g. MATH503 AND (COMP603 OR COMP610)">
+                <textarea style="field-sizing: content;resize: vertical;" name="Courses" type="text" placeholder="e.g. COMP503, COMP602, COMP603, COMP604 OR COMP611 [1], COMP610, COMP705 OR ENSE707 [1], COMP713 OR COMP721 [1], COMP719">
 </textarea><br>
                 <input name="IncompatibleMajors" type="text" placeholder="Incompatible major codes (comma-separated)"><br>
                 <input name="IncompatibleMinors" type="text" placeholder="Incompatible minor codes (comma-separated)"><br>
@@ -214,42 +214,47 @@ select {
 
 </script>
  <script>
-//array that stores all course objects in json
-let optionobjectsstore = [];//this is the array that will hold the objects for the auto-fill
+// Array populated by SelectionMenu.js for the option auto-fill.
+window.optionobjectsstore = [];
     function setInput(){
       var x = document.getElementById("majorselectionedit").value;//get value from selection
       console.log(x);
       if(x != ""){//if its not the null selection
+        const selectedOption = window.optionobjectsstore[x];
+        if (!selectedOption) {
+          console.error("Unable to find the selected major/minor option.");
+          return;
+        }
         //replace with their respective information
-        console.log(optionobjectsstore[x]);
-        document.getElementsByName("Code")[0].value = optionobjectsstore[x].Code;
-        document.getElementsByName("OriginalCode")[0].value = optionobjectsstore[x].Code;
-        document.getElementsByName("Name")[0].value = optionobjectsstore[x].Name;
-        document.getElementsByName("IncompatibleMajors")[0].value = (optionobjectsstore[x].IncompatibleMajors ?? []).join(", ");
-        document.getElementsByName("IncompatibleMinors")[0].value = (optionobjectsstore[x].IncompatibleMinors ?? []).join(", ");
-        document.getElementsByName("IsCore")[0].checked = optionobjectsstore[x].IsCore === true;
+        console.log(selectedOption);
+        document.getElementsByName("Code")[0].value = selectedOption.Code;
+        document.getElementsByName("OriginalCode")[0].value = selectedOption.Code;
+        document.getElementsByName("Name")[0].value = selectedOption.Name;
+        document.getElementsByName("IncompatibleMajors")[0].value = (selectedOption.IncompatibleMajors ?? []).join(", ");
+        document.getElementsByName("IncompatibleMinors")[0].value = (selectedOption.IncompatibleMinors ?? []).join(", ");
+        document.getElementsByName("IsCore")[0].checked = selectedOption.IsCore === true;
        
 
         //creating the text for the courses
         let coursetext = "";
-        for(const required in optionobjectsstore[x].Requirements){
+        for(const required in selectedOption.Requirements){
          
-          if((optionobjectsstore[x].Requirements[required].Courses.length) > 1){
+          if((selectedOption.Requirements[required].Courses.length) > 1){
 
-            for(const multicourse in optionobjectsstore[x].Requirements[required].Courses){
-              coursetext +=(optionobjectsstore[x].Requirements[required].Courses[multicourse])
-               if(multicourse != optionobjectsstore[x].Requirements[required].Courses.length - 1){
+            for(const multicourse in selectedOption.Requirements[required].Courses){
+              coursetext +=(selectedOption.Requirements[required].Courses[multicourse])
+               if(multicourse != selectedOption.Requirements[required].Courses.length - 1){
                   coursetext += " OR ";
                 }
                 else{
-                  coursetext += " ["+optionobjectsstore[x].Requirements[required].Count+"]";
+                  coursetext += " ["+selectedOption.Requirements[required].Count+"]";
                 }
             }
           }
           else{
-            coursetext +=(optionobjectsstore[x].Requirements[required].Courses[0])
+            coursetext +=(selectedOption.Requirements[required].Courses[0])
           }
-          if(required != optionobjectsstore[x].Requirements.length - 1){
+          if(required != selectedOption.Requirements.length - 1){
             coursetext += ", ";
           }
           console.log(coursetext);

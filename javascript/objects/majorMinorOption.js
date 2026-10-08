@@ -1,4 +1,4 @@
-import { loadCourses } from "../courseObjectConverter.js";
+import { loadCourses } from "./course.js";
 const courses = await loadCourses();
 
 

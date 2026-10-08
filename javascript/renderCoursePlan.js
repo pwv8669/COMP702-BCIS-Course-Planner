@@ -1,5 +1,3 @@
-import { getCoursesFromSelectedMajorsAndMinors } from './autopopulateStudyPlan.js';
-import { loadMajorOptions } from "./objects/majorMinorOption.js";
 import { attributedCourses } from "./validation/majorMinorRequirementsValidator.js";
 import { scheduleConfig, mapCoursePlanToDom } from "./state.js";
 import { validateMajorMinorRequirements } from "./validation/majorMinorRequirementsValidator.js";
@@ -68,19 +66,21 @@ function parsePrereqs(node) {//This function exists to find the prerequisites of
 }
 
 
-async function TypeOfCell(coursecode, cell, state){//this is a function that sets the given cell's color and returns the given major/minor/reason its in the table
+function TypeOfCell(coursecode, cell, state){//this is a function that sets the given cell's color and returns the given major/minor/reason its in the table
     //Inputs: Course Code, The cell associated with this course, the state for its arrays
     //Outputs: A modified class list of the given cell and a string cnotaining its attributed course.
 
     try{//we do a try function here as when the site initially opens, it places the core courses. This is called before the system
     //can even attribute them to anything so it will always create an error.
-    //Unless the user is somehow able to add courses before the site even finishes loading, 
+    //Unless the user is somehow able to add courses before the site even finishes loading,
     //this should be fine because it should be only doing
     //this for the initial core courses.
     cell.classList = ''//clear the list
+    // Default to core while the page is starting and no pathway is selected.
+    if (!state.selectedPathway) return "Core";
+
     if(attributedCourses.get(coursecode) == "Elective"){//if the courses has an attributed major/minor/core, we can assume its not an elective
         cell.classList = 'cell-elective';//else give it an elective color and label
-        console.log("Elective given")//For debugging purposes
         return "Elective";//return attributed text
     }
     const formattedAttribution = formatAttribution(
@@ -102,7 +102,7 @@ async function TypeOfCell(coursecode, cell, state){//this is a function that set
                             case 1://If it's the second instead
                                 cell.classList = 'cell-required-minor-second';//add class list
                                 break;
-                        }    
+                        }
                         break;//stop looking if its added the class
                     }
                 }
@@ -113,7 +113,13 @@ async function TypeOfCell(coursecode, cell, state){//this is a function that set
             }
         }
         else{//If the given pathway is double majors and its neither an elective or core, we can assume its a major
-            cell.classList = 'cell-required';//make it required class color
+            if(state.selectedMajors[0].Code == attributedCourses.get(coursecode)){//Check first major, if it matches the course
+                cell.classList = 'cell-required';//add to class list (this one is the major color)
+            }
+            else{
+                cell.classList = 'cell-required-minor';//to differenciate between first and second major we give it a different color (uses the minor 1st color since its in the same spot as it)
+            }
+                            return formattedAttribution;//return attribution
         }
     }
     else{
@@ -154,35 +160,40 @@ export async function renderCoursePlan(state) {//this function assigns colors an
                 continue;
             }
             const prereqText = parsePrereqs(course.prerequisites);//parse prereqs 
-            const typecell = await TypeOfCell(course.code, cell, state);//this returns the major/minor name, and colors the cell given into it
-            
-            cell.innerHTML = `<div class="course-cell"><div class="course-name">${course.code}: ${course.name}</div>`;//set the requirement level e.g. Elective, Core or Major/Minor name
-            
+            const typecell = TypeOfCell(course.code, cell, state);
             const coreqText = parsePrereqs(course.corequisites);//get the corequisites, thankfull the prerequisites function serves just as well for corequisites
-            //set up the button
-                  cell.innerHTML += `<button class="prereq-btn" data-html2canvas-ignore="true">
-                        i
-                    </button>`//information button goes here
-                    let toaddstring = `<div class="prereq-list" style="display:none;">${typecell}`//this will contain the string to be added for the information button
-                
-                    if(prereqText != "No prerequisites"){//if there are prerequisites then add them to the string
-                             toaddstring +=`<br>Prerequisites: ${prereqText}</div>`;
-                    }
-                    if(coreqText != "No prerequisites"){//if there are corequisites then add them to the string
-                        toaddstring +=`<br>Corequisites: ${coreqText}</div>`;
-                    }
-                    cell.innerHTML+= toaddstring;//finally add the full created div to the html
-            cell.innerHTML +=`
-            </div></div>`;
+            const details = [typecell];
+
+            if(prereqText != "No prerequisites"){//if there are prerequisites then add them to the string
+                details.push(`Prerequisites: ${prereqText}`);
+            }
+            if(coreqText != "No prerequisites"){//if there are corequisites then add them to the string
+                details.push(`Corequisites: ${coreqText}`);
+            }
+
+            cell.innerHTML = `<div class="course-cell">
+                <div class="course-type">${typecell}</div>
+                <div class="course-name">${course.code}: ${course.name}</div>
+                <button class="prereq-btn" data-html2canvas-ignore="true">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="infoIcon" viewBox="0 0 24 24" aria-label="Course details">
+                        <path d="M12,0A12,12,0,1,0,24,12,12.013,12.013,0,0,0,12,0Zm0,22A10,10,0,1,1,22,12,10.011,10.011,0,0,1,12,22Z"/><path d="M12,10H11a1,1,0,0,0,0,2h1v6a1,1,0,0,0,2,0V12A2,2,0,0,0,12,10Z"/><circle cx="12" cy="6.5" r="1.5"/>
+                    </svg>
+                </button>
+                <div class="prereq-list" style="display:none;" data-html2canvas-ignore="true">
+                    ${details.join("<br>")}
+                </div>
+            </div>`;
         }
     }
 }
 
 
-    document.addEventListener("click", (e) => {//adds event listener to show the information text when the prereq button is clicked
-        if (!e.target.classList.contains("prereq-btn")) return;
+    document.addEventListener("click", (e) => {//Show the course details when its info button is clicked.
+        const button = e.target.closest(".prereq-btn");
+        if (!button) return;
 
-        const box = e.target.nextElementSibling;
+        const box = button.nextElementSibling;
+        if (!box || !box.classList.contains("prereq-list")) return;
         const hidden = box.style.display === "none";
 
         box.style.display = hidden ? "block" : "none";
