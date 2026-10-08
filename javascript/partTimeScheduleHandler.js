@@ -1,6 +1,7 @@
 import { scheduleConfig, setScheduleMode } from './state.js'
 import { refreshStudyPlan } from './app.js';
 
+// initPartTime: Adds the button to swap between part time and regular schedules
 export async function initPartTime()
 {
     const partTimeButton = document.getElementById('partTimeButton');
@@ -11,6 +12,7 @@ export async function initPartTime()
 
 }
 
+// switchSchedule: Switches between the two schedule modes (called upon button click)
 export function switchSchedule()
 {
     

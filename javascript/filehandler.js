@@ -10,7 +10,7 @@ import {
 
 const majorOptions = await loadMajorOptions();
 const minorOptions = await loadMinorOptions();
-
+//Init: Sets up the button that calls the savefile one click
 function init() {
     const button = document.getElementById("SaveFileButton");
     button?.addEventListener("click", SaveFile, false);
@@ -22,6 +22,9 @@ if (document.readyState === "loading") {
     init();
 }
 
+// getCode: Gets the given code of the input
+// Input: Value that you want the code of 
+// Output: Null if unable to find it or a stringified version of an object's code 
 export function getCode(value) {
     const code = typeof value === "object" && value !== null
         ? value.Code ?? value.code
@@ -57,7 +60,9 @@ function resolveSelections(values, options, size, allowedCount, type) {
         return option;
     });
 }
-
+// loadSchedule: Loads a schedule from a given input
+// Input: Schedule from a file
+// Output: Sets state to the one provided in the file
 function loadSchedule(schedule) {
     if (!Array.isArray(schedule)) {
         throw new Error("The file does not contain a valid schedule.");
@@ -83,6 +88,9 @@ function loadSchedule(schedule) {
     }
 }
 
+// importschedule: Main function for loading in the saved json schedule file
+// Input: Json file
+// Output: A page with the choices and schedule of the json file loaded
 export function importschedule(jsonInput) {
     if (!jsonInput || typeof jsonInput !== "object") {
         throw new Error("The imported file must contain a JSON object.");
@@ -157,6 +165,7 @@ export function importschedule(jsonInput) {
     return true;
 }
 
+// getSelectedPathwayCode: Get the code of a selected pathway from pathway select.
 export function getSelectedPathwayCode() {
     const selectedValue = document.getElementById("pathwaySelect")?.value;
     if (selectedValue) return selectedValue;
@@ -168,7 +177,7 @@ export function getSelectedPathwayCode() {
     return null;
 }
 
-// Save state objects as their stable JSON codes rather than "[object Object]".
+// SaveFile: Save state objects as their stable JSON codes rather than "[object Object]".
 export function SaveFile() {
     const payload = {
         selectedPathway: getSelectedPathwayCode(),

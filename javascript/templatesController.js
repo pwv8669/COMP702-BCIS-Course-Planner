@@ -10,7 +10,7 @@ share their unique solutions to common circumstances for students*/
 
 
 
-
+// initTemplatesController: Function that sets up the functionalities for saving and loading of the given templates
 function initTemplatesController() {
     //selecting the relevant html elements
     const panel = document.getElementById('templates');

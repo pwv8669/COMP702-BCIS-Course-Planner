@@ -8,7 +8,10 @@ let sourceSlotIndex = null;
 let draggedCourseCode = null;
 
 
-
+// initDragAndDrop: Sets up drag functionality for each course card element so they may be moved around, and set the state
+// array to a given course when dragged onto.
+// Input: The refresh study plan function so it can call it to refresh the display afterwards.
+// Output: Drag functionality
 export function initDragAndDrop(onPlanChange) {
 
     // Sidebar course cards
@@ -138,7 +141,7 @@ export function initDragAndDrop(onPlanChange) {
     });
 }
 
-//Function that ensures when a course is dropped onto the background the course is deleted from the schedule table
+// Function that ensures when a course is dropped onto the background the course is deleted from the schedule table
 export function initGlobalDeleteZone(onDeleteCallback) {
     document.body.addEventListener('dragover', (e) => {
         e.preventDefault();
