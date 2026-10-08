@@ -1,4 +1,4 @@
-//This is just a class that holds the pathway the user currently has selected.
+// This is just a class that holds the pathway the user currently has selected.
 export class Pathway {
     constructor(data) {
         this.name = data.name;
@@ -8,7 +8,11 @@ export class Pathway {
     }
 }
 
-//Load Pathways: This function loads the available pathways from pathways.json and returns it as an object containing each entry.
+/* 
+loadPathways: This function loads the available pathways from pathways.json and returns it as an object containing each entry.
+Inputs: N/A
+Outputs: pathways (object, key: name, value: map of Pathway objects)
+*/ 
 export async function loadPathways() {
     const response = await fetch("json/pathways.json");
     const data = await response.json();

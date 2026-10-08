@@ -10,6 +10,13 @@ const ELECTIVE_POINTS_PER_OVERLAPPING_COURSE = 15;
 // Public display map consumed by renderCoursePlan.js.
 export const attributedCourses = new Map();
 
+/* 
+validateMajorMinorRequirements: Main function to validate whether the course plan meets the requirements for selected major(s) and minor(s)
+Inputs: N/A
+Outputs: errors (array of PlanError object)
+
+Attribution of courses to majors/minors is also done here.
+*/ 
 export function validateMajorMinorRequirements() {
     const errors = [];
     const plannedCourses = getPlannedCourses();

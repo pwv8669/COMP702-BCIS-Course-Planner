@@ -1,6 +1,11 @@
 import { state, scheduleConfig } from '../state.js';
 import { PlanError, ErrorSeverity } from '../objects/planError.js';
 
+/* 
+getCourseCounts: Loops through the course plan, if course code is in appearances map, change the value by +1, else add to map with value 1.
+Inputs: N/A
+Outputs: appearances (map, key: courseCode string, value: currentValue integer)
+*/ 
 function getCourseCounts(){
     const appearances = new Map();
     for (let i = 0; i<scheduleConfig.semesters; i++){
@@ -20,6 +25,11 @@ function getCourseCounts(){
     return appearances;
 }
 
+/* 
+validateCourseAppearances: Gets appearances map, checking if the same course code appears more than once.
+Inputs: N/A
+Outputs: errors (array of PlanError object)
+*/ 
 export function validateCourseAppearances() {
     const errors = [];
     const appearances = getCourseCounts();
