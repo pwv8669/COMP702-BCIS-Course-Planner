@@ -1,5 +1,3 @@
-import { getCoursesFromSelectedMajorsAndMinors } from './autopopulateStudyPlan.js';
-import { loadMajorOptions } from "./objects/majorMinorOption.js";
 import { attributedCourses } from "./validation/majorMinorRequirementsValidator.js";
 import { scheduleConfig, mapCoursePlanToDom } from "./state.js";
 import { validateMajorMinorRequirements } from "./validation/majorMinorRequirementsValidator.js";
@@ -68,19 +66,21 @@ function parsePrereqs(node) {//This function exists to find the prerequisites of
 }
 
 
-async function TypeOfCell(coursecode, cell, state){//this is a function that sets the given cell's color and returns the given major/minor/reason its in the table
+function TypeOfCell(coursecode, cell, state){//this is a function that sets the given cell's color and returns the given major/minor/reason its in the table
     //Inputs: Course Code, The cell associated with this course, the state for its arrays
     //Outputs: A modified class list of the given cell and a string cnotaining its attributed course.
 
     try{//we do a try function here as when the site initially opens, it places the core courses. This is called before the system
     //can even attribute them to anything so it will always create an error.
-    //Unless the user is somehow able to add courses before the site even finishes loading, 
+    //Unless the user is somehow able to add courses before the site even finishes loading,
     //this should be fine because it should be only doing
     //this for the initial core courses.
     cell.classList = ''//clear the list
+    // Default to core while the page is starting and no pathway is selected.
+    if (!state.selectedPathway) return "Core";
+
     if(attributedCourses.get(coursecode) == "Elective"){//if the courses has an attributed major/minor/core, we can assume its not an elective
         cell.classList = 'cell-elective';//else give it an elective color and label
-        console.log("Elective given")//For debugging purposes
         return "Elective";//return attributed text
     }
     const formattedAttribution = formatAttribution(
@@ -102,7 +102,7 @@ async function TypeOfCell(coursecode, cell, state){//this is a function that set
                             case 1://If it's the second instead
                                 cell.classList = 'cell-required-minor-second';//add class list
                                 break;
-                        }    
+                        }
                         break;//stop looking if its added the class
                     }
                 }
@@ -154,26 +154,24 @@ export async function renderCoursePlan(state) {//this function assigns colors an
                 continue;
             }
             const prereqText = parsePrereqs(course.prerequisites);//parse prereqs 
-            const typecell = await TypeOfCell(course.code, cell, state);//this returns the major/minor name, and colors the cell given into it
-            
-            cell.innerHTML = `<div class="course-cell"><div class="course-name">${course.code}: ${course.name}</div>`;//set the requirement level e.g. Elective, Core or Major/Minor name
-            
+            const typecell = TypeOfCell(course.code, cell, state);
             const coreqText = parsePrereqs(course.corequisites);//get the corequisites, thankfull the prerequisites function serves just as well for corequisites
-            //set up the button
-                  cell.innerHTML += `<button class="prereq-btn" data-html2canvas-ignore="true">
-                        i
-                    </button>`//information button goes here
-                    let toaddstring = `<div class="prereq-list" style="display:none;">${typecell}`//this will contain the string to be added for the information button
-                
-                    if(prereqText != "No prerequisites"){//if there are prerequisites then add them to the string
-                             toaddstring +=`<br>Prerequisites: ${prereqText}</div>`;
-                    }
-                    if(coreqText != "No prerequisites"){//if there are corequisites then add them to the string
-                        toaddstring +=`<br>Corequisites: ${coreqText}</div>`;
-                    }
-                    cell.innerHTML+= toaddstring;//finally add the full created div to the html
-            cell.innerHTML +=`
-            </div></div>`;
+            const details = [typecell];
+
+            if(prereqText != "No prerequisites"){//if there are prerequisites then add them to the string
+                details.push(`Prerequisites: ${prereqText}`);
+            }
+            if(coreqText != "No prerequisites"){//if there are corequisites then add them to the string
+                details.push(`Corequisites: ${coreqText}`);
+            }
+
+            cell.innerHTML = `<div class="course-cell">
+                <div class="course-name">${course.code}: ${course.name}</div>
+                <button class="prereq-btn" data-html2canvas-ignore="true">i</button>
+                <div class="prereq-list" style="display:none;" data-html2canvas-ignore="true">
+                    ${details.join("<br>")}
+                </div>
+            </div>`;
         }
     }
 }
