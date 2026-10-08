@@ -104,6 +104,12 @@ td{
 .schedule-table td.cell-required {
     border: calc(.3 * var(--scale)) solid #3842af;
 }
+.majorcolor{background-color: #5286c5 !important;} 
+.minor1color{background-color: #9461af !important;} 
+.minor2color{background-color: #b75a9b !important;} 
+.selectioncolor{background-color: #71a1dc  ;}  /* Alternate between light and dark cells */
+.minor1selectioncolor{background-color: #bc80dc  ;}  /* Alternate between light and dark cells */
+.minor2selectioncolor{background-color: #dc7fc0  ;}  /* Alternate between light and dark cells */
 
 .schedule-table td.cell-required-minor:nth-child(even){background-color: #bc80dc ;}  /* Alternate between light and dark cells */
 .schedule-table td.cell-required-minor:nth-child(odd) {background-color: #9461af ;}
@@ -111,7 +117,7 @@ td{
     border: calc(.3 * var(--scale)) solid #5d3672;
 }
 
-.schedule-table td.cell-required-minor-second:nth-child(even){background-color: hsl(318, 57%, 68%) ;}  /* Alternate between light and dark cells */
+.schedule-table td.cell-required-minor-second:nth-child(even){background-color: #dc7fc0 ;}  /* Alternate between light and dark cells */
 .schedule-table td.cell-required-minor-second:nth-child(odd) {background-color: #b75a9b ;}
 .schedule-table td.cell-required-minor-second {
     border: calc(.3 * var(--scale)) solid #723657;
@@ -530,8 +536,8 @@ label[for="pathwaySelect"] {
   flex-direction: column;
   font-size: calc(2 * var(--scale));
   justify-content: center;
-  gap: calc(1 * var(--scale));
   background-color: #822787;
+  gap: calc(1 * var(--scale));
   padding: calc(1 * var(--scale));
   min-width: calc(20 * var(--scale));
   width: auto;
