@@ -142,7 +142,7 @@ select {
 
 
 <head>
-  <script type="module" src="./javascript/SelectionMenu.js">
+  <script type="module" src="./javascript/selectionMenu.js">
   </script>
 </head>
 <title>BCIS Major/Minor Editor</title>
@@ -152,7 +152,7 @@ select {
             <h1 style="margin-top: 0; width: 100%;">BCIS Major/Minor Editor</h1>
 
             <label>Major or Minor:</label><br>
-            <select id="MajorMinorSelection" onchange="SetupMajorMinorSelections()" style="margin-top: 10px;">
+            <select id="MajorMinorSelection" onchange="setupMajorMinorSelections()" style="margin-top: 10px;">
                 <option>Major</option>
                 <option>Minor</option>
             </select>
@@ -189,7 +189,7 @@ select {
     </div>
 </body>
 <script type="module">
-  import {SetupMajorMinorSelections} from "./javascript/SelectionMenu.js";
+  import {setupMajorMinorSelections} from "./javascript/selectionMenu.js";
   function testfunc(){
     if(document.getElementById("MajorMinorSelection").value == "Major"){
       document.getElementById("MajorMinorPostForm").action="./php/editMajor.php";
@@ -198,7 +198,7 @@ select {
       document.getElementById("MajorMinorPostForm").action="./php/editMinor.php";
       //console.log("setposttominor");
     }
-    SetupMajorMinorSelections();
+    setupMajorMinorSelections();
       document.getElementsByName("Code")[0].value = "";//reset
       document.getElementsByName("OriginalCode")[0].value = "";
       document.getElementsByName("Name")[0].value = "";
@@ -214,7 +214,7 @@ select {
 
 </script>
  <script>
-// Array populated by SelectionMenu.js for the option auto-fill.
+// Array populated by selectionMenu.js for the option auto-fill.
 window.optionobjectsstore = [];
     function setInput(){
       var x = document.getElementById("majorselectionedit").value;//get value from selection

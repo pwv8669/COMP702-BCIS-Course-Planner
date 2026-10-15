@@ -63,7 +63,7 @@ const mockData = vi.hoisted(() => ({
 // Replace application collaborators so imports can be tested independently.
 vi.mock("../javascript/app.js", () => ({
     placeCourse: mockData.placeCourse,
-    PathwayRefresh: mockData.pathwayRefresh
+    pathwayRefresh: mockData.pathwayRefresh
 }));
 
 vi.mock("../javascript/renderCoursePlan.js", () => ({
@@ -85,8 +85,8 @@ vi.mock("../javascript/objects/majorMinorOption.js", () => ({
 
 let getCode;
 let getSelectedPathwayCode;
-let importschedule;
-let SaveFile;
+let importSchedule;
+let saveFile;
 
 // Build the standard shape written by the application's save function.
 function makeImport(overrides = {}) {
@@ -131,7 +131,7 @@ beforeAll(async () => {
         addEventListener: vi.fn(),
         getElementById: vi.fn(id => {
             if (id === "pathwaySelect") return mockData.pathwaySelect;
-            if (id === "SaveFileButton") return mockData.saveButton;
+            if (id === "saveFileButton") return mockData.saveButton;
             return null;
         }),
         createElement: vi.fn(tag =>
@@ -156,9 +156,9 @@ beforeAll(async () => {
     ({
         getCode,
         getSelectedPathwayCode,
-        importschedule,
-        SaveFile
-    } = await import("../javascript/filehandler.js"));
+        importSchedule,
+        saveFile
+    } = await import("../javascript/fileHandler.js"));
 });
 
 afterAll(() => {
@@ -232,33 +232,33 @@ describe("getSelectedPathwayCode", () => {
     });
 });
 
-describe("importschedule", () => {
+describe("importSchedule", () => {
     // Imports must be JSON objects rather than null or primitive values.
     test("rejects a non-object import", () => {
-        expect(() => importschedule(null)).toThrow(
+        expect(() => importSchedule(null)).toThrow(
             "The imported file must contain a JSON object."
         );
-        expect(() => importschedule("invalid")).toThrow(
+        expect(() => importSchedule("invalid")).toThrow(
             "The imported file must contain a JSON object."
         );
     });
 
     // A pathway must exist in the page's supported pathway dropdown.
     test("rejects a missing or unknown pathway", () => {
-        expect(() => importschedule(makeImport({
+        expect(() => importSchedule(makeImport({
             selectedPathway: "UnknownPathway"
         }))).toThrow("Unknown pathway code: UnknownPathway");
-        expect(() => importschedule(makeImport({
+        expect(() => importSchedule(makeImport({
             selectedPathway: null
         }))).toThrow("Unknown pathway code: missing");
     });
 
     // Major and minor codes are resolved to the canonical loaded objects.
     test("rejects unknown major and minor codes", () => {
-        expect(() => importschedule(makeImport({
+        expect(() => importSchedule(makeImport({
             selectedMajors: ["UnknownMajor", null]
         }))).toThrow("Unknown major code: UnknownMajor");
-        expect(() => importschedule(makeImport({
+        expect(() => importSchedule(makeImport({
             selectedMinors: ["UnknownMinor", null]
         }))).toThrow("Unknown minor code: UnknownMinor");
     });
@@ -271,7 +271,7 @@ describe("importschedule", () => {
         const schedule = Array.from({ length: 6 }, () => []);
         schedule[0] = ["COMP500", { code: "COMP600" }, null, null];
 
-        expect(importschedule(makeImport({
+        expect(importSchedule(makeImport({
             schedule,
             ignoredErrors
         }))).toBe(true);
@@ -306,7 +306,7 @@ describe("importschedule", () => {
         const schedule = Array.from({ length: 12 }, () => []);
         schedule[11] = ["COMP700", null];
 
-        importschedule(makeImport({
+        importSchedule(makeImport({
             selectedPathway: "doubleMajors",
             selectedMajors: ["MajorA", "MajorB"],
             selectedMinors: [],
@@ -323,7 +323,7 @@ describe("importschedule", () => {
 
     // Schedule data must be an array before any cells can be loaded.
     test("rejects an invalid schedule shape", () => {
-        expect(() => importschedule(makeImport({
+        expect(() => importSchedule(makeImport({
             schedule: { semester: [] }
         }))).toThrow("The file does not contain a valid schedule.");
     });
@@ -334,7 +334,7 @@ describe("importschedule", () => {
         const schedule = Array.from({ length: 6 }, () => []);
         schedule[0] = ["UNKNOWN500"];
 
-        expect(importschedule(makeImport({ schedule }))).toBe(true);
+        expect(importSchedule(makeImport({ schedule }))).toBe(true);
         expect(state.coursePlan[0][0]).toBeNull();
         expect(warning).toHaveBeenCalledWith(
             "Unknown course code in imported file: UNKNOWN500"
@@ -347,13 +347,13 @@ describe("importschedule", () => {
     test("defaults missing ignored errors to an empty object", () => {
         state.ignoredErrors = { ExistingError: "Old note" };
 
-        importschedule(makeImport({ ignoredErrors: null }));
+        importSchedule(makeImport({ ignoredErrors: null }));
 
         expect(state.ignoredErrors).toEqual({});
     });
 });
 
-describe("SaveFile", () => {
+describe("saveFile", () => {
     // Exported files should contain stable codes and trigger a JSON download.
     test("serializes state into a downloadable JSON file", () => {
         vi.useFakeTimers();
@@ -377,7 +377,7 @@ describe("SaveFile", () => {
         state.coursePlan[1][2] = mockData.courses.COMP600;
         state.ignoredErrors = { ExampleError: "Approved" };
 
-        SaveFile();
+        saveFile();
 
         const payload = JSON.parse(mockData.lastBlob.parts[0]);
         expect(payload.selectedPathway).toBe("doubleMajors");

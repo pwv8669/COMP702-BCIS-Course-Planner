@@ -44,8 +44,8 @@ const menuMocks = vi.hoisted(() => ({
     elements: {}
 }));
 
-let SetupMajorMinorSelections;
-let SetupSelections;
+let setupMajorMinorSelections;
+let setupSelections;
 
 function makeResponse(data, ok = true) {
     return {
@@ -122,9 +122,9 @@ beforeEach(async () => {
 
     // Importing the module automatically initializes both editor menus.
     ({
-        SetupMajorMinorSelections,
-        SetupSelections
-    } = await import("../javascript/SelectionMenu.js"));
+        setupMajorMinorSelections,
+        setupSelections
+    } = await import("../javascript/selectionMenu.js"));
 });
 
 describe("course editor selections", () => {
@@ -153,7 +153,7 @@ describe("course editor selections", () => {
         globalThis.courseobjectsstore.length = 0;
         menuMocks.fetch.mockRejectedValue(new Error("Courses unavailable"));
 
-        await expect(SetupSelections()).resolves.toBeUndefined();
+        await expect(setupSelections()).resolves.toBeUndefined();
 
         expect(menuMocks.elements.coursetoedit.innerHTML).toBe(
             "Existing menu"

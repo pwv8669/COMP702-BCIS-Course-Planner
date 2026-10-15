@@ -2,8 +2,11 @@ import { validateStudyPlan } from './validation/planValidator.js';
 import { ErrorSeverity } from './objects/planError.js';
 import { state, mapCoursePlanToDom } from './state.js';
 
-
-
+/*
+resizeScheduleTable: Resizes the schedule table, making the tableHeight larger when no errors are present.
+Inputs: N/A
+Outputs: N/A
+*/
 function resizeScheduleTable()
 {
     let tableHeight = 60;
@@ -24,7 +27,11 @@ function resizeScheduleTable()
     tableGrid.style.minHeight = `calc(${tableHeight} * var(--scale))`;
 }
 
-//Gets the error list container from the html and the error list from validateStudyPlan() populates it with error messages by calling renderErrors()
+/*
+errorDisplay: Gets all errors from validateStudyPlan(), clears currently displayed previous errors, and populates the error list on the html with the new errors.
+Inputs: N/A
+Outputs: errors (array of PlanError object)
+*/
 export function errorDisplay()
 {
     const errors = validateStudyPlan();
@@ -59,16 +66,18 @@ export function errorDisplay()
     return errors;
 }
 
+
+// clearPreviousErrors: Helper function to clear all displayed errors from the html.
 function clearPreviousErrors() {
     // Clear all color codes
     document.querySelectorAll('.cell-red-error').forEach(c => c.classList.remove('cell-red-error'));
     document.querySelectorAll('.cell-yellow-warning').forEach(c => c.classList.remove('cell-yellow-warning'));
 }
 
-/*This function populates the error list on the html with the error list 
-passed in from errorDisplay each entry gets an ignore button which when pressed 
-opens a note creation panel.
-
+/*
+renderErrors: Creates the html elements for each error in the errorList and appends them to the appropriate container.
+Inputs: errorList (array of PlanError objects)
+Outputs: N/A
 */
 function renderErrors(errorList) {
     const redContainer = document.getElementById("red-error-list-container");
@@ -142,12 +151,13 @@ function renderErrors(errorList) {
 
 }
 
+/*
+renderIgnoredErrors: Creates the html elements for each ignored error and appends them to the ignored container.
+Inputs: N/A
+Outputs: N/A
 
-
-
-
-
-//This function populates the html ignored error list and adds delete buttons to each entry.
+Gets the ignored errors from state.ignoredErrors.
+*/
 export function renderIgnoredErrors() {
 
     const parentContainer = document.getElementById("ignored-errors-container");
@@ -199,6 +209,7 @@ export function renderIgnoredErrors() {
 
 let currentErrorId = null;
 
+// Helper function to open the ignore modal and set the current error ID.
 function openIgnoreModal(errorId) {
     currentErrorId = errorId;
     document.getElementById("ignoreModal").classList.remove("hidden");

@@ -2,6 +2,11 @@ import { PlanError } from '../objects/planError.js';
 import { state } from '../state.js';
 import { scheduleConfig } from '../state.js'
 
+/* 
+validateNumberOfCourses: Loops through the course plan, counting courses in total, in semesters, and amount of semesters required to graduate.
+Inputs: N/A
+Outputs: errors (Array of PlanError object)
+*/ 
 export function validateNumberOfCourses()
 {
 	let coursePlan = state.coursePlan;
@@ -15,6 +20,7 @@ export function validateNumberOfCourses()
         () => Array(scheduleConfig.slotsPerSemester).fill(false)
     );
 
+	// Helper function to reset number of courses and error state in positions
 	function resetErrorProperties(){
 		numCourses = 0;
 		positions = Array.from(

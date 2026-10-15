@@ -13,7 +13,12 @@ import { initDragAndDrop, initGlobalDeleteZone } from './dragAndDropController.j
 import { initPartTime } from './partTimeScheduleHandler.js';
 
 export let courses = {};
-// init: This function is called when the site/page initially opens and runs all the functions required to get it setup.
+
+/* 
+init: This function is called when the site/page initially opens and runs all the functions required to get it setup.
+Inputs: N/A
+Outputs: N/A
+*/ 
 async function init() {
 
     if (document.readyState === "loading") {
@@ -49,7 +54,11 @@ async function init() {
 	initPartTime();
 }
 
-// factoryReset: This is called when the factory reset button is clicked
+/* 
+factoryReset: This is called when the factory reset button is clicked, and it will run the factory_reset.php file.
+Inputs: N/A
+Outputs: N/A
+*/ 
 async function factoryReset() {
 	//confirm whether or not the user wants to factory reset
 	if (!window.confirm('Restore all course-planner data to the factory defaults?')) {
@@ -74,10 +83,13 @@ async function factoryReset() {
 	}
 }
 
+/* 
+placeCourse: Function to place a course in the course plan at a specific row and column.
+Inputs: row (number), col (number), code (string)
+Outputs: N/A
 
-// placeCourse: Function to place a course in the course plan at a specific row and column.
-// Inputs: Takes in the row and column to put the inputted course in
-// Outputs: Adjusts the state array to contain the course at the given position
+Modifies state.
+*/ 
 export function placeCourse(row, col, code) {
 	state.coursePlan[row][col] = courses[code];
 }
@@ -89,12 +101,20 @@ pathwaySelect.addEventListener('change', (e) => {
     updatePathwayOptions(e.target.value);
 });
 
-// PathwayRefresh: function for other js to use to refresh the pathway where needed
-export function PathwayRefresh(pathway){
+/* 
+pathwayRefresh: Function for other files to refresh the pathway. Uses updatePathwayOptions from pathwayManager.js.
+Inputs: pathway (string)
+Outputs: N/A
+*/ 
+export function pathwayRefresh(pathway){
     updatePathwayOptions(pathway);
 }
 
-// refreshStudyPlan: this function effectively builds the studyplan from groundup in order to display it
+/* 
+refreshStudyPlan: Function effectively rebuilds the study plan from scratch and displays it.
+Inputs: N/A
+Outputs: N/A
+*/ 
 export async function refreshStudyPlan() {
 	await renderCoursePlan(state);//render the course plan
     errorDisplay();//set up the error display to check for any
@@ -102,7 +122,5 @@ export async function refreshStudyPlan() {
     initDragAndDrop(refreshStudyPlan);//setup the drag and drop functionality
 
 }
-
-// This function fetches the available majors and minors from the json files and populates the majorsArray and minorsArray with the data. It then calls the updatePathwayOptions function to update the dropdown options in the HTML form based on the selected pathway.
 
 await init();

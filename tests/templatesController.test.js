@@ -20,7 +20,7 @@ const mockData = vi.hoisted(() => ({
     },
     scheduleConfig: { mode: "full-time" },
     refreshStudyPlan: vi.fn(),
-    importschedule: vi.fn(),
+    importSchedule: vi.fn(),
     getSelectedPathwayCode: vi.fn(),
     getCode: vi.fn(),
     fetch: vi.fn(),
@@ -42,8 +42,8 @@ vi.mock("../javascript/state.js", () => ({
     scheduleConfig: mockData.scheduleConfig
 }));
 
-vi.mock("../javascript/filehandler.js", () => ({
-    importschedule: mockData.importschedule,
+vi.mock("../javascript/fileHandler.js", () => ({
+    importSchedule: mockData.importSchedule,
     getSelectedPathwayCode: mockData.getSelectedPathwayCode,
     getCode: mockData.getCode
 }));
@@ -251,7 +251,7 @@ describe("server template list", () => {
 
         await templateButton.trigger("click");
 
-        expect(mockData.importschedule).toHaveBeenCalledWith(templateData);
+        expect(mockData.importSchedule).toHaveBeenCalledWith(templateData);
         expect(mockData.refreshStudyPlan).toHaveBeenCalledOnce();
         expect(element("templates").close).toHaveBeenCalledOnce();
         expect(element("templates").open).toBe(false);
@@ -304,7 +304,7 @@ describe("server template list", () => {
         });
         await element("templateBtnContainer").children[0].trigger("click");
 
-        expect(mockData.importschedule).not.toHaveBeenCalled();
+        expect(mockData.importSchedule).not.toHaveBeenCalled();
         expect(mockData.refreshStudyPlan).not.toHaveBeenCalled();
         expect(mockData.alert).toHaveBeenCalledWith(
             "Incompatible template: Could not load template file."
@@ -408,7 +408,7 @@ describe("local template uploads", () => {
         expect(mockData.alert).toHaveBeenCalledWith(
             "Please select a valid JSON template file first."
         );
-        expect(mockData.importschedule).not.toHaveBeenCalled();
+        expect(mockData.importSchedule).not.toHaveBeenCalled();
     });
 
     // A valid local JSON file should be parsed, imported, and rendered.
@@ -425,7 +425,7 @@ describe("local template uploads", () => {
         await mockData.readPromise;
 
         expect(mockData.lastReadFile).toBe(file);
-        expect(mockData.importschedule).toHaveBeenCalledWith(templateData);
+        expect(mockData.importSchedule).toHaveBeenCalledWith(templateData);
         expect(mockData.refreshStudyPlan).toHaveBeenCalledOnce();
         expect(element("templates").close).toHaveBeenCalledOnce();
     });
@@ -439,7 +439,7 @@ describe("local template uploads", () => {
         await element("uploadTemplateForm").trigger("submit");
         await mockData.readPromise;
 
-        expect(mockData.importschedule).not.toHaveBeenCalled();
+        expect(mockData.importSchedule).not.toHaveBeenCalled();
         expect(mockData.refreshStudyPlan).not.toHaveBeenCalled();
         expect(mockData.alert).toHaveBeenCalledWith(
             expect.stringContaining("Invalid template:")

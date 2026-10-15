@@ -33,6 +33,11 @@ export const state = {
     attributedCourses: new Map()
 };
 
+/*
+setScheduleMode: Sets the schedule mode to either "full-time" or "part-time" and updates the scheduleConfig accordingly.
+Inputs: mode (string) - either "full-time" or "part-time"
+Outputs: N/A
+*/
 export function setScheduleMode(mode) {
     if (mode === "part-time") {
         scheduleConfig.mode = "part-time";
@@ -44,9 +49,15 @@ export function setScheduleMode(mode) {
         scheduleConfig.slotsPerSemester = 4;
     }
 
+    // Rebuild course plan for new config.
     state.coursePlan = buildCoursePlan();
 }
 
+/*
+mapDomToCoursePlan: Maps the DOM coordinates to the course plan indices. Allows for part-time configuration.
+Inputs: domRow (number), domCol (number)
+Outputs: { semesterIndex: number, slotIndex: number }
+*/
 export function mapDomToCoursePlan(domRow, domCol) {
     // Full-time: 6 semesters and 4 slots so direct mapping is fine
     if (scheduleConfig.mode !== 'part-time') {
@@ -73,6 +84,11 @@ export function mapDomToCoursePlan(domRow, domCol) {
     return { semesterIndex, slotIndex };
 }
 
+/*
+mapCoursePlanToDom: Maps the coursePlan coordinates to DOM indices. Allows for part-time configuration.
+Inputs: planRow (number), planCol (number)
+Outputs: { UIRow: number, UICol: number }
+*/
 export function mapCoursePlanToDom(planRow, planCol) {
     // Full-time: 6 semesters and 4 slots so direct mapping is fine
     if (scheduleConfig.mode !== 'part-time') {

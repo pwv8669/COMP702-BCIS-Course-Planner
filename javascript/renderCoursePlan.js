@@ -2,9 +2,12 @@ import { attributedCourses } from "./validation/majorMinorRequirementsValidator.
 import { scheduleConfig, mapCoursePlanToDom } from "./state.js";
 import { validateMajorMinorRequirements } from "./validation/majorMinorRequirementsValidator.js";
 
-function formatAttribution(attribution) {//This formats the text given by the cell attribution so we can tidily display it.
-    //Inputs:A cell's attributed text
-    //Outputs:A string that formats it tidily
+/*
+formatAttribution: Formats text given by the cell attribution so we can tidily display it.
+Inputs: attribution (string)
+Outputs: N/A
+*/
+function formatAttribution(attribution) {
     return attribution
         .split(" & ")
         .map(optionCode =>
@@ -13,10 +16,14 @@ function formatAttribution(attribution) {//This formats the text given by the ce
         .join(" & ");
 }
 
-function parsePrereqs(node) {//This function exists to find the prerequisites of a given node
-    //Inputs:A node
-    //Outputs: A string that attempts to give the user a node's prerequisites
-    //Do note that despite the name, it can also be used to find co-requisites
+/*
+parsePrereqs: Recursively parses the prerequisites of a given node.
+Inputs: node (object)
+Outputs: A string representing the prerequisites
+
+Can be used for corequisites as well.
+*/
+function parsePrereqs(node) {
     if (!node) return "No prerequisites";//If theres nothing, return that information (used to be displayed, but now just shows no text instead)
 
     // COURSE node
@@ -65,11 +72,12 @@ function parsePrereqs(node) {//This function exists to find the prerequisites of
     return "Unknown prerequisite structure";
 }
 
-
-function TypeOfCell(coursecode, cell, state){//this is a function that sets the given cell's color and returns the given major/minor/reason its in the table
-    //Inputs: Course Code, The cell associated with this course, the state for its arrays
-    //Outputs: A modified class list of the given cell and a string cnotaining its attributed course.
-
+/*
+typeOfCell: Sets the given cell's color and returns the given major/minor/reason its in the table
+Inputs: coursecode (string), cell (DOM element), state (object)
+Outputs: formatted attribution (string)
+*/
+function typeOfCell(coursecode, cell, state){
     try{//we do a try function here as when the site initially opens, it places the core courses. This is called before the system
     //can even attribute them to anything so it will always create an error.
     //Unless the user is somehow able to add courses before the site even finishes loading,
@@ -134,9 +142,12 @@ catch{
 }
 }
 
-export async function renderCoursePlan(state) {//this function assigns colors and text information for a given cell, as well as anything else inside (e.g. information buttons)
-    //INPUT: State (holds all course, pathways major/minor information)
-    //OUTPUT: Sets up the site display specifically for the table
+/*
+renderCoursePlan: Renders the course plan table and each cell with all course information, colors, and details.
+Inputs: state (object)
+Outputs: N/A
+*/
+export async function renderCoursePlan(state) {
     await validateMajorMinorRequirements();//this is called beforehand as it attributes the major and minor requirements for courses/cells
     for (let row = 0; row < scheduleConfig.semesters; row++) {//for loops to go through all cells
         for (let col = 0; col < scheduleConfig.slotsPerSemester; col++) {
@@ -160,7 +171,7 @@ export async function renderCoursePlan(state) {//this function assigns colors an
                 continue;
             }
             const prereqText = parsePrereqs(course.prerequisites);//parse prereqs 
-            const typecell = TypeOfCell(course.code, cell, state);
+            const typecell = typeOfCell(course.code, cell, state);
             const coreqText = parsePrereqs(course.corequisites);//get the corequisites, thankfull the prerequisites function serves just as well for corequisites
             const details = [typecell];
 
