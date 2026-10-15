@@ -4,7 +4,7 @@ import { PlanError, ErrorSeverity } from '../objects/planError.js';
 /* 
 getCourseCounts: Loops through the course plan, if course code is in appearances map, change the value by +1, else add to map with value 1.
 Inputs: N/A
-Outputs: appearances (map, key: courseCode string, value: currentValue integer)
+Outputs: appearances (map, key: courseCode string, value: currentValue Number)
 */ 
 function getCourseCounts(){
     const appearances = new Map();

@@ -33,7 +33,7 @@ export class MinorOption {
 /* 
 resolveRequirements: Takes an input requirement set and course list, and outputs a map for each given requirement and course
 Inputs: requirements (Map from JSON data), courses (Map of Course objects) 
-Outputs: requirements (object, key: requirement, value: map of Course objects)
+Outputs: requirements (object, key: requirement, value: map of string, Course objects)
  
 See courseObjectConverter for details about Course objects
 */ 

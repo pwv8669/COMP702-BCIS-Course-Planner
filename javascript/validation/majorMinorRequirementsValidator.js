@@ -90,6 +90,7 @@ export function validateMajorMinorRequirements() {
     return errors;
 }
 
+// isDoubleMajorPathway: Helper function to determine if the selected pathway has 2 majors and 0 minors.
 function isDoubleMajorPathway(pathway = state.selectedPathway) {
     return pathway === "doubleMajors" || (
         pathway?.numMajors === 2 &&
@@ -97,6 +98,7 @@ function isDoubleMajorPathway(pathway = state.selectedPathway) {
     );
 }
 
+// getPathwayCounts: Helper function to get the expected major and minor count for each pathway.
 function getPathwayCounts(pathway) {
     if (typeof pathway === "object") {
         return {
@@ -117,6 +119,11 @@ function getPathwayCounts(pathway) {
     };
 }
 
+/* 
+getSelectedOptions: Get the selected options in the pathway, pushing errors if parts are missing.
+Inputs: selectedOptions (array of Major/Minor object), requiredCount (Number), optionType (string, "Major" or "Minor"), errors
+Outputs: options (array of Major/Minor object)
+*/ 
 function getSelectedOptions(
     selectedOptions,
     requiredCount,
@@ -144,6 +151,7 @@ function getSelectedOptions(
     return options;
 }
 
+// getPlannedCourses: Helper function to get a map of courses in the course plan (key: code, value: Course object)
 function getPlannedCourses() {
     const courses = new Map();
 
@@ -158,6 +166,11 @@ function getPlannedCourses() {
     return courses;
 }
 
+/* 
+allocateCore: Function to add allocation for Core courses
+Inputs: plannedCourses (Map of string, Course object), ownership (Map of string, Course object), errors (array of PlanError objects)
+Outputs: N/A
+*/ 
 function allocateCore(plannedCourses, ownership, errors) {
     const core = majorOptions.Core;
     const presenceErrors = addRequirementPresenceErrors(
@@ -178,6 +191,11 @@ function allocateCore(plannedCourses, ownership, errors) {
     addOwnership(ownership, allocation, core.Code);
 }
 
+/* 
+allocateDoubleMajors: Function to add allocation for Double Major courses (overlap)
+Inputs: majors (Array of MajorOption object), plannedCourses (Map of string, Course object), ownership (Map of string, Course object), errors (array of PlanError objects)
+Outputs: N/A
+*/ 
 function allocateDoubleMajors(
     majors,
     plannedCourses,
@@ -258,6 +276,11 @@ function allocateDoubleMajors(
     }
 }
 
+/* 
+evaluateDoubleMajorPair: Evaluate double major pairs
+Inputs: first (MajorOption object), second (MajorOption object), plannedCourses (Map of string, Course object), coreOwnership (Map of string, Course object) 
+Outputs: Object { first (MajorOption object), second (MajorOption object), overlappingCourses (Set of Course object), overlapPoints (Set of Array), requiredElectivePoints (number), overlapWithinLimit (boolean), electiveRequirementMet (boolean) }
+*/ 
 function evaluateDoubleMajorPair(
     first,
     second,
@@ -304,6 +327,13 @@ function evaluateDoubleMajorPair(
     };
 }
 
+/* 
+selectBestDoubleMajorPair: Select the best double major pairs
+Inputs: evaluations (Object)
+Outputs: evaluations (Object)
+
+Filtered and sorted
+*/ 
 function selectBestDoubleMajorPair(evaluations) {
     const validEvaluations = evaluations.filter(evaluation =>
         evaluation.overlapWithinLimit &&
@@ -336,6 +366,11 @@ function selectBestDoubleMajorPair(evaluations) {
     )[0];
 }
 
+/* 
+compareDoubleMajorPairs: Compares an allocation pair to see which one should be preferred
+Inputs: a (Object), b (object)
+Outputs: number (number)
+*/ 
 function compareDoubleMajorPairs(a, b) {
     return a.overlapPoints - b.overlapPoints ||
         (
@@ -353,6 +388,11 @@ function compareDoubleMajorPairs(a, b) {
         );
 }
 
+/* 
+addDoubleMajorErrors: Find errors with double major overlaps
+Inputs: evaluation (Object), majors (Array of MajorOption object), errors (Array of PlanError objects)
+Outputs: errors (Array of PlanError objects)
+*/ 
 function addDoubleMajorErrors(evaluation, majors, errors) {
     const overlapCodes = [...evaluation.overlappingCourses];
     const majorNames = majors.map(major => major.Name).join(" & ");
@@ -395,6 +435,11 @@ function addDoubleMajorErrors(evaluation, majors, errors) {
     }
 }
 
+/* 
+allocateExclusiveOptions: Allocate for exclusive
+Inputs: options (Object), plannedCourses (Map of string, Course object), ownership (Map of string, Course object), errors (array of PlanError objects)
+Outputs: N/A
+*/ 
 function allocateExclusiveOptions(
     options,
     plannedCourses,
@@ -470,6 +515,11 @@ function allocateExclusiveOptions(
     }
 }
 
+/* 
+findExclusiveAllocation: Find allocations for exclusive options recursively
+Inputs: options (Object), optionsIndex (number), plannedCourses (Map of string, Course object), ownership (Map of string, Course object), selections (array of selection)
+Outputs: selections, null
+*/ 
 function findExclusiveAllocation(
     options,
     optionIndex,
@@ -509,6 +559,12 @@ function findExclusiveAllocation(
     return null;
 }
 
+
+/* 
+generateOptionAllocations: Get option allocations with requirements
+Inputs: options (Object), plannedCourses (Map of string, Course object), ownership (Map of string, Course object), errors (array of PlanError objects)
+Outputs: N/A
+*/ 
 function generateOptionAllocations(
     option,
     plannedCourses,
@@ -573,6 +629,11 @@ function generateOptionAllocations(
     );
 }
 
+/* 
+getRequirementAssignments: Get assignments for a requirement
+Inputs: requirement (Object), optionCatalog (Map of string, Course object), plannedCourses (Map of string, Course object), blockedCodes (Set of course code string), usedCourses (Set of course code string)
+Outputs: assignments (Map of string, Course object)
+*/ 
 function getRequirementAssignments(
     requirement,
     optionCatalog,
@@ -629,6 +690,11 @@ function getRequirementAssignments(
     return deduplicateAssignments(assignments);
 }
 
+/* 
+assignRequirementCourses: Assign required courses
+Inputs: requirementCourses (Object of string, Course object), optionCatalog (Map of string, Course object), plannedCourses (Map of string, Course object), blockedCodes (Set of course code string), usedCourses (Set of course code string)
+Outputs: assignments (Map of string, Course object)
+*/ 
 function assignRequirementCourses(
     requirementCourses,
     optionCatalog,
@@ -703,6 +769,7 @@ function assignRequirementCourses(
     return deduplicateAssignments(assignments);
 }
 
+// deduplicateAssignments: Helper function to remove duplicate assignments
 function deduplicateAssignments(assignments) {
     const uniqueAssignments = new Map();
 
@@ -726,6 +793,7 @@ function deduplicateAssignments(assignments) {
     );
 }
 
+// countUnavailableCourses: Helper function to count previously used or blocked course codes.
 function countUnavailableCourses(
     courses,
     blockedCodes,
@@ -737,6 +805,11 @@ function countUnavailableCourses(
     ).length;
 }
 
+/* 
+buildPartialAllocation: Build a partial allocation
+Inputs: option (MajorOption or MinorOption object), plannedCourses (Map of string, Course object), blockedCodes (Set of course code string)
+Outputs: allocation (Set of course code string)
+*/ 
 function buildPartialAllocation(
     option,
     plannedCourses,
@@ -773,6 +846,13 @@ function buildPartialAllocation(
     return allocation;
 }
 
+/* 
+addRequirementPresenceErrors: Generate errors for missing required courses
+Inputs: option (MajorOption or MinorOption object), plannedCourses (Map of string, Course object), errors (Array of PlanError object)
+Outputs: errorCount (number)
+
+Outputs the number of errors found.
+*/ 
 function addRequirementPresenceErrors(option, plannedCourses, errors) {
     let errorCount = 0;
 
@@ -823,6 +903,11 @@ function addRequirementPresenceErrors(option, plannedCourses, errors) {
     return errorCount;
 }
 
+/* 
+addExclusiveConflictErrors: Generate errors for distinct courses
+Inputs: option (MajorOption or MinorOption object), plannedCourses (Map of string, Course object), ownership (Map of string, Course object) errors (Array of PlanError object)
+Outputs: N/A
+*/ 
 function addExclusiveConflictErrors(
     option,
     plannedCourses,
@@ -892,6 +977,11 @@ function addExclusiveConflictErrors(
     }
 }
 
+/* 
+addExclusiveCourseError: Generate errors for exclusive overlap.
+Inputs: option (MajorOption or MinorOption object), overlappingCourses (Map of string, Course object), ownership (Map of string, Course object) errors (Array of PlanError object)
+Outputs: N/A
+*/ 
 function addExclusiveCourseError(
     option,
     overlappingCourses,
@@ -926,6 +1016,11 @@ function addExclusiveCourseError(
     ));
 }
 
+/* 
+addOwnership: Generate errors for exclusive overlap.
+Inputs: ownership (Map of string, Course object), courseCodes (Set of courseCode string) optionCode (string)
+Outputs: N/A
+*/ 
 function addOwnership(ownership, courseCodes, optionCode) {
     for (const courseCode of courseCodes) {
         if (!ownership.has(courseCode)) {
@@ -936,6 +1031,11 @@ function addOwnership(ownership, courseCodes, optionCode) {
     }
 }
 
+/* 
+cloneOwnership: Returns a new copy of ownership with the same data
+Inputs: ownership (Map of string, Course object)
+Outputs: cloned ownership (Map of string, Course object)
+*/ 
 function cloneOwnership(ownership) {
     return new Map(
         [...ownership].map(([courseCode, owners]) => [
@@ -945,6 +1045,11 @@ function cloneOwnership(ownership) {
     );
 }
 
+/* 
+populateDisplayMap: Populates display map, ordering attributions by core, major, minor, elective.
+Inputs: plannedCourses (Map of string, Course object), ownership (Map of string, Course object), displayOrder (Array of MajorOption or MinorOption objects)
+Outputs: N/A
+*/ 
 function populateDisplayMap(
     plannedCourses,
     ownership,
@@ -979,6 +1084,11 @@ function populateDisplayMap(
     }
 }
 
+/*
+getCoursesOfferedBy: Get a map with all courses from input option. 
+Inputs: option (MajorOption or MinorOption object)
+Outputs: courses (Map of Courses, key: string, value: Course object)
+*/
 function getCoursesOfferedBy(option) {
     const courses = new Map();
 
@@ -991,6 +1101,7 @@ function getCoursesOfferedBy(option) {
     return [...courses.values()];
 }
 
+// getOptionName: Helper function to get display name for an option.
 function getOptionName(optionCode) {
     if (optionCode === majorOptions.Core.Code) {
         return majorOptions.Core.Name;
@@ -1008,6 +1119,7 @@ function getOptionName(optionCode) {
     return optionCode;
 }
 
+// getCoursePoints: Helper function to get points value from a course (usually 15).
 function getCoursePoints(course) {
     const points = Number(course?.points);
     return Number.isFinite(points) ? points : 0;
