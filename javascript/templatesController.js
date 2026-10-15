@@ -1,6 +1,6 @@
 import { refreshStudyPlan } from './app.js';
 import { state, scheduleConfig } from './state.js';
-import { importschedule, getSelectedPathwayCode, getCode } from './filehandler.js';
+import { importSchedule, getSelectedPathwayCode, getCode } from './fileHandler.js';
 
 /*This code handles all the premade studyplan template buttons it dynamically generates
 buttons based on the stored files in the json templates folder of the web app.
