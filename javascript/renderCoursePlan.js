@@ -178,12 +178,22 @@ export async function renderCoursePlan(state) {
             if(prereqText != "No prerequisites"){//if there are prerequisites then add them to the string
                 details.push(`Prerequisites: ${prereqText}`);
             }
+            const maximumRequirementLevel =
+                course.requiresAllCoreAndMajorRequirementsUpToLevel;
+            if (
+                maximumRequirementLevel !== null &&
+                maximumRequirementLevel !== undefined
+            ) {//Add the dynamic Core and selected-major prerequisite.
+                const requirementDescription =
+                    "Prerequisites: Complete all Core and selected-major " +
+                    `requirements up to Level ${maximumRequirementLevel}`;
+                details.push(requirementDescription);
+            }
             if(coreqText != "No prerequisites"){//if there are corequisites then add them to the string
                 details.push(`Corequisites: ${coreqText}`);
             }
 
             cell.innerHTML = `<div class="course-cell">
-                <div class="course-type">${typecell}</div>
                 <div class="course-name">${course.code}: ${course.name}</div>
                 <button class="prereq-btn" data-html2canvas-ignore="true">
                     <svg xmlns="http://www.w3.org/2000/svg" class="infoIcon" viewBox="0 0 24 24" aria-label="Course details">
