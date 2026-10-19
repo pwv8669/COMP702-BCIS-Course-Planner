@@ -1,4 +1,6 @@
 // The aim of this file is to convert the courses from courses.json to objects which can be used in the application. This is done by creating a Course class and then creating instances of that class for each course in the courses.json file.
+
+// Course class that holds all course-related data.
 class Course {
     constructor(data) {
         this.code = data.Code;
@@ -43,12 +45,24 @@ class Node {
     }
 }
 
-// The tokenize function takes a string input and returns an array of tokens. The regex used in the match method matches parentheses, AND, OR, and course codes (e.g., COMP500).
+/*
+tokenize: Takes a string input and returns an array of tokens.
+Inputs: input (string)
+Outputs: tokens (array of strings)
+
+The regex used in the match method matches parentheses, AND, OR, and course codes (e.g., COMP500).
+*/
 function tokenize(input) {
     return input.match(/\(|\)|AND|OR|[A-Z]+\d+/g);
 }
 
-// The parse function takes an array of tokens and builds a tree structure based on the logical operators (AND, OR) and parentheses.
+/*
+parse: Takes an array of tokens and builds a tree structure based on the logical operators (AND, OR) and parentheses.
+Inputs: tokens (array of strings)
+Outputs: node (Node object)
+
+The regex used in the match method matches parentheses, AND, OR, and course codes (e.g., COMP500).
+*/
 function parse(tokens) {
     // We use an index variable to keep track of our position in the tokens array as we parse it. This allows us to move through the tokens sequentially and build our tree structure based on the logical operators and parentheses.
     let index = 0;
@@ -97,7 +111,14 @@ function parse(tokens) {
     return parseOr();
 }
 
-// The flatten function takes a node and recursively flattens any nested AND or OR nodes of the same type. This is done to simplify the tree structure and make it easier to work with when resolving prerequisites and corequisites later on. For example, if we have an AND node that has another AND node as a child, we can merge their children into a single AND node.
+/*
+flattenTree: Takes an input node, and recursively flattens any nested AND or OR nodes of the same type.
+Inputs: node (Node object)
+Outputs: node (Node object)
+
+This is done to simplify the tree structure and make it easier to work with when resolving prerequisites and corequisites later on.
+For example, if we have an AND node that has another AND node as a child, we can merge their children into a single AND node.
+*/
 function flattenTree(node) {
     if (!node) return node;
 
@@ -120,7 +141,14 @@ function flattenTree(node) {
     return node;
 }
 
-// The resolveTree function takes a node and a courseMap (which is an object mapping course codes to Course objects) and recursively resolves the tree structure of prerequisites and corequisites by replacing COURSE nodes with the actual Course objects from the courseMap. This allows us to easily access the full course data when we need to check prerequisites or corequisites for a given course.
+/*
+resolveTree: Takes a node and a courseMap (which is an object mapping course codes to Course objects) and recursively resolves the tree structure of prerequisites and corequisites.
+Inputs: node (Node object), courseMap (object)
+Outputs: N/A
+
+This is done by replacing COURSE nodes with the actual Course objects from the courseMap.
+This allows us to easily access the full course data when we need to check prerequisites or corequisites for a given course.
+*/
 function resolveTree(node, courseMap) {
     if (!node) return;
     // If the node is a COURSE node, we look up the corresponding Course object in the courseMap using the node's value (which is the course code) and attach it to the node. This way, when we later access this node, we can directly access the full Course object instead of just the course code.
@@ -134,6 +162,14 @@ function resolveTree(node, courseMap) {
     );
 }
 
+/*
+loadCourses: Imports data from the courses.json files, converts them into Course objects, and prepares them for use.
+Inputs: N/A
+Outputs: courses (object, key: courseCode string, value: Course object)
+
+This is done by replacing COURSE nodes with the actual Course objects from the courseMap.
+This allows us to easily access the full course data when we need to check prerequisites or corequisites for a given course.
+*/
 export async function loadCourses() {
     // We fetch the courses.json file and parse it as JSON to get the raw course data. This data is expected to be an object where each key is a course code and each value is an object containing the course details (e.g., name, points, prerequisites, etc.).
     const response = await fetch("json/courses.json");

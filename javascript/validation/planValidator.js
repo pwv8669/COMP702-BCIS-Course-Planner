@@ -9,7 +9,11 @@ import { validatePoints } from "./pointsValidator.js";
 //Import state for error notes
 import { state } from "../state.js";
 
-// Returns an array of error objects.
+/* 
+validateStudyPlan: Main function for all validation of course plan.
+Inputs: N/A
+Outputs: errors (array of PlanError object)
+*/ 
 export function validateStudyPlan(){
     const errors = [];
     

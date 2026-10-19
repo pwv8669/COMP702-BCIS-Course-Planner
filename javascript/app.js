@@ -13,18 +13,25 @@ import { initDragAndDrop, initGlobalDeleteZone } from './dragAndDropController.j
 import { initPartTime } from './partTimeScheduleHandler.js';
 
 export let courses = {};
+
+/* 
+init: This function is called when the site/page initially opens and runs all the functions required to get it setup.
+Inputs: N/A
+Outputs: N/A
+*/ 
 async function init() {
 
     if (document.readyState === "loading") {
         await new Promise(resolve => document.addEventListener("DOMContentLoaded", resolve));
     }
-
+	// load the courses and output it for debugging purposes.
 	courses = await loadCourses();
 	console.log(courses);
-
+	// Add the factory reset button in case of issue
 	document.getElementById('factoryResetButton')?.addEventListener('click', factoryReset);
 
 	// Example usage of the placeCourse function.
+	// This places the core courses when the user initially opens the page.
 	placeCourse(0, 0, 'COMP500');
 	placeCourse(0, 1, 'COMP501');
 	placeCourse(0, 2, 'COMP508');
@@ -39,17 +46,26 @@ async function init() {
 	initGlobalDeleteZone(async () => {
 	    await refreshStudyPlan();
 	})
-	
+	// wait for the study plan to be refreshed/setup
 	await refreshStudyPlan();
+	// initialize the pathways the user may take
 	await initPathwayOptions();
+	// initialize part time button
 	initPartTime();
 }
 
+/* 
+factoryReset: This is called when the factory reset button is clicked, and it will run the factory_reset.php file.
+Inputs: N/A
+Outputs: N/A
+*/ 
 async function factoryReset() {
+	//confirm whether or not the user wants to factory reset
 	if (!window.confirm('Restore all course-planner data to the factory defaults?')) {
 		return;
 	}
 
+	//if so, attempt to reset the entries with the factory_reset.php file
 	try {
 		const response = await fetch('./php/factory_reset.php', {
 			method: 'POST'
@@ -67,8 +83,13 @@ async function factoryReset() {
 	}
 }
 
+/* 
+placeCourse: Function to place a course in the course plan at a specific row and column.
+Inputs: row (number), col (number), code (string)
+Outputs: N/A
 
-// Function to place a course in the course plan at a specific row and column.
+Modifies state.
+*/ 
 export function placeCourse(row, col, code) {
 	state.coursePlan[row][col] = courses[code];
 }
@@ -80,18 +101,26 @@ pathwaySelect.addEventListener('change', (e) => {
     updatePathwayOptions(e.target.value);
 });
 
-export function PathwayRefresh(pathway){
+/* 
+pathwayRefresh: Function for other files to refresh the pathway. Uses updatePathwayOptions from pathwayManager.js.
+Inputs: pathway (string)
+Outputs: N/A
+*/ 
+export function pathwayRefresh(pathway){
     updatePathwayOptions(pathway);
 }
 
+/* 
+refreshStudyPlan: Function effectively rebuilds the study plan from scratch and displays it.
+Inputs: N/A
+Outputs: N/A
+*/ 
 export async function refreshStudyPlan() {
-	await renderCoursePlan(state);
-    errorDisplay();
-    generateDynamicCourseList(courses);
-    initDragAndDrop(refreshStudyPlan);
+	await renderCoursePlan(state);//render the course plan
+    errorDisplay();//set up the error display to check for any
+    generateDynamicCourseList(courses);//generate a list of possible courses that may be picked based on user selection
+    initDragAndDrop(refreshStudyPlan);//setup the drag and drop functionality
 
 }
-
-// This function fetches the available majors and minors from the json files and populates the majorsArray and minorsArray with the data. It then calls the updatePathwayOptions function to update the dropdown options in the HTML form based on the selected pathway.
 
 await init();

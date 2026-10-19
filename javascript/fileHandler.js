@@ -1,4 +1,4 @@
-import { placeCourse, PathwayRefresh } from "./app.js";
+import { placeCourse, pathwayRefresh } from "./app.js";
 import { renderCoursePlan } from "./renderCoursePlan.js";
 import { state, scheduleConfig } from "./state.js";
 import { renderIgnoredErrors } from "./errorDisplay.js";
@@ -11,9 +11,14 @@ import {
 const majorOptions = await loadMajorOptions();
 const minorOptions = await loadMinorOptions();
 
+/*
+init: Sets up the saveFileButton.
+Inputs: N/A
+Outputs: N/A
+*/
 function init() {
-    const button = document.getElementById("SaveFileButton");
-    button?.addEventListener("click", SaveFile, false);
+    const button = document.getElementById("saveFileButton");
+    button?.addEventListener("click", saveFile, false);
 }
 
 if (document.readyState === "loading") {
@@ -22,6 +27,14 @@ if (document.readyState === "loading") {
     init();
 }
 
+/*
+getCode: Tries to get the code from an input value.
+Inputs: value (any)
+Outputs: code (string), or null.
+
+Intended for objects with code properties, or for strings that are already codes.
+Course codes, Major or minor codes are examples.
+*/
 export function getCode(value) {
     const code = typeof value === "object" && value !== null
         ? value.Code ?? value.code
@@ -40,6 +53,11 @@ export function getCode(value) {
     return String(code);
 }
 
+/*
+resolveSelections: Tries to resolve input values into a MajorOption or MinorOption object based on the inputs.
+Inputs: values (array), options (Map of MajorOption or MinorOption objects), size (number), allowedCount (number), type (string)
+Outputs: option (MajorOption or MinorOption object), or null.
+*/
 function resolveSelections(values, options, size, allowedCount, type) {
     const input = Array.isArray(values) ? values : [];
 
@@ -58,6 +76,13 @@ function resolveSelections(values, options, size, allowedCount, type) {
     });
 }
 
+/*
+loadSchedule: Loads a schedule from an input array into the state.
+Inputs: schedule (2D array of course codes)
+Outputs: N/A
+
+Used for schedule file import.
+*/
 function loadSchedule(schedule) {
     if (!Array.isArray(schedule)) {
         throw new Error("The file does not contain a valid schedule.");
@@ -83,7 +108,14 @@ function loadSchedule(schedule) {
     }
 }
 
-export function importschedule(jsonInput) {
+/*
+importSchedule: Main function for loading in the saved json schedule file
+Inputs: jsonInput (object)
+Outputs: true if successful, throws an error if not.
+
+Used for schedule file import.
+*/
+export function importSchedule(jsonInput) {
     if (!jsonInput || typeof jsonInput !== "object") {
         throw new Error("The imported file must contain a JSON object.");
     }
@@ -102,7 +134,7 @@ export function importschedule(jsonInput) {
     }
 
     pathwaySelect.value = pathwayCode;
-    PathwayRefresh(pathwayCode);
+    pathwayRefresh(pathwayCode);
 
     const pathway = state.selectedPathway;
     if (!pathway || typeof pathway.numMajors !== "number") {
@@ -150,13 +182,14 @@ export function importschedule(jsonInput) {
         : {};
 
     // Rebuild the controls after resolving file codes into state objects.
-    PathwayRefresh(pathwayCode);
+    pathwayRefresh(pathwayCode);
     renderIgnoredErrors();
     renderCoursePlan(state);
 
     return true;
 }
 
+// getSelectedPathwayCode: Helper function to get the code of a selected pathway. Else null.
 export function getSelectedPathwayCode() {
     const selectedValue = document.getElementById("pathwaySelect")?.value;
     if (selectedValue) return selectedValue;
@@ -168,8 +201,14 @@ export function getSelectedPathwayCode() {
     return null;
 }
 
-// Save state objects as their stable JSON codes rather than "[object Object]".
-export function SaveFile() {
+/*
+saveFile: Convert state objects to JSON codes rather than "[object Object]".
+Inputs: N/A
+Outputs: N/A
+
+Downloads the JSON file containing the schedule.
+*/
+export function saveFile() {
     const payload = {
         selectedPathway: getSelectedPathwayCode(),
         selectedMajors: state.selectedMajors.map(getCode),

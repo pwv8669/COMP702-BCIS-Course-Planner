@@ -2,8 +2,8 @@
 import { state } from './state.js';
 
 
-
-export async function SetupSelections()
+// setupSelections: Sets up the options that the course editor can use to choose from
+export async function setupSelections()
 {
 	try{
 		const coursesData = await fetch('json/courses.json', { cache: 'no-store' });//open file
@@ -30,8 +30,8 @@ export async function SetupSelections()
 	}
 }
 
-
-export async function SetupMajorMinorSelections()
+// setupMajorMinorSelections: Sets up the options that the major/minor editor can use to choose from
+export async function setupMajorMinorSelections()
 {
 	let majorminor = "";
 	try {
@@ -79,7 +79,7 @@ export async function SetupMajorMinorSelections()
 	
 
 }
-
+// initFactoryResetButton: Adds the factory reset button the user can use to change course and major minor data back to the backup files if required
 async function initFactoryResetButton() 
 {
     const button = document.getElementById('factoryResetButton');
@@ -113,6 +113,6 @@ async function initFactoryResetButton()
 
 }
 
-await SetupSelections();
+await setupSelections();
 await initFactoryResetButton();
-await SetupMajorMinorSelections();
+await setupMajorMinorSelections();

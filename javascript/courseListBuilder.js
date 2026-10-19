@@ -6,6 +6,12 @@ import { state } from './state.js';
  * Generates collapsible lists from instantiated Course objects
  * @param {Object} coursesMap - Object mapping course codes to Course instances
  */
+
+/*
+generateDynamicCourseList: Creates the list of courses that can be picked on the side based on the given majors and minors
+Inputs: courses (object, key: courseCode string, value: Course object)
+Outputs: N/A
+*/
 export function generateDynamicCourseList(courses) {
 
     const sidebar = document.getElementById('dynamic-course-sidebar');
@@ -175,6 +181,11 @@ export function generateDynamicCourseList(courses) {
 
 }
 
+/*
+restoreScrollPos: Sets the scroll position of the list when it gets rebuilt
+Inputs: N/A
+Outputs: N/A
+*/
 function restoreScrollPos() {
     const savedPos = localStorage.getItem('scrollPos');
     const sidebar = document.getElementById('dynamic-course-sidebar');

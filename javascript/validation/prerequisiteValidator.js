@@ -5,7 +5,11 @@ import { loadMajorOptions } from '../objects/majorMinorOption.js';
 
 const majorOptions = await loadMajorOptions();
 
-// Returns all codes for courses completed prior to a given semester.
+/* 
+getCompletedCourses: Returns all codes for courses completed prior to a given semester.
+Inputs: currentSemester (number)
+Outputs: completed (Set of coursecode string)
+*/ 
 export function getCompletedCourses(currentSemester){
     // We create a set to keep track of all the previously completed courses' codes.
     const completed = new Set()
@@ -21,7 +25,11 @@ export function getCompletedCourses(currentSemester){
     return completed;
 }
 
-// Returns all codes for courses taken in one specific semester.
+/* 
+getCoursesInSemester: Returns all codes for courses taken in one specific semester.
+Inputs: semester (number)
+Outputs: courses (Set of coursecode string)
+*/ 
 function getCoursesInSemester(semester) {
     const courses = new Set();
 
@@ -38,6 +46,11 @@ function getCoursesInSemester(semester) {
     return courses;
 }
 
+/* 
+evaluatePrerequisiteTree: Recursive function which checks prerequisite nodes until none are left
+Inputs: node (Node object), completedCourses (Set of courses)
+Outputs: true (if no prerequisites), false (if prerequisites)
+*/ 
 export function evaluatePrerequisiteTree(node, completedCourses) {
     // No Prerequisites
     if (!node) return true;
@@ -58,6 +71,11 @@ export function evaluatePrerequisiteTree(node, completedCourses) {
     return false;
 }
 
+/* 
+evaluateCoreAndMajorRequirements: Checks if core and major requirements are met (amount of required courses)
+Inputs: maximumLevel (number), completedCourses (Set of Course objects)
+Outputs: true / false
+*/ 
 export function evaluateCoreAndMajorRequirements(
     maximumLevel,
     completedCourses
@@ -98,6 +116,13 @@ export function evaluateCoreAndMajorRequirements(
     );
 }
 
+/* 
+validatePointPrerequisites: Validates point prerequisites for courses, returning errors if not met.
+Inputs: N/A
+Outputs: errors (Array of PlanError object)
+
+This is not point validation for the entire course plan. That is handled in pointsValidator.
+*/ 
 export function validatePointPrerequisites(){
     const errors = [];
 
@@ -177,6 +202,11 @@ export function validatePointPrerequisites(){
     return errors;
 }
 
+/* 
+validatePrerequisites: Validates all course prerequisites (and runs the point prerequisite function).
+Inputs: N/A
+Outputs: errors (Array of PlanError object)
+*/ 
 export function validatePrerequisites(){
     const errors = [];
     for (let semester = 0; semester < scheduleConfig.semesters; semester++){
@@ -257,6 +287,11 @@ export function validatePrerequisites(){
     return errors;
 }
 
+/* 
+validateCorequisites: Similar to prerequisite function, but can be in the same semester instead of strictly in the previous semester.
+Inputs: N/A
+Outputs: errors (Array of PlanError)
+*/ 
 export function validateCorequisites(){
     const errors = [];
     for (let semester = 0; semester < scheduleConfig.semesters; semester++){

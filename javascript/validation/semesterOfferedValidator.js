@@ -2,6 +2,11 @@ import { state } from "../state.js";
 import { PlanError, ErrorSeverity } from '../objects/planError.js';
 import { scheduleConfig } from "../state.js";
 
+/* 
+validateSemestersOffered: Validates if the semester a course is placed in is one of the semesters it is offered in.
+Inputs: N/A
+Outputs: errors (Array of PlanError)
+*/ 
 export function validateSemestersOffered() {
     const errors = [];
     for (let semester = 0; semester < scheduleConfig.semesters; semester++){
@@ -25,6 +30,7 @@ export function validateSemestersOffered() {
     return errors;
 }
 
+// Helper function to determine if a course is offered in the given semester
 function offeredThisSemester(course, semester) {
     const isSemester1 = semester % 2 === 0;
 
