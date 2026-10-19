@@ -1,19 +1,21 @@
-// Autopopulate study plan module
-// This script aims to build a set containing courses which satisfy the major/minor requirements
-// It tries all combinations of ChooseN requirement choices & duplicate Required substitutions until a valid solution is found.
-// It then schedules the courses in a valid way.
-
-// Imports ---------- //
+// This module builds and schedules courses that satisfy the selected options.
+// It searches ChooseN choices and overlapping requirement substitutions.
 import { refreshStudyPlan } from './app.js';
 import { state } from './state.js';
 import { loadMajorOptions } from "./objects/majorMinorOption.js";
 import { evaluatePrerequisiteTree } from './validation/prerequisiteValidator.js';
 import { loadCourses, NodeType } from './objects/course.js';
 
-// Global consts ---------- //
 const coursesObject = await loadCourses();
 const majorOptions = await loadMajorOptions();
 
+/*
+isDoubleMajorPathway: Checks whether the selected pathway has two majors.
+Inputs: N/A
+Outputs: isDoubleMajor (boolean)
+
+Reads selectedPathway from state.js.
+*/
 function isDoubleMajorPathway() {
     const pathway = state.selectedPathway;
 
@@ -30,7 +32,7 @@ const requiredCourseSubstitutions = [];
 
 const chooseNSubstitutions = [];
 const chooseNRequirementOwners = new WeakMap();
-const MAX_DOUBLE_MAJOR_OVERLAP_POINTS = 30;
+const maxDoubleMajorOverlapPoints = 30;
 
 /*
  * Course data and semester rules are static for the lifetime of the page, so
@@ -41,14 +43,19 @@ const MAX_DOUBLE_MAJOR_OVERLAP_POINTS = 30;
 const scheduleCache = new Map();
 const effectivePrerequisiteTreeCache = new WeakMap();
 
-// Rigging event listener to button that triggers autopopulation
+// Connect the autocomplete button to the study plan generator.
 const button = document.getElementById('AutocompletePlanButton');
 button.addEventListener('click', () => {
-    // Call the function to autopopulate the study plan
     autocompleteStudyPlan();
 });
 
-// Entry point for autocompletion logic
+/*
+autocompleteStudyPlan: Generates and displays an automatic study plan.
+Inputs: N/A
+Outputs: N/A
+
+Calls refreshStudyPlan from app.js to update the displayed HTML.
+*/
 function autocompleteStudyPlan() {
     if (!generateStudyPlan()) {
         return;
@@ -58,22 +65,24 @@ function autocompleteStudyPlan() {
 }
 
 /*
- * Generate and commit a plan without rendering it. Keeping generation
- * separate from the button/UI work makes the solver reusable and keeps its
- * performance straightforward to test.
- */
+generateStudyPlan: Generates and stores a study plan without rendering it.
+Inputs: N/A
+Outputs: generated (boolean)
+
+The scheduling process updates coursePlan in state.js only when successful.
+*/
 export function generateStudyPlan() {
-    // Checks that pathway and options have been selected, fails otherwise
+    // Stop when the required pathway options have not been selected.
     if (!checkIfMajorsAndMinorsSelected()) {
         return false;
     }
 
-    // Wipes the substitution list, as it should not contain leftover data.
+    // Clear substitution data left by an earlier generation attempt.
     requiredCourseOwners.clear();
     requiredCourseSubstitutions.length = 0;
     chooseNSubstitutions.length = 0;
 
-    // Builds a list of courses, if it could not build a valid study plan, it fails.
+    // Stop when no valid selection and schedule can be built.
     const selectedCourses = buildCourseList();
     if (!selectedCourses) {
         alert("Unable to generate a valid study plan.");
@@ -83,7 +92,11 @@ export function generateStudyPlan() {
     return true;
 }
 
-// Builds a map of all the selected courses.
+/*
+buildCourseList: Builds the courses needed by the selected pathway options.
+Inputs: N/A
+Outputs: selectedCourses (Map of course codes to Course objects), or null
+*/
 function buildCourseList() {
     const selectedCourses = new Map();
 
@@ -104,10 +117,15 @@ function buildCourseList() {
     return selectedCourses;
 }
 
-// --- BuildCourseList() helper functions --- //
-// Adds core courses to the selectedCourses map.
+/*
+addCoreCourses: Adds required Core courses to the selected course map.
+Inputs: selectedCourses (Map of course codes to Course objects)
+Outputs: N/A
+
+Reads Core requirements loaded from majors.json.
+*/
 function addCoreCourses(selectedCourses) {
-    const core = majorOptions["Core"]
+    const core = majorOptions["Core"];
     if (!core) return;
 
     for (const requirement of core.Requirements) {
@@ -121,12 +139,18 @@ function addCoreCourses(selectedCourses) {
     }
 }
 
-// Adds required courses in the same core-major-minor order as the requirements
-// validator and records both options involved in every overlap.
+/*
+addRequiredCourses: Adds required major and minor courses in validation order.
+Inputs: selectedCourses (Map of course codes to Course objects)
+Outputs: N/A
+
+Reads selectedPathway, selectedMajors, and selectedMinors from state.js.
+Records both options involved in each overlapping course requirement.
+*/
 function addRequiredCourses(selectedCourses) {
     const selectedPathway = state.selectedPathway;
 
-    // Add major required courses
+    // Add required courses from each selected major.
     for (let i = 0; i < selectedPathway.numMajors; i++) {
         const major = state.selectedMajors[i];
         if (!major) continue;
@@ -137,7 +161,7 @@ function addRequiredCourses(selectedCourses) {
         );
     }
 
-    // Add minor required courses
+    // Add required courses from each selected minor.
     for (let i = 0; i < selectedPathway.numMinors; i++) {
         const minor = state.selectedMinors[i];
         if (!minor) continue;
@@ -149,6 +173,13 @@ function addRequiredCourses(selectedCourses) {
     }
 }
 
+/*
+addRequiredCoursesFromOption: Adds required courses from one pathway option.
+Inputs: option (MajorOption or MinorOption object), selectedCourses (Map)
+Outputs: N/A
+
+Records overlapping requirements for later substitution.
+*/
 function addRequiredCoursesFromOption(
     option,
     selectedCourses
@@ -173,7 +204,13 @@ function addRequiredCoursesFromOption(
     }
 }
 
-// Recursive backtracking to satisfy all ChooseN requirements.
+/*
+tryChooseNRequirements: Selects courses for every ChooseN requirement.
+Inputs: requirements (array), index (integer), selectedCourses (Map)
+Outputs: completed (boolean)
+
+Uses recursive backtracking and schedules a completed course selection.
+*/
 function tryChooseNRequirements(
     requirements,
     index,
@@ -287,10 +324,13 @@ function tryChooseNRequirements(
 }
 
 /*
- * Within a Choose-N requirement, first try courses whose prerequisites are
- * already present. The JSON order is preserved within each group so this
- * heuristic does not otherwise alter the preferred academic ordering.
- */
+orderRequirementCourses: Orders ChooseN courses for the selection search.
+Inputs: courses (array of Course objects), selectedCourses (Map)
+Outputs: orderedCourses (array of Course objects)
+
+Courses with available prerequisites are tried first. Original JSON order is
+preserved within each group.
+*/
 function orderRequirementCourses(
     courses,
     selectedCourses
@@ -329,9 +369,13 @@ function orderRequirementCourses(
 }
 
 /*
- * Yield combinations one at a time. This keeps the search lazy: as soon as a
- * valid plan is found, no later combinations are built or stored in memory.
- */
+getCombinations: Yields each course combination of the requested size.
+Inputs: courses (array), count (integer), startIndex (integer),
+currentCombination (array)
+Outputs: combinations (generator of arrays)
+
+The lazy search stops building combinations after a valid plan is found.
+*/
 function* getCombinations(
     courses,
     count,
@@ -370,7 +414,13 @@ function* getCombinations(
     }
 }
 
-// Collect all ChooseN requirements from Core and selected majors/minors.
+/*
+getAllChooseNRequirements: Collects ChooseN requirements in validation order.
+Inputs: N/A
+Outputs: requirements (array of requirement objects)
+
+Reads the Core option and selected pathway options from state.js.
+*/
 function getAllChooseNRequirements() {
     const requirements = [];
     const selectedPathway = state.selectedPathway;
@@ -404,7 +454,13 @@ function getAllChooseNRequirements() {
     return requirements;
 }
 
-// Substitute overlapping courses.
+/*
+tryOverlapSubstitutions: Selects substitutes for overlapping requirements.
+Inputs: selectedCourses (Map of course codes to Course objects)
+Outputs: completed (boolean)
+
+Reads the elective count from selectedPathway in state.js.
+*/
 function tryOverlapSubstitutions(selectedCourses) {
     const replacementGroups = [
         ...getReplacementGroups(),
@@ -427,10 +483,13 @@ function tryOverlapSubstitutions(selectedCourses) {
 }
 
 /*
- * Try replacement groups using the most-constrained group first. Candidate
- * lists change as courses are selected, so this choice is recalculated at
- * every level of the search.
- */
+tryReplacementGroups: Selects and schedules courses for replacement groups.
+Inputs: replacementGroups (array), selectedCourses (Map)
+Outputs: completed (boolean)
+
+Updates selectedElectives in state.js after a valid elective choice is found.
+The most constrained group is recalculated at each search level.
+*/
 function tryReplacementGroups(
     replacementGroups,
     selectedCourses
@@ -575,6 +634,11 @@ function tryReplacementGroups(
     return false;
 }
 
+/*
+getReplacementCandidates: Gets ordered candidates for one replacement group.
+Inputs: group (object), selectedCourses (Map)
+Outputs: candidates (array of Course objects)
+*/
 function getReplacementCandidates(
     group,
     selectedCourses
@@ -607,11 +671,13 @@ function getReplacementCandidates(
 }
 
 /*
- * Try candidates whose prerequisites are already represented by the current
- * course set first. Flexible offerings and lower-level courses are used as
- * tie-breakers. This changes search order only; every candidate remains
- * available to the complete backtracking search.
- */
+orderCandidateCourses: Orders replacement candidates for the search.
+Inputs: candidates (array of Course objects), selectedCourses (Map)
+Outputs: orderedCandidates (array of Course objects)
+
+Useful prerequisites, available prerequisites, flexible offerings, and lower
+levels determine search order. Every candidate remains available.
+*/
 function orderCandidateCourses(
     candidates,
     selectedCourses
@@ -719,10 +785,13 @@ function orderCandidateCourses(
 }
 
 /*
- * Convert prerequisites which depend on the selected majors into the same
- * AND/OR tree used by ordinary course prerequisites. This lets selection,
- * domain propagation, and final validation all enforce the same rule.
- */
+getEffectivePrerequisiteTree: Builds all prerequisites for one course.
+Inputs: course (Course object)
+Outputs: prerequisiteTree (object), or null
+
+Reads selectedMajors from state.js. Dynamic requirements are converted to the
+same AND/OR tree used by ordinary prerequisites.
+*/
 function getEffectivePrerequisiteTree(course) {
     const maximumLevel =
         course.requiresAllCoreAndMajorRequirementsUpToLevel;
@@ -781,6 +850,11 @@ function getEffectivePrerequisiteTree(course) {
     return effectiveTree;
 }
 
+/*
+buildRequirementPrerequisiteTree: Converts one requirement to an AND/OR tree.
+Inputs: requirement (object), maximumLevel (integer)
+Outputs: prerequisiteTree (object), or null
+*/
 function buildRequirementPrerequisiteTree(
     requirement,
     maximumLevel
@@ -834,6 +908,11 @@ function buildRequirementPrerequisiteTree(
     };
 }
 
+/*
+combinePrerequisiteNodes: Combines prerequisite nodes under one operator.
+Inputs: type (string), nodes (array of prerequisite nodes)
+Outputs: combinedNode (object), or null
+*/
 function combinePrerequisiteNodes(type, nodes) {
     if (nodes.length === 0) {
         return null;
@@ -849,6 +928,11 @@ function combinePrerequisiteNodes(type, nodes) {
     };
 }
 
+/*
+prerequisiteTreeIsCovered: Checks whether course codes cover a tree.
+Inputs: node (prerequisite node), courseCodes (Set of strings)
+Outputs: isCovered (boolean)
+*/
 function prerequisiteTreeIsCovered(
     node,
     courseCodes
@@ -884,6 +968,11 @@ function prerequisiteTreeIsCovered(
     return false;
 }
 
+/*
+getCombinationCount: Calculates how many combinations a selection can make.
+Inputs: numberOfCourses (integer), count (integer)
+Outputs: combinationCount (integer)
+*/
 function getCombinationCount(
     numberOfCourses,
     count
@@ -915,9 +1004,13 @@ function getCombinationCount(
     return result;
 }
 
-// Build one replacement group for each required-course overlap. Keeping the
-// two participating options on the group allows the candidate policy to
-// match the requirements validator.
+/*
+getReplacementGroups: Builds groups for overlapping required courses.
+Inputs: N/A
+Outputs: replacementGroups (array)
+
+Each group retains both pathway options used by the requirements validator.
+*/
 function getReplacementGroups() {
     return requiredCourseSubstitutions.map(
         substitution => ({
@@ -927,6 +1020,11 @@ function getReplacementGroups() {
     );
 }
 
+/*
+getChooseNReplacementGroups: Builds groups for overlapping ChooseN courses.
+Inputs: N/A
+Outputs: replacementGroups (array)
+*/
 function getChooseNReplacementGroups() {
     return chooseNSubstitutions.map(
         substitution => ({
@@ -939,10 +1037,14 @@ function getChooseNReplacementGroups() {
     );
 }
 
-// Determine candidate courses that compensate for a duplicated required
-// course. Double-major overlaps use electives and may never exceed 30 points.
-// Other pathways require a same-or-higher-level course from the option whose
-// requirement still needs to be fulfilled.
+/*
+getAvailableReplacementCourses: Gets substitutes for a required course.
+Inputs: group (replacement group), selectedCourses (Map)
+Outputs: availableCourses (array of Course objects)
+
+Double-major overlaps use electives within the overlap limit. Other pathways
+use a same-or-higher-level course from the unfulfilled option.
+*/
 function getAvailableReplacementCourses(
     group,
     selectedCourses
@@ -956,7 +1058,7 @@ function getAvailableReplacementCourses(
     if (isDoubleMajor) {
         if (
             requiredSubstitutionPoints >
-            MAX_DOUBLE_MAJOR_OVERLAP_POINTS
+            maxDoubleMajorOverlapPoints
         ) {
             return [];
         }
@@ -991,6 +1093,13 @@ function getAvailableReplacementCourses(
         .sort((a, b) => a.level - b.level);
 }
 
+/*
+getAvailableChooseNReplacementCourses: Gets substitutes for a ChooseN overlap.
+Inputs: group (replacement group), selectedCourses (Map)
+Outputs: availableCourses (array of Course objects)
+
+Double-major candidates must remain within the allowed overlap points.
+*/
 function getAvailableChooseNReplacementCourses(
     group,
     selectedCourses
@@ -1015,7 +1124,7 @@ function getAvailableChooseNReplacementCourses(
     if (isDoubleMajor) {
         if (
             totalSubstitutionPoints >
-            MAX_DOUBLE_MAJOR_OVERLAP_POINTS
+            maxDoubleMajorOverlapPoints
         ) {
             // Reject this ChooseN branch so the caller can try a combination
             // with no more than 30 points of double-major overlap.
@@ -1065,7 +1174,11 @@ function getAvailableChooseNReplacementCourses(
         );
 }
 
-// Total points represented by required-course overlaps.
+/*
+getRequiredSubstitutionPoints: Totals required-course overlap points.
+Inputs: N/A
+Outputs: substitutionPoints (number)
+*/
 function getRequiredSubstitutionPoints() {
     return requiredCourseSubstitutions.reduce(
         (total, substitution) =>
@@ -1074,12 +1187,24 @@ function getRequiredSubstitutionPoints() {
     );
 }
 
+/*
+getAvailableElectiveCourses: Gets courses not already selected for the plan.
+Inputs: selectedCourses (Map)
+Outputs: availableCourses (array of Course objects)
+*/
 function getAvailableElectiveCourses(selectedCourses) {
     return Object.values(coursesObject).filter(
         course => !selectedCourses.has(course.code)
     );
 }
 
+/*
+getAvailableDoubleMajorElectiveCourses: Gets valid double-major electives.
+Inputs: selectedCourses (Map)
+Outputs: availableCourses (array of Course objects)
+
+Reads selectedMajors from state.js and excludes their requirement courses.
+*/
 function getAvailableDoubleMajorElectiveCourses(selectedCourses) {
     const selectedMajorCourseCodes = new Set(
         state.selectedMajors
@@ -1097,6 +1222,11 @@ function getAvailableDoubleMajorElectiveCourses(selectedCourses) {
     );
 }
 
+/*
+addCoursesFromOption: Adds every course from one pathway option to a map.
+Inputs: majorOrMinor (option object), courses (Map)
+Outputs: N/A
+*/
 function addCoursesFromOption(
     majorOrMinor,
     courses
@@ -1118,17 +1248,14 @@ function addCoursesFromOption(
 }
 
 /*
- * Schedule a course set as a constraint-satisfaction problem.
- *
- * A course is assigned to a semester rather than a particular table slot
- * because slots in the same semester are interchangeable. The search uses
- * domain propagation, chooses the course with the fewest semester choices,
- * and backtracks immediately when a remaining course has no possible
- * semester.
- *
- * All work is done against local data. state.coursePlan is updated only after
- * a complete valid schedule has been found.
- */
+scheduleCourses: Schedules selected courses with constraint-based searching.
+Inputs: selectedCourses (Map of course codes to Course objects)
+Outputs: scheduled (boolean)
+
+Courses are assigned to semesters because slots are interchangeable. The
+search propagates domains and backtracks when a course has no valid semester.
+coursePlan in state.js is updated only after a complete plan is found.
+*/
 function scheduleCourses(selectedCourses) {
     const courses =
         new Map(selectedCourses);
@@ -1258,6 +1385,11 @@ function scheduleCourses(selectedCourses) {
     return true;
 }
 
+/*
+offeredThisSemester: Checks whether a course is offered in a semester.
+Inputs: course (Course object), semester (integer)
+Outputs: isOffered (boolean)
+*/
 function offeredThisSemester(course, semester) {
     const isSemester1 = semester % 2 === 0;
 
@@ -1265,10 +1397,15 @@ function offeredThisSemester(course, semester) {
     return course.semester2Offered;
 }
 
-const POINT_PREREQUISITE_LEVELS = [5, 6, 7];
+const pointPrerequisiteLevels = [5, 6, 7];
 
+/*
+getPointPrerequisites: Gets positive point requirements for a course.
+Inputs: course (Course object)
+Outputs: pointPrerequisites (array of level and point pairs)
+*/
 function getPointPrerequisites(course) {
-    return POINT_PREREQUISITE_LEVELS
+    return pointPrerequisiteLevels
         .map(level => [
             level,
             Number(
@@ -1285,12 +1422,14 @@ function getPointPrerequisites(course) {
 }
 
 /*
- * Point prerequisites only count courses completed in an earlier semester.
- * During search, an unassigned course is counted as a potential contributor
- * only when its current domain still contains an earlier semester. This is
- * deliberately optimistic: it removes impossible placements without
- * discarding a placement whose contributing courses can still be arranged.
- */
+pointPrerequisitesCanBeSatisfied: Checks a course's point prerequisites.
+Inputs: course (Course object), semester (integer), courses (Map),
+assignments (Map), domains (Map or null)
+Outputs: canBeSatisfied (boolean)
+
+Only courses in earlier semesters contribute points. Unassigned courses count
+when their domain still contains an earlier semester.
+*/
 function pointPrerequisitesCanBeSatisfied(
     course,
     semester,
@@ -1348,6 +1487,11 @@ function pointPrerequisitesCanBeSatisfied(
     return true;
 }
 
+/*
+buildInitialSemesterDomains: Builds offered-semester choices for each course.
+Inputs: courses (Map), semesterCount (integer)
+Outputs: domains (Map of course codes to semester arrays), or null
+*/
 function buildInitialSemesterDomains(
     courses,
     semesterCount
@@ -1387,6 +1531,12 @@ function buildInitialSemesterDomains(
     return domains;
 }
 
+/*
+searchSemesterAssignments: Searches recursively for valid semester choices.
+Inputs: courses (Map), domains (Map), assignments (Map), semesterLoads (array),
+semesterCapacity (integer), dependencyCounts (Map), failedStates (Set)
+Outputs: completedAssignments (Map), or null
+*/
 function searchSemesterAssignments(
     courses,
     domains,
@@ -1489,6 +1639,12 @@ function searchSemesterAssignments(
     return null;
 }
 
+/*
+propagateSemesterDomains: Removes impossible semesters from course domains.
+Inputs: courses (Map), domains (Map), assignments (Map), semesterLoads (array),
+semesterCapacity (integer)
+Outputs: propagatedDomains (Map), or null
+*/
 function propagateSemesterDomains(
     courses,
     domains,
@@ -1677,11 +1833,14 @@ function propagateSemesterDomains(
 }
 
 /*
- * Prerequisite checking normally narrows a dependent course from left to
- * right. This complementary pass also narrows prerequisite courses from
- * right to left. Consecutive prerequisites can additionally require the
- * prerequisite to be exactly one semester earlier.
- */
+restrictPrerequisiteDomains: Narrows domains for prerequisite relationships.
+Inputs: node (prerequisite node), dependentDomain (array), assignments (Map),
+domains (Map), relationship (string)
+Outputs: result (object containing valid and changed booleans)
+
+This pass narrows prerequisite courses from right to left. Consecutive
+prerequisites can require a course to be exactly one semester earlier.
+*/
 function restrictPrerequisiteDomains(
     node,
     dependentDomain,
@@ -1853,6 +2012,12 @@ function restrictPrerequisiteDomains(
     };
 }
 
+/*
+semesterRelationshipIsValid: Checks a relationship between two semesters.
+Inputs: requirementSemester (integer), dependentSemester (integer),
+relationship (string)
+Outputs: isValid (boolean)
+*/
 function semesterRelationshipIsValid(
     requirementSemester,
     dependentSemester,
@@ -1873,11 +2038,14 @@ function semesterRelationshipIsValid(
 }
 
 /*
- * Check all 63 non-empty subsets of the six semesters. If more courses are
- * confined to a subset than the subset has free slots, the branch is
- * impossible. If the counts are equal, those slots are reserved and can be
- * removed from every other course's domain.
- */
+propagateCapacityConstraints: Restricts domains using semester capacity.
+Inputs: domains (Map), assignments (Map), semesterLoads (array),
+semesterCapacity (integer)
+Outputs: result (object containing valid and changed booleans)
+
+Semester subsets with equal course and slot counts reserve those slots. A
+subset containing more courses than slots makes the search branch invalid.
+*/
 function propagateCapacityConstraints(
     domains,
     assignments,
@@ -2005,10 +2173,13 @@ function propagateCapacityConstraints(
 }
 
 /*
- * Return whether a prerequisite expression can still be completed before the
- * proposed semester. For an unassigned prerequisite, at least one value in
- * its current domain must be earlier than the proposed semester.
- */
+prerequisiteTreeCanBeSatisfied: Checks a tree against a proposed semester.
+Inputs: node (prerequisite node), semester (integer), assignments (Map),
+domains (Map)
+Outputs: canBeSatisfied (boolean)
+
+An unassigned prerequisite needs an earlier semester in its current domain.
+*/
 function prerequisiteTreeCanBeSatisfied(
     node,
     semester,
@@ -2068,9 +2239,13 @@ function prerequisiteTreeCanBeSatisfied(
 }
 
 /*
- * A corequisite may be completed before its dependent course or alongside it
- * in the same semester.
- */
+corequisiteTreeCanBeSatisfied: Checks a corequisite tree and semester.
+Inputs: node (corequisite node), semester (integer), assignments (Map),
+domains (Map)
+Outputs: canBeSatisfied (boolean)
+
+A corequisite may be completed earlier or in the same semester.
+*/
 function corequisiteTreeCanBeSatisfied(
     node,
     semester,
@@ -2122,10 +2297,13 @@ function corequisiteTreeCanBeSatisfied(
 }
 
 /*
- * Check a prerequisite expression against one exact semester. This is used
- * for courses such as COMP703 whose prerequisite must be taken immediately
- * beforehand rather than at any earlier point in the plan.
- */
+prerequisiteTreeCanBeSatisfiedInSemester: Checks a tree in one semester.
+Inputs: node (prerequisite node), requiredSemester (integer), assignments (Map),
+domains (Map)
+Outputs: canBeSatisfied (boolean)
+
+This supports courses whose prerequisites must be immediately beforehand.
+*/
 function prerequisiteTreeCanBeSatisfiedInSemester(
     node,
     requiredSemester,
@@ -2178,6 +2356,12 @@ function prerequisiteTreeCanBeSatisfiedInSemester(
     return false;
 }
 
+/*
+consecutivePrerequisitesCanBeSatisfied: Checks consecutive prerequisites.
+Inputs: course (Course object), semester (integer), assignments (Map),
+domains (Map)
+Outputs: canBeSatisfied (boolean)
+*/
 function consecutivePrerequisitesCanBeSatisfied(
     course,
     semester,
@@ -2196,6 +2380,11 @@ function consecutivePrerequisitesCanBeSatisfied(
     );
 }
 
+/*
+isCoreCourseCode: Checks whether a course belongs to a Core requirement.
+Inputs: courseCode (string)
+Outputs: isCoreCourse (boolean)
+*/
 function isCoreCourseCode(courseCode) {
     return (
         majorOptions.Core?.Requirements.some(
@@ -2207,6 +2396,11 @@ function isCoreCourseCode(courseCode) {
     );
 }
 
+/*
+selectMostConstrainedCourse: Selects the next course for the search.
+Inputs: courses (Map), domains (Map), assignments (Map), dependencyCounts (Map)
+Outputs: courseCode (string)
+*/
 function selectMostConstrainedCourse(
     courses,
     domains,
@@ -2253,6 +2447,12 @@ function selectMostConstrainedCourse(
     return unassignedCourses[0].code;
 }
 
+/*
+orderSemesterChoices: Orders possible semesters for one course.
+Inputs: courseCode (string), domains (Map), assignments (Map),
+semesterLoads (array), semesterCapacity (integer), dependencyCounts (Map)
+Outputs: semesters (array of integers)
+*/
 function orderSemesterChoices(
     courseCode,
     domains,
@@ -2314,6 +2514,12 @@ function orderSemesterChoices(
     return semesters;
 }
 
+/*
+getSemesterPressure: Calculates competition for one semester's capacity.
+Inputs: semester (integer), selectedCourseCode (string), domains (Map),
+assignments (Map), semesterLoads (array), semesterCapacity (integer)
+Outputs: pressure (number)
+*/
 function getSemesterPressure(
     semester,
     selectedCourseCode,
@@ -2351,6 +2557,11 @@ function getSemesterPressure(
     );
 }
 
+/*
+buildDependencyCounts: Counts how many selected courses depend on each course.
+Inputs: courses (Map of course codes to Course objects)
+Outputs: dependencyCounts (Map of course codes to integers)
+*/
 function buildDependencyCounts(courses) {
     const dependencyCounts =
         new Map(
@@ -2396,6 +2607,11 @@ function buildDependencyCounts(courses) {
     return dependencyCounts;
 }
 
+/*
+collectPrerequisiteCodes: Adds every course code from a tree to a set.
+Inputs: node (prerequisite node), prerequisiteCodes (Set of strings)
+Outputs: N/A
+*/
 function collectPrerequisiteCodes(
     node,
     prerequisiteCodes
@@ -2417,6 +2633,11 @@ function collectPrerequisiteCodes(
     }
 }
 
+/*
+assignmentsAreValid: Checks every constraint in completed assignments.
+Inputs: courses (Map), assignments (Map of course codes to semesters)
+Outputs: areValid (boolean)
+*/
 function assignmentsAreValid(
     courses,
     assignments
@@ -2470,6 +2691,11 @@ function assignmentsAreValid(
     return true;
 }
 
+/*
+consecutivePrerequisitesAreValid: Validates consecutive prerequisites.
+Inputs: course (Course object), semester (integer), assignments (Map)
+Outputs: areValid (boolean)
+*/
 function consecutivePrerequisitesAreValid(
     course,
     semester,
@@ -2496,6 +2722,11 @@ function consecutivePrerequisitesAreValid(
     );
 }
 
+/*
+getCompletedCoursesForSemester: Gets courses completed before a semester.
+Inputs: assignments (Map), semester (integer)
+Outputs: completedCourses (Set of course code strings)
+*/
 function getCompletedCoursesForSemester(
     assignments,
     semester
@@ -2514,6 +2745,11 @@ function getCompletedCoursesForSemester(
     return completedCourses;
 }
 
+/*
+getAssignmentStateKey: Creates a stable cache key for course assignments.
+Inputs: assignments (Map of course codes to semesters)
+Outputs: stateKey (string)
+*/
 function getAssignmentStateKey(assignments) {
     return Array.from(assignments)
         .sort(
@@ -2529,6 +2765,11 @@ function getAssignmentStateKey(assignments) {
         .join("|");
 }
 
+/*
+cloneDomains: Copies a map of course semester domains.
+Inputs: domains (Map of course codes to semester arrays)
+Outputs: clonedDomains (Map)
+*/
 function cloneDomains(domains) {
     return new Map(
         Array.from(domains)
@@ -2542,6 +2783,12 @@ function cloneDomains(domains) {
     );
 }
 
+/*
+buildCoursePlan: Converts semester assignments into a course plan grid.
+Inputs: courses (Map), assignments (Map), semesterCount (integer),
+semesterCapacity (integer)
+Outputs: coursePlan (two-dimensional array), or null
+*/
 function buildCoursePlan(
     courses,
     assignments,
@@ -2590,6 +2837,13 @@ function buildCoursePlan(
     return coursePlan;
 }
 
+/*
+commitCoursePlan: Copies a completed plan into shared application state.
+Inputs: coursePlan (two-dimensional array of Course objects or null values)
+Outputs: N/A
+
+Updates coursePlan in state.js.
+*/
 function commitCoursePlan(coursePlan) {
     for (
         let semester = 0;
@@ -2608,15 +2862,21 @@ function commitCoursePlan(coursePlan) {
 }
 
 
-// Ensure pathway is selected and that the required number of majors/minors are chosen
+/*
+checkIfMajorsAndMinorsSelected: Checks whether pathway selections are complete.
+Inputs: N/A
+Outputs: selectionsAreValid (boolean)
+
+Reads selectedPathway, selectedMajors, and selectedMinors from state.js.
+*/
 function checkIfMajorsAndMinorsSelected() {
-    // Check that state has a selected pathway.
+    // Check that a pathway has been selected.
     if (!state.selectedPathway) {
         alert("Please select a pathway before autopopulating the study plan.");
         return false;
     }
     const selectedPathway = state.selectedPathway;
-    // Check that the enough majors are selected for the chosen pathway.
+    // Check that enough majors are selected for the chosen pathway.
     const requiredMajorsCount = selectedPathway.numMajors;
     const selectedMajors = state.selectedMajors;
     const numSelectedMajors = selectedMajors.filter(major => major !== null).length;
@@ -2625,7 +2885,7 @@ function checkIfMajorsAndMinorsSelected() {
         return false;
     }
 
-    // Check that the enough minors are selected for the chosen pathway.
+    // Check that enough minors are selected for the chosen pathway.
     const requiredMinorsCount = selectedPathway.numMinors;
     const selectedMinors = state.selectedMinors;
     const numSelectedMinors = selectedMinors.filter(minor => minor !== null).length;
