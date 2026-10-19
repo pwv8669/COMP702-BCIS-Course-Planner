@@ -178,6 +178,21 @@ export async function renderCoursePlan(state) {
             if(prereqText != "No prerequisites"){//if there are prerequisites then add them to the string
                 details.push(`Prerequisites: ${prereqText}`);
             }
+            const pointPrerequisites = [
+                { level: 5, points: course.level5PointsRequired },
+                { level: 6, points: course.level6PointsRequired },
+                { level: 7, points: course.level7PointsRequired }
+            ].filter(requirement => requirement.points > 0);
+            if (pointPrerequisites.length > 0) {//Add point prerequisites.
+                const pointRequirementDescription = pointPrerequisites
+                    .map(requirement =>
+                        `${requirement.points} points at Level ${requirement.level}`
+                    )
+                    .join(", ");
+                details.push(
+                    `Prerequisites: ${pointRequirementDescription}`
+                );
+            }
             const maximumRequirementLevel =
                 course.requiresAllCoreAndMajorRequirementsUpToLevel;
             if (
