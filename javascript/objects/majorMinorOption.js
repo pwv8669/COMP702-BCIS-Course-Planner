@@ -52,7 +52,7 @@ Outputs: majors (object, key: courseCode string, value: MajorOption object)
 See courseObjectConverter for details about Course objects
 */ 
 export async function loadMajorOptions() {
-    const response = await fetch("json/majors.json");
+    const response = await fetch("json/majors.json", { cache: "no-store" });
     const data = await response.json();
     let optionsarray = Object.values(data);
     //console.log(optionsarray);
@@ -75,7 +75,7 @@ Outputs: minors (object, key: courseCode string, value: MinorObject object)
 See courseObjectConverter for details about Course objects
 */ 
 export async function loadMinorOptions() {
-    const response = await fetch("json/minors.json");
+    const response = await fetch("json/minors.json", { cache: "no-store" });
     const data = await response.json();
 
     const minors = Object.fromEntries(

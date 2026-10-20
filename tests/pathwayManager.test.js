@@ -230,11 +230,13 @@ describe("initPathwayOptions", () => {
 
         expect(mockData.fetch).toHaveBeenNthCalledWith(
             1,
-            "./json/majors.json"
+            "./json/majors.json",
+            { cache: "no-store" }
         );
         expect(mockData.fetch).toHaveBeenNthCalledWith(
             2,
-            "./json/minors.json"
+            "./json/minors.json",
+            { cache: "no-store" }
         );
         expect(state.selectedPathway).toBe(mockData.pathways.doubleMajors);
 

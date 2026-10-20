@@ -85,7 +85,10 @@ describe("loadCourses", () => {
         const courses = await loadCourses();
 
         expect(fetchMock).toHaveBeenCalledOnce();
-        expect(fetchMock).toHaveBeenCalledWith("json/courses.json");
+        expect(fetchMock).toHaveBeenCalledWith(
+            "json/courses.json",
+            { cache: "no-store" }
+        );
         expect(json).toHaveBeenCalledOnce();
         expect(courses.COMP500).toMatchObject({
             code: "COMP500",

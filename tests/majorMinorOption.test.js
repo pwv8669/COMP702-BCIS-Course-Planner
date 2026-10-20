@@ -150,7 +150,10 @@ describe("option loaders", () => {
 
         const majors = await loadMajorOptions();
 
-        expect(fetchMock).toHaveBeenCalledWith("json/majors.json");
+        expect(fetchMock).toHaveBeenCalledWith(
+            "json/majors.json",
+            { cache: "no-store" }
+        );
         expect(json).toHaveBeenCalledOnce();
         expect(Object.keys(majors)).toEqual(["ComputerScience", "Core"]);
         expect(majors.ComputerScience).toBeInstanceOf(MajorOption);
@@ -175,7 +178,10 @@ describe("option loaders", () => {
 
         const minors = await loadMinorOptions();
 
-        expect(fetchMock).toHaveBeenCalledWith("json/minors.json");
+        expect(fetchMock).toHaveBeenCalledWith(
+            "json/minors.json",
+            { cache: "no-store" }
+        );
         expect(Object.keys(minors)).toEqual([
             "SoftwareDevelopment",
             "ArtificialIntelligence"

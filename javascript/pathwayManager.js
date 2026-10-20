@@ -63,8 +63,14 @@ export async function initPathwayOptions()
     minorsArray = [];
 
 	// Fetch the options.json file which contains the list of available majors and minors.
-	const majorOptionsResource = await fetch('./json/majors.json');
-    const minorOptionsResource = await fetch('./json/minors.json');
+	const majorOptionsResource = await fetch(
+        './json/majors.json',
+        { cache: 'no-store' }
+    );
+    const minorOptionsResource = await fetch(
+        './json/minors.json',
+        { cache: 'no-store' }
+    );
 	const majorOptions = await majorOptionsResource.json();
 	const minorOptions = await minorOptionsResource.json();
 

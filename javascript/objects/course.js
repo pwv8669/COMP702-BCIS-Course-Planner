@@ -172,7 +172,7 @@ This allows us to easily access the full course data when we need to check prere
 */
 export async function loadCourses() {
     // We fetch the courses.json file and parse it as JSON to get the raw course data. This data is expected to be an object where each key is a course code and each value is an object containing the course details (e.g., name, points, prerequisites, etc.).
-    const response = await fetch("json/courses.json");
+    const response = await fetch("json/courses.json", { cache: "no-store" });
     const data = await response.json();
 
     // We then create a new object called courses by iterating over the entries of the raw data object. For each entry, we take the course code (the key) and the course details (the value) and create a new Course object using the Course class constructor. We use Object.fromEntries to convert the array of [code, Course] pairs back into an object where each key is a course code and each value is a Course object.
