@@ -2,6 +2,8 @@
 <html>
 <head>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.3.3/jspdf.min.js"></script>
+<script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
 <script type="module" src="./javascript/app.js" ></script>
 <style>
   /* Styling here */
@@ -854,40 +856,51 @@ select:hover,button:hover{
 <script defer>
 
 
-// JSPDF
-//Create PDf from HTML...
-function getPDF(){
+/*
+exportPlanAsPdf: Creates and downloads a PDF of the visible study plan.
+Inputs: N/A
+Outputs: N/A
+Reads the schedule table from the HTML and starts a browser download.
+*/
+async function exportPlanAsPdf() {
+    const scheduleTable = document.querySelector(".schedule-table");
 
-		var HTML_Width = $(".schedule-table").width();
-		var HTML_Height = $(".schedule-table").height();
-		var top_left_margin = 15;
-		var PDF_Width = HTML_Width+(top_left_margin*2);
-		var PDF_Height = (PDF_Width*1.5)+(top_left_margin*2);
-		var canvas_image_width = HTML_Width;
-		var canvas_image_height = HTML_Height;
-		
-		var totalPDFPages = Math.ceil(HTML_Height/PDF_Height)-1;
-		
+    if (!scheduleTable || typeof html2canvas !== "function" || typeof jsPDF !== "function") {
+        window.alert("PDF export is unavailable. Please refresh the page and try again.");
+        return;
+    }
 
-		html2canvas($(".schedule-table")[0],{allowTaint:true}).then(function(canvas) {
-			canvas.getContext('2d');
-			
-			console.log(canvas.height+"  "+canvas.width);
-			
-			
-			var imgData = canvas.toDataURL("image/jpeg", 1.0);
-			var pdf = new jsPDF('p', 'pt',  [PDF_Width, PDF_Height]);
-		    pdf.addImage(imgData, 'JPG', top_left_margin, top_left_margin,canvas_image_width,canvas_image_height);
-			
-			
-			for (var i = 1; i <= totalPDFPages; i++) { 
-				pdf.addPage(PDF_Width, PDF_Height);
-				pdf.addImage(imgData, 'JPG', top_left_margin, -(PDF_Height*i)+(top_left_margin*4),canvas_image_width,canvas_image_height);
-			}
-			
-		    pdf.save("Study Plan.pdf");
-        });
-	};
+    try {
+        const htmlWidth = scheduleTable.offsetWidth;
+        const htmlHeight = scheduleTable.offsetHeight;
+        const topLeftMargin = 15;
+        const pdfWidth = htmlWidth + (topLeftMargin * 2);
+        const pdfHeight = (pdfWidth * 1.5) + (topLeftMargin * 2);
+        const totalPdfPages = Math.max(0, Math.ceil(htmlHeight / pdfHeight) - 1);
+        const canvas = await html2canvas(scheduleTable, { allowTaint: true });
+        const imageData = canvas.toDataURL("image/jpeg", 1.0);
+        const pdf = new jsPDF("p", "pt", [pdfWidth, pdfHeight]);
+
+        pdf.addImage(imageData, "JPG", topLeftMargin, topLeftMargin, htmlWidth, htmlHeight);
+
+        for (let page = 1; page <= totalPdfPages; page += 1) {
+            pdf.addPage(pdfWidth, pdfHeight);
+            pdf.addImage(
+                imageData,
+                "JPG",
+                topLeftMargin,
+                -(pdfHeight * page) + (topLeftMargin * 4),
+                htmlWidth,
+                htmlHeight
+            );
+        }
+
+        pdf.save("Study Plan.pdf");
+    } catch (error) {
+        console.error("Unable to export the study plan as a PDF.", error);
+        window.alert("The PDF could not be created. Please try again.");
+    }
+}
 </script>
 
 <!-- 
