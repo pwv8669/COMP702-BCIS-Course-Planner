@@ -30,6 +30,7 @@ import {
 
 let partTimeButton;
 let partTimeHeader;
+let scheduleIcon;
 
 // Create the event behavior needed by the schedule-mode button.
 function makeButton() {
@@ -52,13 +53,15 @@ beforeEach(() => {
     setScheduleMode("full-time");
 
     partTimeButton = makeButton();
-    partTimeButton.title = "Switch Schedule to Part-Time";
+    partTimeButton.title = "Switch to Part-Time Schedule";
     partTimeHeader = { style: { display: "none" } };
+    scheduleIcon = { title: "Switch to Part-Time Schedule" };
 
     vi.stubGlobal("document", {
         getElementById: vi.fn(id => {
             if (id === "partTimeButton") return partTimeButton;
             if (id === "partTimeHeader") return partTimeHeader;
+            if (id === "scheduleIcon") return scheduleIcon;
             return null;
         })
     });
@@ -98,7 +101,7 @@ describe("switchSchedule", () => {
             state.coursePlan.every(semester => semester.length === 2)
         ).toBe(true);
         expect(partTimeHeader.style.display).toBe("table-row");
-        expect(partTimeButton.title).toBe("Switch Schedule to Full-Time");
+        expect(partTimeButton.title).toBe("Switch to Full-Time Schedule");
         expect(appMocks.refreshStudyPlan).toHaveBeenCalledOnce();
     });
 
@@ -106,7 +109,7 @@ describe("switchSchedule", () => {
     test("switches a part-time schedule back to full-time", () => {
         setScheduleMode("part-time");
         partTimeHeader.style.display = "table-row";
-        partTimeButton.title = "Switch Schedule to Full-Time";
+        partTimeButton.title = "Switch to Full-Time Schedule";
 
         switchSchedule();
 
@@ -120,7 +123,7 @@ describe("switchSchedule", () => {
             state.coursePlan.every(semester => semester.length === 4)
         ).toBe(true);
         expect(partTimeHeader.style.display).toBe("none");
-        expect(partTimeButton.title).toBe("Switch Schedule to Part-Time");
+        expect(partTimeButton.title).toBe("Switch to Part-Time Schedule");
         expect(appMocks.refreshStudyPlan).toHaveBeenCalledOnce();
     });
 

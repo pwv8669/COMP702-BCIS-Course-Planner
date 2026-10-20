@@ -187,7 +187,7 @@ describe("major and minor editor selections", () => {
         menuMocks.elements.MajorMinorSelection.value = "Minor";
         vi.clearAllMocks();
 
-        await SetupMajorMinorSelections();
+        await setupMajorMinorSelections();
 
         expect(menuMocks.fetch).toHaveBeenCalledWith(
             "json/minors.json",
