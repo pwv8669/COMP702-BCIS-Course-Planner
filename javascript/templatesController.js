@@ -182,7 +182,7 @@ function initTemplatesController() {
                         if (!fileResponse.ok) throw new Error("Could not load template file.");
                         
                         const templateData = await fileResponse.json();
-                        importschedule(templateData);
+                        importSchedule(templateData);
                         await refreshStudyPlan();
                         if (panel.open) panel.close();
                     } catch (err) {
@@ -211,7 +211,7 @@ function initTemplatesController() {
         reader.onload = async function (event) {
             try {
                 const templateData = JSON.parse(event.target.result);
-                importschedule(templateData);
+                importSchedule(templateData);
                 await refreshStudyPlan();
                 if (panel?.open) panel.close();
             } catch (error) {
