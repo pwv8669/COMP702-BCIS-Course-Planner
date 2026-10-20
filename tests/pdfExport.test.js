@@ -17,17 +17,19 @@ function loadExportPlanAsPdf({ table, html2canvas, jsPDF, alert = vi.fn() }) {
     const document = {
         querySelector: vi.fn(() => table)
     };
-    const window = { alert };
+    const window = {
+        alert,
+        html2canvas,
+        jspdf: { jsPDF }
+    };
     const factory = new Function(
         "document",
-        "html2canvas",
-        "jsPDF",
         "window",
         `${pdfScript}\nreturn exportPlanAsPdf;`
     );
 
     return {
-        exportPlanAsPdf: factory(document, html2canvas, jsPDF, window),
+        exportPlanAsPdf: factory(document, window),
         alert,
         document
     };
@@ -35,8 +37,8 @@ function loadExportPlanAsPdf({ table, html2canvas, jsPDF, alert = vi.fn() }) {
 
 describe("PDF export", () => {
     it("loads the browser libraries used by the export", () => {
-        expect(plannerHtml).toContain("jspdf/1.3.3/jspdf.min.js");
-        expect(plannerHtml).toContain("html2canvas.hertzen.com/dist/html2canvas.min.js");
+        expect(plannerHtml).toContain("jspdf/2.5.1/jspdf.umd.min.js");
+        expect(plannerHtml).toContain("html2canvas/1.4.1/html2canvas.min.js");
         expect(pdfScript).toBeTruthy();
     });
 
